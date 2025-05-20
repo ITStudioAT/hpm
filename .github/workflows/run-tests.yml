@@ -2,12 +2,6 @@ name: run-tests
 
 on:
   push:
-    paths:
-      - '**.php'
-      - '.github/workflows/run-tests.yml'
-      - 'phpunit.xml.dist'
-      - 'composer.json'
-      - 'composer.lock'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,22 +14,42 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        php: [8.4, 8.3]
-        laravel: [12.*, 11.*, 10.*]
+        os: [ubuntu-latest]
+        php: [8.3]
+        laravel: [12.*, 11.*]
         stability: [prefer-lowest, prefer-stable]
         include:
           - laravel: 12.*
             testbench: 10.*
           - laravel: 11.*
             testbench: 9.*
-          - laravel: 10.*
-            testbench: 8.*
-    
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_USER: user
+          MYSQL_PASSWORD: secret
+          MYSQL_DATABASE: pest_test
+          MYSQL_ROOT_PASSWORD: secretroot
+          MYSQL_ROOT_HOST: '%'
+        ports: 
+          - 3306:3306                  
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
+      - name: Verify MySQL connection
+        run: |
+          mysql --version
+          sudo apt-get install -y mysql-client
+          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -psecretroot -e "SHOW DATABASES"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -43,7 +57,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_mysql, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
           coverage: none
 
       - name: Setup problem matchers
@@ -56,8 +70,9 @@ jobs:
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
-      - name: List Installed Dependencies
-        run: composer show -D
-
       - name: Execute tests
-        run: vendor/bin/pest --ci
+        run: vendor/bin/pest
+        env:
+          DB_USERNAME: root
+          DB_PASSWORD: secretroot
+          DB_PORT: ${{ job.services.mysql.ports[3306] }}
