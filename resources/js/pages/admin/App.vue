@@ -14,7 +14,9 @@
             </v-toolbar>
             <v-list>
                 <v-list-item :exact="false" prepend-icon="mdi-home" title="Homepage" to="/hpm/admin" />
+                <v-list-item :exact="false" prepend-icon="mdi-shield-crown-outline" title="Admin" to="/admin" />
             </v-list>
+
         </v-navigation-drawer>
 
 
@@ -36,11 +38,19 @@
         </v-main>
 
         <!-- Footer -->
-        <v-footer name="footer" tile color="primary" app>
+        <v-footer name="footer" tile color="primary" app v-if="config">
             <v-container class="text-center">
-                © {{ new Date().getFullYear() }} MyApp. All rights reserved.
+                © {{ new Date().getFullYear() }} HPMaker. All rights reserved. {{ config.version }}
             </v-container>
         </v-footer>
+
+        <!-- Es wird aktuell etwas geladen-->
+        <div class="d-flex justify-center align-center"
+            style="position: fixed; inset: 0; background-color: rgba(255, 255, 255, 0.8); z-index: 9999;"
+            v-if="is_loading > 0">
+            <v-progress-circular indeterminate size="70" width="7" />
+        </div>
+
     </v-layout>
 
 
@@ -53,15 +63,15 @@
 
 <script>
 import { mapWritableState } from "pinia";
-import { useHomepageStore } from "../../stores/HomepageStore";
+import { useAdminStore } from "../../stores/AdminStore";
 
 export default {
 
     components: {},
 
     async beforeMount() {
-        this.homepageStore = useHomepageStore(); this.homepageStore.initialize(this.$router);
-        // this.homepageStore.loadConfig();
+        this.adminStore = useAdminStore(); this.adminStore.initialize(this.$router);
+        this.adminStore.getConfig();
     },
 
     unmounted() {
@@ -70,29 +80,13 @@ export default {
     data() {
         return {
             show_navigation_drawer: true,
-            homepageStore: null,
-            homepage: {
-                header: {
-                    is_active: true,
-                    bg_color: 'header',
-                    color: 'white',
-                    density: 'default',
-                    is_flat: true,
-                    is_tile: true,
-                    srcoll_behavior: 'hide',
-                },
-                footer: {
-                    is_active: true,
-                    is_tile: false,
-                    bg_color: 'footer',
-                    color: 'yellow',
-                },
-            }
+            adminStore: null,
+
         };
     },
 
     computed: {
-        ...mapWritableState(useHomepageStore, ['config', 'is_loading', 'error']),
+        ...mapWritableState(useAdminStore, ['config', 'is_loading', 'error']),
 
     },
 

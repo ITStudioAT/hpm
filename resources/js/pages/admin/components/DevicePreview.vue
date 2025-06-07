@@ -1,27 +1,30 @@
 <template>
-    <v-container class="pa-4">
-        <v-row align="center" class="mb-4">
-            <v-col cols="12" md="4">
-                <v-select v-model="selectedDevice" :items="deviceOptions" label="Select device" item-title="label"
-                    item-value="key" variant="outlined" dense />
+    <v-container fluid class="pa-0">
+        <v-row no-gutters class="py-2">
+            <v-col cols="12" sm="6" md="4" lg="3" xl="2">
+                <v-select hide-details v-model="selectedDevice" :items="deviceOptions" label="Select device"
+                    item-title="label" item-value="key" variant="outlined" dense />
+
             </v-col>
         </v-row>
 
-        <v-row justify="center">
-            <v-col cols="12" class="d-flex justify-center">
+
+        <v-row no-gutters>
+            <v-col cols="12">
                 <v-card :style="deviceStyle" class="overflow-hidden elevation-10" rounded="sm">
                     <iframe :src="previewUrl" class="w-100 h-100" frameborder="0" :title="selectedDevice"></iframe>
                 </v-card>
             </v-col>
         </v-row>
     </v-container>
+
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 
 const selectedDevice = ref('desktop')
-const previewUrl = '/' // Change this to the route or page you want to preview
+const previewUrl = '/pv' // Change this to the route or page you want to preview
 
 const baseDevices = {
     desktop: { label: 'Desktop', width: 1280, height: 800 },

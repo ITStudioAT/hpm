@@ -31,7 +31,7 @@ import { defineAsyncComponent } from 'vue'
 
 const Renderer = defineAsyncComponent(() => import('./Renderer.vue'))
 export default {
-    props: ['item', 'homepageStore'],
+    props: ['homepageStore'],
     components: { Renderer },
 
 

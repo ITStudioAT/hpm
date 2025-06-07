@@ -9,6 +9,8 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class HpmServiceProvider extends PackageServiceProvider
 {
+
+
     public function configurePackage(Package $package): void
     {
         /*
@@ -19,7 +21,9 @@ class HpmServiceProvider extends PackageServiceProvider
         $package
             ->name('hpm')
             ->hasConfigFile()
-            ->hasRoutes(['web', 'api'])
+            /*
+            ->hasRoutes(['web'])
+            */
             ->hasViews();
     }
 
@@ -53,11 +57,17 @@ class HpmServiceProvider extends PackageServiceProvider
     protected function loadRoutes()
     {
 
-        if (file_exists(__DIR__ . '/../routes/vendor/hpm/web.php')) {
-            $this->loadRoutesFrom(__DIR__ . '/../routes/vendor/hpm/web.php');
+        $publishedRoutePath = base_path('routes/vendor/hpm/web.php');
+        $defaultRoutePath = __DIR__ . '/../routes/web.php';
+
+        if (file_exists($publishedRoutePath)) {
+            $this->loadRoutesFrom($publishedRoutePath);
+        } elseif (file_exists($defaultRoutePath)) {
+            $this->loadRoutesFrom($defaultRoutePath);
         }
 
         // Lade API-Routen ohne Middleware
+        /*      */
         if (file_exists(__DIR__ . '/../routes/api.php')) {
             Route::prefix('api') // API-Routen mit 'api' Prefix
                 ->group(__DIR__ . '/../routes/api.php');

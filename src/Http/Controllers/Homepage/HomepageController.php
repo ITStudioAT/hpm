@@ -11,7 +11,7 @@ class HomepageController extends Controller
     public function getConfig()
     {
         $data = [
-            'version' => config('hpm.version', 'v x.x.x.'),
+            'version' => config('hpm.version'),
         ];
         return response()->json($data, 200);
     }
