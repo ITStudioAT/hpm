@@ -5,8 +5,9 @@ use function Pest\Laravel\artisan;
 use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
-    $src = realpath(__DIR__ . '/../../../resources/js/pages/pv_homepage/App.vue');
+    $src = realpath('resources/js/pages/pv_homepage/App.vue');
     $dest = base_path('resources/vendor/hpm/js/pages/pv_homepage/App.vue');
+    dump($src);
 
     if (! $src || ! file_exists($src)) {
         test()->skip("Missing source file: $src");
@@ -18,6 +19,8 @@ beforeEach(function () {
 
 
 it('reads a vue file with success', function () {
+
+
 
     $user = User::find(1);
     Role::create(['name' => 'super_admin']);
