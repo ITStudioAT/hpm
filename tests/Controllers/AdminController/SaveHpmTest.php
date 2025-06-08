@@ -5,14 +5,22 @@ use function Pest\Laravel\artisan;
 use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
+    // Source in your package
     $src = realpath(__DIR__ . '/../../../resources/js/pages/pv_homepage/App.vue');
+
+    // Destination in the Laravel test app's resources folder
     $dest = base_path('resources/vendor/hpm/js/pages/pv_homepage/App.vue');
 
     if (! $src || ! file_exists($src)) {
-        $this->markTestSkipped("Missing source file: $src");
+        test()->skip("Missing source file: $src");
     }
 
-    @mkdir(dirname($dest), 0777, true);
+    // Ensure destination directory exists
+    if (! file_exists(dirname($dest))) {
+        mkdir(dirname($dest), 0777, true);
+    }
+
+    // Copy the file
     copy($src, $dest);
 });
 
