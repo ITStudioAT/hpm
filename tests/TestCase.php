@@ -59,7 +59,10 @@ class TestCase extends Orchestra
         ];
     }
 
-    protected function defineEnvironment($app) {}
+    protected function defineEnvironment($app)
+    {
+        $app['router']->aliasMiddleware('web-allowed', WebAllowed::class);
+    }
 
     /**
      * Set up the environment configuration for the test.
@@ -67,7 +70,7 @@ class TestCase extends Orchestra
     public function getEnvironmentSetUp($app)
     {
 
-
+        $app['config']->set('app.key', 'base64:' . base64_encode(random_bytes(32)));
         Schema::DropAllTables();
         $migration = include __DIR__ . '/../database/migrations/0001_01_01_000000_create_users_table.php';
         $migration->up();
@@ -91,7 +94,7 @@ class TestCase extends Orchestra
         $app['config']->set('permission.column_names.role_pivot_key', 'role_id');
         $app['config']->set('permission.column_names.permission_pivot_key', 'permission_id');
 
-        /*
+
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(config('spa.api_throttle', 60))->by($request->user()?->id ?: $request->ip());
         });
@@ -109,6 +112,5 @@ class TestCase extends Orchestra
         $app['router']->aliasMiddleware('web-allowed', WebAllowed::class);
         $app['router']->aliasMiddleware('api-allowed', ApiAllowed::class);
         $app['router']->aliasMiddleware('auth:sanctum', EnsureFrontendRequestsAreStateful::class);
-        */
     }
 }

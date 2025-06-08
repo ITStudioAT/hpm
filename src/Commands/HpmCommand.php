@@ -8,11 +8,11 @@ class HpmCommand extends Command
 {
     public $signature = 'hpm';
 
-    public $description = 'My command';
+    public $description = 'Version Of HPMaker';
 
     public function handle(): int
     {
-        $this->comment('All done');
+        $this->comment(config('hpm.version'));
 
         return self::SUCCESS;
     }

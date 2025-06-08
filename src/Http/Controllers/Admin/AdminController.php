@@ -1,6 +1,6 @@
 <?php
 
-namespace Itstudioat\Hpm\src\Http\Controllers\Admin;
+namespace Itstudioat\Hpm\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -26,14 +26,17 @@ class AdminController extends Controller
 
     public function getHpm(Request $request)
     {
+
         if (!$this->userHasRole()) abort(403, 'Not allowed');
         $source = $request->query('source');
-        $filename = resource_path('vendor/hpm/js/pages/pv_homepage/' . $source . ".vue");
+        $filename = resource_path(config('hpm.pv_homepage_path') . $source . ".vue");
 
         $vuedataService = new VuedataService();
         $stream = $vuedataService->read($filename);
 
-        $data = ['hpm' => $stream['hpm']];
+        if ($stream['success'] == false) abort(500,  "Fehler beim Lesen!");
+
+        $data = ['hpm' => $stream['data']['hpm']];
         return response()->json($data, 200);
     }
 
@@ -44,10 +47,11 @@ class AdminController extends Controller
         $source = $request['source'];
         $data = $request['data'];
 
-        $filename = resource_path('vendor/hpm/js/pages/pv_homepage/' . $source . ".vue");
+        $filename = resource_path(config('hpm.pv_homepage_path') . $source . ".vue");
 
         $vuedataService = new VuedataService();
-        $vuedataService->write($filename, ['hpm' => $data]);
+        $stream = $vuedataService->write($filename, ['hpm' => $data]);
+        if ($stream['status'] != 'success') abort(500, "Fehler beim Schreiben!");
 
         $data = ['hpm' => $data];
         return response()->json($data, 200);

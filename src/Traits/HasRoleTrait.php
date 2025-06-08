@@ -9,7 +9,6 @@ trait HasRoleTrait
 
         if (!config('hpm.check_spatie_role')) return true;
 
-
         $par_roles = config('hpm.needed_role');
 
         if (! is_array($par_roles)) {
@@ -17,10 +16,6 @@ trait HasRoleTrait
         } else {
             $roles = $par_roles;
         }
-
-        info($roles);
-        info(auth()->check());
-        
 
         if (! auth()->check()) {
             return false;

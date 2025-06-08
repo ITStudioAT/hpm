@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Itstudioat\Hpm\src\Http\Controllers\Admin\AdminController;
-use Itstudioat\Hpm\src\Http\Controllers\Homepage\HomepageController;
+use Itstudioat\Hpm\Http\Controllers\Admin\AdminController;
+use Itstudioat\Hpm\Http\Controllers\Homepage\HomepageController;
 
 
 

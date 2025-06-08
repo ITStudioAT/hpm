@@ -1,6 +1,6 @@
 <?php
 
-namespace Itstudioat\Hpm\src\Http\Controllers\Homepage;
+namespace Itstudioat\Hpm\Http\Controllers\Homepage;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Request;

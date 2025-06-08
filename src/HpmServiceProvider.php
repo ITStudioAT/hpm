@@ -24,6 +24,7 @@ class HpmServiceProvider extends PackageServiceProvider
             /*
             ->hasRoutes(['web'])
             */
+            ->hasCommand(HpmCommand::class)
             ->hasViews();
     }
 
