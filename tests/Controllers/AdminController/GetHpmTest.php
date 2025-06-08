@@ -8,6 +8,7 @@ beforeEach(function () {
     $src = realpath('resources/js/pages/pv_homepage/App.vue');
     $dest = base_path('resources/vendor/hpm/js/pages/pv_homepage/App.vue');
     dump($src);
+    dump(file_exists($src));
 
     if (! $src || ! file_exists($src)) {
         test()->skip("Missing source file: $src");
