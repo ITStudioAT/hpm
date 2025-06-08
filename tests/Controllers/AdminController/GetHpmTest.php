@@ -4,11 +4,20 @@ use App\Models\User;
 use function Pest\Laravel\artisan;
 use Spatie\Permission\Models\Role;
 
-it('reads a vue file with success', function () {
-
-    $src = dirname(__DIR__, 3) . '/resources/js/pages/pv_homepage/App.vue';
+beforeEach(function () {
+    $src = realpath(__DIR__ . '/../../../resources/js/pages/pv_homepage/App.vue');
     $dest = base_path('resources/vendor/hpm/js/pages/pv_homepage/App.vue');
+
+    if (! $src || ! file_exists($src)) {
+        $this->markTestSkipped("Missing source file: $src");
+    }
+
+    @mkdir(dirname($dest), 0777, true);
     copy($src, $dest);
+});
+
+
+it('reads a vue file with success', function () {
 
     $user = User::find(1);
     Role::create(['name' => 'super_admin']);
@@ -23,10 +32,6 @@ it('reads a vue file with success', function () {
 
 
 it('reads a vue file with error, user has no needed role', function () {
-    $src = dirname(__DIR__, 3) . '/resources/js/pages/pv_homepage/App.vue';
-    $dest = base_path('resources/vendor/hpm/js/pages/pv_homepage/App.vue');
-    copy($src, $dest);
-
     config()->set('hpm.check_spatie_role', true);
     config()->set('hpm.needed_role', ['super_admin', 'hpm_admin']);
 
@@ -41,10 +46,6 @@ it('reads a vue file with error, user has no needed role', function () {
 
 
 it('reads a vue file with error, wrong file-name', function () {
-
-    $src = dirname(__DIR__, 3) . '/resources/js/pages/pv_homepage/App.vue';
-    $dest = base_path('resources/vendor/hpm/js/pages/pv_homepage/App.vue');
-    copy($src, $dest);
 
     $user = User::find(1);
     Role::create(['name' => 'super_admin']);

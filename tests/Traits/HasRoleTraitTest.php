@@ -14,6 +14,9 @@ beforeEach(function () {
         ');
     }
 });
+
+
+
 it('returns true if check_spatie_role is false', function () {
     Config::set('hpm.check_spatie_role', false);
 

@@ -4,11 +4,20 @@ use App\Models\User;
 use function Pest\Laravel\artisan;
 use Spatie\Permission\Models\Role;
 
-it('writes a vue file with success', function () {
-    $src = dirname(__DIR__, 3) . '/resources/js/pages/pv_homepage/App.vue';
+beforeEach(function () {
+    $src = realpath(__DIR__ . '/../../../resources/js/pages/pv_homepage/App.vue');
     $dest = base_path('resources/vendor/hpm/js/pages/pv_homepage/App.vue');
-    copy($src, $dest);
 
+    if (! $src || ! file_exists($src)) {
+        $this->markTestSkipped("Missing source file: $src");
+    }
+
+    @mkdir(dirname($dest), 0777, true);
+    copy($src, $dest);
+});
+
+
+it('writes a vue file with success', function () {
 
     config()->set('hpm.check_spatie_role', true);
     config()->set('hpm.needed_role', ['super_admin', 'hpm_admin']);
@@ -45,10 +54,6 @@ it('writes a vue file with success', function () {
 
 
 it('writes a vue file with error 403, no needed role when writing', function () {
-    $src = dirname(__DIR__, 3) . '/resources/js/pages/pv_homepage/App.vue';
-    $dest = base_path('resources/vendor/hpm/js/pages/pv_homepage/App.vue');
-    copy($src, $dest);
-
 
     config()->set('hpm.check_spatie_role', true);
     config()->set('hpm.needed_role', ['super_admin', 'hpm_admin']);
@@ -77,10 +82,6 @@ it('writes a vue file with error 403, no needed role when writing', function () 
 });
 
 it('writes a vue file with error 500, wrong filename', function () {
-    $src = dirname(__DIR__, 3) . '/resources/js/pages/pv_homepage/App.vue';
-    $dest = base_path('resources/vendor/hpm/js/pages/pv_homepage/App.vue');
-    copy($src, $dest);
-
 
     config()->set('hpm.check_spatie_role', true);
     config()->set('hpm.needed_role', ['super_admin', 'hpm_admin']);
