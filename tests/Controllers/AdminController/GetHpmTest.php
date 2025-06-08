@@ -9,7 +9,7 @@ beforeEach(function () {
     $dest = base_path('resources/vendor/hpm/js/pages/pv_homepage/App.vue');
 
     if (! $src || ! file_exists($src)) {
-        $this->markTestSkipped("Missing source file: $src");
+        test()->skip("Missing source file: $src");
     }
 
     @mkdir(dirname($dest), 0777, true);
