@@ -39,7 +39,7 @@ class AdminController extends Controller
             [
                 'filename' => $filename,
                 'file_exists' => file_exists($filename),
-                'stream' => $stream,
+                'streamx' => $stream,
             ];
 
         return response()->json($data, 200);
