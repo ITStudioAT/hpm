@@ -27,7 +27,6 @@ beforeEach(function () {
     dump(file_exists($dest));
 });
 
-
 it('writes a vue file with success', function () {
 
     config()->set('hpm.check_spatie_role', true);
@@ -37,10 +36,10 @@ it('writes a vue file with success', function () {
     Role::create(['name' => 'super_admin']);
     $user->assignRole('super_admin');
 
-    $result = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
+    $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
         ->assertOk();
 
-    $data = $result->json();
+    $data = $response->json();
 
     $data['hpm']['name'] = "Homepage-Struktur changed";
     $data['hpm']['type'] = "homepage changed";
@@ -50,19 +49,16 @@ it('writes a vue file with success', function () {
         'source' => 'App',
         'data' => $data['hpm'],
     ]);
-
     $saveResult->assertOk();
 
-    $result = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
+    $verifyResponse = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
         ->assertOk();
 
-    $result = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
-        ->assertOk();
+    $verifyData = $verifyResponse->json();
 
-    expect($result['hpm']['name'])->toBe("Homepage-Struktur changed");
-    expect($result['hpm']['type'])->toBe("homepage changed");
+    expect($verifyData['hpm']['name'])->toBe("Homepage-Struktur changed");
+    expect($verifyData['hpm']['type'])->toBe("homepage changed");
 });
-
 
 it('writes a vue file with error 403, no needed role when writing', function () {
 
@@ -73,17 +69,17 @@ it('writes a vue file with error 403, no needed role when writing', function () 
     Role::create(['name' => 'super_admin']);
     $user->assignRole('super_admin');
 
-    $result = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
+    $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
         ->assertOk();
 
-    $data = $result->json();
+    $data = $response->json();
 
     $data['hpm']['name'] = "Homepage-Struktur changed";
     $data['hpm']['type'] = "homepage changed";
 
+    // remove roles before saving
     $user->syncRoles([]);
 
-    // POST speichern
     $saveResult = $this->actingAs($user)->postJson('/api/hpm/admin/save_hpm', [
         'source' => 'App',
         'data' => $data['hpm'],
@@ -101,20 +97,21 @@ it('writes a vue file with error 500, wrong filename', function () {
     Role::create(['name' => 'super_admin']);
     $user->assignRole('super_admin');
 
-    $result = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
+    $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
         ->assertOk();
 
-    $data = $result->json();
+    $data = $response->json();
 
     $data['hpm']['name'] = "Homepage-Struktur changed";
     $data['hpm']['type'] = "homepage changed";
 
-    // POST speichern
     $saveResult = $this->actingAs($user)->postJson('/api/hpm/admin/save_hpm', [
-        'source' => 'Appx',
+        'source' => 'Appx', // invalid file name
         'data' => $data['hpm'],
     ]);
 
     $saveResult->assertStatus(500);
-    expect($saveResult['message'])->toBe("Fehler beim Schreiben!");
+    $errorData = $saveResult->json();
+
+    expect($errorData['message'])->toBe("Fehler beim Schreiben!");
 });

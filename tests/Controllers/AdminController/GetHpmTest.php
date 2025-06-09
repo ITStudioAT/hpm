@@ -33,11 +33,13 @@ it('reads a vue file with success', function () {
     Role::create(['name' => 'super_admin']);
     $user->assignRole('super_admin');
 
-    $result = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
+    $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
         ->assertOk();
 
-    expect($result['hpm']['name'])->toBe("Homepage-Struktur");
-    expect($result['hpm']['type'])->toBe("homepage");
+    $data = $response->json();
+
+    expect($data['hpm']['name'])->toBe("Homepage-Struktur");
+    expect($data['hpm']['type'])->toBe("homepage");
 });
 
 
@@ -48,10 +50,11 @@ it('reads a vue file with error, user has no needed role', function () {
     $user = User::find(1);
     $user->syncRoles();
 
-    $result = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
+    $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
         ->assertStatus(403);
 
-    expect($result['message'])->toBe("Not allowed");
+    $data = $response->json();
+    expect($data['message'])->toBe("Not allowed");
 });
 
 
@@ -61,8 +64,9 @@ it('reads a vue file with error, wrong file-name', function () {
     Role::create(['name' => 'super_admin']);
     $user->assignRole('super_admin');
 
-    $result = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=Appx')
+    $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=Appx')
         ->assertStatus(500);
 
-    expect($result['message'])->toBe("Fehler beim Lesen!");
+    $data = $response->json();
+    expect($data['message'])->toBe("Fehler beim Lesen!");
 });
