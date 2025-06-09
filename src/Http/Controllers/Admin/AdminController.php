@@ -32,16 +32,20 @@ class AdminController extends Controller
         $filename = resource_path(config('hpm.pv_homepage_path') . $source . ".vue");
 
 
+        $vuedataService = new VuedataService();
+        $stream = $vuedataService->read($filename);
+
         $data =
             [
                 'filename' => $filename,
                 'file_exists' => file_exists($filename),
+                'stream' => $stream,
             ];
 
         return response()->json($data, 200);
 
-        $vuedataService = new VuedataService();
-        $stream = $vuedataService->read($filename);
+
+
 
         if ($stream['success'] == false) abort(500,  $stream['error']);
 
