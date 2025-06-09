@@ -20,6 +20,8 @@ beforeEach(function () {
         mkdir(dirname($dest), 0777, true);
     }
 
+    dump("SOURCE->DEST: " . $src . "->" . $dest);
+
     // Copy the file
     copy($src, $dest);
 });
@@ -33,13 +35,18 @@ it('reads a vue file with success', function () {
     Role::create(['name' => 'super_admin']);
     $user->assignRole('super_admin');
 
+    $filename = resource_path(config('hpm.pv_homepage_path') . "App.vue");
+    dump("XXXXXXXXXXXXXXXX");
+    dump($filename);
+    dump(file_exists($filename));
+
+
+
     $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
         ->assertOk();
 
 
-    $filename = resource_path(config('hpm.pv_homepage_path') . "App.vue");
-    dump($filename);
-    dump(file_exists($filename));
+
 
 
     $data = $response->json();
