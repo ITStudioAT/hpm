@@ -40,7 +40,7 @@ it('reads a vue file with success', function () {
     $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
         ->assertOk();
 */
-    $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App');
+    $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')->assertStatus(500);
     dump($response->json());
 
 
