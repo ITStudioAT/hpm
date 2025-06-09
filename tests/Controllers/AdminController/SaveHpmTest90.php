@@ -110,7 +110,6 @@ it('writes a vue file with error 500, wrong filename', function () {
     $saveResult->assertStatus(500);
     $errorData = $saveResult->json();
 
-    dump($errorData['message']);
 
     expect($errorData['message'])->toBe("FILE_NOT_EXISTS");
 });

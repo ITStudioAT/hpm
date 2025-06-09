@@ -36,13 +36,8 @@ it('reads a vue file with success', function () {
 
     // $filename = resource_path(config('hpm.pv_homepage_path') . "App.vue");
 
-    /*
     $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
         ->assertOk();
-*/
-    $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')->assertStatus(500);
-    dump($response->json());
-
 
 
     $data = $response->json();
@@ -77,6 +72,5 @@ it('reads a vue file with error, wrong file-name', function () {
         ->assertStatus(500);
 
     $data = $response->json();
-    dump($data['message']);
     expect($data['message'])->toBe("FILE_NOT_EXISTS");
 });
