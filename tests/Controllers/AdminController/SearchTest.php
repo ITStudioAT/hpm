@@ -36,7 +36,7 @@ it('reads a vue file with success', function () {
 
     // $filename = resource_path(config('hpm.pv_homepage_path') . "App.vue");
 
-    $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
+    $response = $this->actingAs($user)->get('/api/hpm/admin/get_hpm?source=App')
         ->assertOk();
 
 
