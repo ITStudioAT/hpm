@@ -35,15 +35,16 @@ class AdminController extends Controller
         $vuedataService = new VuedataService();
         $stream = $vuedataService->read($filename);
 
+        /*
         $data =
             [
                 'filename' => $filename,
                 'file_exists' => file_exists($filename),
-                'streamx' => $stream,
+                'stream' => $stream,
             ];
 
         return response()->json($data, 200);
-
+*/
 
 
 
