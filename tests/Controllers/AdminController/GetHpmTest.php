@@ -20,7 +20,7 @@ beforeEach(function () {
         mkdir(dirname($dest), 0777, true);
     }
 
-    dump("SOURCE->DEST: " . $src . "->" . $dest);
+    //  dump("SOURCE->DEST: " . $src . "->" . $dest);
 
     // Copy the file
     copy($src, $dest);
@@ -29,18 +29,12 @@ beforeEach(function () {
 
 it('reads a vue file with success', function () {
 
-
-
     $user = User::find(1);
     Role::create(['name' => 'super_admin']);
     $user->assignRole('super_admin');
 
-    $filename = resource_path(config('hpm.pv_homepage_path') . "App.vue");
-    dump("XXXXXXXXXXXXXXXX");
-    dump($filename);
-    dump(file_exists($filename));
 
-
+    // $filename = resource_path(config('hpm.pv_homepage_path') . "App.vue");
 
     $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
         ->assertOk();
@@ -81,5 +75,6 @@ it('reads a vue file with error, wrong file-name', function () {
         ->assertStatus(500);
 
     $data = $response->json();
-    expect($data['message'])->toBe("Fehler beim Lesen!");
+    dump($data['message']);
+    expect($data['message'])->toBe("FILE_NOT_EXISTS");
 });

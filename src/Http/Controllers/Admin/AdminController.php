@@ -35,7 +35,7 @@ class AdminController extends Controller
         $vuedataService = new VuedataService();
         $stream = $vuedataService->read($filename);
 
-        if ($stream['success'] == false) abort(500,  "Fehler beim Lesen!");
+        if ($stream['success'] == false) abort(500,  $stream['error']);
 
         $data = ['hpm' => $stream['data']['hpm']];
         return response()->json($data, 200);
@@ -52,7 +52,7 @@ class AdminController extends Controller
 
         $vuedataService = new VuedataService();
         $stream = $vuedataService->write($filename, ['hpm' => $data]);
-        if ($stream['status'] != 'success') abort(500, "Fehler beim Schreiben!");
+        if ($stream['status'] != 'success') abort(500,  $stream['error']);
 
         $data = ['hpm' => $data];
         return response()->json($data, 200);
