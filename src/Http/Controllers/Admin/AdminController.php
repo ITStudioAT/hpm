@@ -35,7 +35,7 @@ class AdminController extends Controller
         $vuedataService = new VuedataService();
         $stream = $vuedataService->read($filename);
 
-        return $stream['success'];
+        return $stream;
 
         if ($stream['success'] == false) abort(500,  $stream['error']);
 
