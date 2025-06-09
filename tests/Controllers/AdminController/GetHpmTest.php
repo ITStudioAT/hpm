@@ -36,6 +36,11 @@ it('reads a vue file with success', function () {
     $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App')
         ->assertOk();
 
+
+    $filename = resource_path(config('hpm.pv_homepage_path') . "App.vue");
+    dump($filename . ": " . file_exists($filename));
+
+
     $data = $response->json();
 
     expect($data['hpm']['name'])->toBe("Homepage-Struktur");

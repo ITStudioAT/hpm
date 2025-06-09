@@ -22,9 +22,6 @@ beforeEach(function () {
 
     // Copy the file
     copy($src, $dest);
-
-    dump($dest);
-    dump(file_exists($dest));
 });
 
 it('writes a vue file with success', function () {
