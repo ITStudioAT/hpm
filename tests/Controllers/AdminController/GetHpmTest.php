@@ -41,7 +41,7 @@ it('reads a vue file with success', function () {
         ->assertOk();
 */
     $response = $this->actingAs($user)->getJson('/api/hpm/admin/get_hpm?source=App');
-    dump($response);
+    dump($response->json());
 
 
 
