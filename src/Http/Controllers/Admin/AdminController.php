@@ -31,6 +31,8 @@ class AdminController extends Controller
         $source = $request->query('source');
         $filename = resource_path(config('hpm.pv_homepage_path') . $source . ".vue");
 
+        return $filename;
+
 
         $vuedataService = new VuedataService();
         $stream = $vuedataService->read($filename);
