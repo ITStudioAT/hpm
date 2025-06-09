@@ -38,7 +38,9 @@ it('reads a vue file with success', function () {
 
 
     $filename = resource_path(config('hpm.pv_homepage_path') . "App.vue");
-    dump($filename . ": " . file_exists($filename));
+    dump("XXXXXXXXXXXXXXXXXXX");
+    dump($filename);
+    dump(file_exists($filename));
 
 
     $data = $response->json();
