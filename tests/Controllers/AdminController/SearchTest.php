@@ -41,5 +41,5 @@ it('reads a vue file with success', function () {
 
 
     dump($response);
-    $data = $response->json();
+    // $data = $response->json();
 });
