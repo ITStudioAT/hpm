@@ -14,7 +14,8 @@
             </v-toolbar>
             <v-list>
                 <v-list-item :exact="false" prepend-icon="mdi-home" title="Homepage" to="/hpm/admin" />
-                <v-list-item :exact="false" prepend-icon="mdi-shield-crown-outline" title="Admin" to="/admin" />
+                <v-list-item :exact="false" prepend-icon="mdi-multimedia" title="Medien" to="/hpm/admin/mm" />
+                <v-list-item :exact="false" prepend-icon="mdi-shield-crown-outline" title="Admin" href="/admin" />
             </v-list>
 
         </v-navigation-drawer>

@@ -1,0 +1,114 @@
+{
+    "properties": [
+        {
+            "is_online": {
+                "title": "Online",
+                "value": true,
+                "name": "Ja",
+                "selection": {
+                    "type": "switch_yes_no"
+                }
+            }
+        },
+        {
+            "bg_color": {
+                "title": "Hintergrundfarbe",
+                "value": "green",
+                "name": "Grün",
+                "selection": {
+                    "type": "color"
+                }
+            }
+        },
+        {
+            "is_fluid": {
+                "title": "Bis Bildschirmrand",
+                "value": true,
+                "name": "Ja",
+                "selection": {
+                    "type": "switch_yes_no"
+                }
+            }
+        }
+    ],
+    "bag": [
+        {
+            "json": "",
+            "name": "Kopfbereich",
+            "type": {
+                "title": "Art des Kopfbereichs",
+                "value": "header",
+                "name": "Standard",
+                "selection": {
+                    "type": "list",
+                    "values": [
+                        {
+                            "value": "header",
+                            "title": "Standard"
+                        }
+                    ]
+                }
+            },
+            "is_visible": {
+                "title": "Sichtbar",
+                "value": true,
+                "name": "Ja",
+                "selection": {
+                    "type": "switch_yes_no"
+                }
+            }
+        },
+        {
+            "json": "",
+            "name": "Inhaltsbereich",
+            "type": {
+                "title": "Art des Inhaltsbereich",
+                "value": "main",
+                "name": "Standard",
+                "selection": {
+                    "type": "list",
+                    "values": [
+                        {
+                            "value": "main",
+                            "title": "Standard"
+                        }
+                    ]
+                }
+            },
+            "is_visible": {
+                "title": "Sichtbar",
+                "value": true,
+                "name": "Ja",
+                "selection": {
+                    "type": "switch_yes_no"
+                }
+            }
+        },
+        {
+            "json": "",
+            "name": "Fußbereich",
+            "type": {
+                "title": "Art des Fußbereichs",
+                "value": "footer",
+                "name": "Standard",
+                "selection": {
+                    "type": "list",
+                    "values": [
+                        {
+                            "value": "footer",
+                            "title": "Standard"
+                        }
+                    ]
+                }
+            },
+            "is_visible": {
+                "title": "Sichtbar",
+                "value": true,
+                "name": "Ja",
+                "selection": {
+                    "type": "switch_yes_no"
+                }
+            }
+        }
+    ]
+}

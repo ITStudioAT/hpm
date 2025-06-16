@@ -4,29 +4,13 @@
         <v-form ref="form" v-model="is_valid">
             <v-row no-gutters>
                 <v-col cols="12">
-                    <v-switch base-color="error" color="success" density="compact" flat hide-details
-                        false-icon="mdi-close" true-icon="mdi-check" label="Aktiv" v-model="data.is_active.value" />
+                    <div v-for="(item, i) in data.properties">
 
+                        <v-switch base-color="error" color="success" density="compact" flat hide-details
+                            false-icon="mdi-close" true-icon="mdi-check" :label="item.props.label"
+                            v-model="item.props.value" v-if="item.props.selection.type === 'switch_yes_no'" />
 
-                    <v-switch base-color="error" color="success" density="compact" flat hide-details
-                        false-icon="mdi-close" true-icon="mdi-check" label="Kopfbereich"
-                        v-model="data.elements.header.is_active.value" />
-
-                    <v-autocomplete v-model="data.elements.header.component.value" :items="['Header']"
-                        density="comfortable" label="Typ" v-if="data.elements.header.is_active.value"></v-autocomplete>
-
-                    <v-switch base-color="error" color="success" density="compact" flat hide-details
-                        false-icon="mdi-close" true-icon="mdi-check" label="Hauptbereich"
-                        v-model="data.elements.main.is_active.value" />
-                    <v-autocomplete v-model="data.elements.main.component.value" :items="['Main']" density="comfortable"
-                        label="Typ" v-if="data.elements.main.is_active.value"></v-autocomplete>
-
-
-                    <v-switch base-color="error" color="success" density="compact" flat hide-details
-                        false-icon="mdi-close" true-icon="mdi-check" label="Fußbereich"
-                        v-model="data.elements.footer.is_active.value" />
-                    <v-autocomplete v-model="data.elements.footer.component.value" :items="['Footer']"
-                        density="comfortable" label="Typ" v-if="data.elements.footer.is_active.value"></v-autocomplete>
+                    </div>
 
                 </v-col>
             </v-row>

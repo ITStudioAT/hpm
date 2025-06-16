@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=roboto:100,300,400,500,700,900" rel="stylesheet" />
 
-    <title>Hpm Previewx</title>
+    <title>Hpm Preview</title>
 
     @if (!app()->runningUnitTests())
     @vite('resources/vendor/hpm/js/apps/pv_homepage.js')

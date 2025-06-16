@@ -1,0 +1,71 @@
+{
+    "items": [
+        {
+            "title": "Homepage",
+            "icon": "mdi-home",
+            "properties": [
+                {
+                    "name": "is_online",
+                    "props": {
+                        "label": "Online",
+                        "value": true,
+                        "name": "Ja",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                },
+                {
+                    "name": "is_header",
+                    "props": {
+                        "label": "Kopfbereich",
+                        "value": true,
+                        "name": "Ja",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                },
+                {
+                    "name": "is_main",
+                    "props": {
+                        "label": "Hauptbereich",
+                        "value": true,
+                        "name": "Ja",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                },
+                {
+                    "name": "is_footer",
+                    "props": {
+                        "label": "Fußbereich",
+                        "value": true,
+                        "name": "Ja",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Header",
+            "icon": "mdi-home",
+            "properties": [
+                {
+                    "name": "is_fluid",
+                    "props": {
+                        "label": "Volle Breite",
+                        "value": true,
+                        "name": "Ja",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

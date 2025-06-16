@@ -1,0 +1,27 @@
+{
+    "active": {
+        "json": "",
+        "type": {
+            "title": "Homepage-Typ",
+            "value": "hp",
+            "name": "Standard"
+        }
+    },
+    "preview": {
+        "json": "",
+        "type": {
+            "title": "Homepage-Typ",
+            "value": "hp",
+            "name": "Standard",
+            "selection": {
+                "type": "list",
+                "values": [
+                    {
+                        "value": "hp",
+                        "name": "Standard"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,64 @@
+{
+    "properties": [
+        {
+            "is_online": {
+                "value": true,
+                "title": "Fluid",
+                "selection": {
+                    "type": "switch_yes_no"
+                }
+            }
+        },
+        {
+            "bg_color": {
+                "value": "green",
+                "title": "Hintergrundfarbe",
+                "selection": {
+                    "type": "color"
+                }
+            }
+        },
+        {
+            "is_fluid": {
+                "value": true,
+                "title": "Bis zum Rand",
+                "selection": {
+                    "type": "switch_yes_no"
+                }
+            }
+        }
+    ],
+    "bag": [
+        {
+            "name": "Kopfbereich",
+            "json": "",
+            "type": {
+                "value": "header",
+                "title": "Kopfbereichsart",
+                "selection": {
+                    "type": "list",
+                    "values": [
+                        {
+                            "value": "header",
+                            "title": "Standard"
+                        }
+                    ]
+                }
+            },
+            "is_visible": {
+                "value": true,
+                "title": "Sichtbar",
+                "selection": {
+                    "type": "switch_yes_no"
+                }
+            }
+        },
+        {
+            "name": "Inhaltsbereich"
+        },
+        {
+            "json": "",
+            "name": "Fußbereich"
+        }
+    ]
+}

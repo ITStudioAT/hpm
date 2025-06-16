@@ -17,14 +17,17 @@
                     <v-autocomplete v-model="data.columns.value" :items="[1, 2, 3]" density="comfortable"
                         label="Spalten" />
 
-                    <v-autocomplete v-model="data.elements.col_1.component.value" :items="['ShortText']"
-                        density="comfortable" label="1. Spalte: Typ" v-if="data.columns?.value >= 1" />
+                    <v-autocomplete v-model="data.elements.col_1.component.value"
+                        :items="['ShortText', 'ShortTextPlus']" density="comfortable" label="1. Spalte: Typ"
+                        v-if="data.columns?.value >= 1" />
 
-                    <v-autocomplete v-model="data.elements.col_2.component.value" :items="['ShortText']"
-                        density="comfortable" label="2. Spalte: Typ" v-if="data.columns?.value >= 2" />
+                    <v-autocomplete v-model="data.elements.col_2.component.value"
+                        :items="['ShortText', 'ShortTextPlus']" density="comfortable" label="2. Spalte: Typ"
+                        v-if="data.columns?.value >= 2" />
 
-                    <v-autocomplete v-model="data.elements.col_3.component.value" :items="['ShortText']"
-                        density="comfortable" label="3. Spalte: Typ" v-if="data.columns?.value >= 3" />
+                    <v-autocomplete v-model="data.elements.col_3.component.value"
+                        :items="['ShortText', 'ShortTextPlus']" density="comfortable" label="3. Spalte: Typ"
+                        v-if="data.columns?.value >= 3" />
 
                 </v-col>
             </v-row>
@@ -43,6 +46,11 @@
 
     </ColBox>
 
+    <div>
+        {{ data.elements.col_1.component.value }}
+    </div>
+
+
     <!-- ELEMENTE DER TOPLINE -->
 
     <component :is="'PV' + data.elements['col_' + i].component.value" :data="data.elements['col_' + i]"
@@ -59,12 +67,13 @@
 import { useValidationRulesSetup } from "../../../helpers/rules";
 import ColBox from "../components/ColBox.vue";
 import PVShortText from "./PVShortText.vue";
+import PVShortTextPlus from "./PVShortTextPlus.vue";
 export default {
     emits: ['click-save', 'click-abort'],
     setup() { return useValidationRulesSetup(); },
 
     props: ['data'],
-    components: { ColBox, PVShortText },
+    components: { ColBox, PVShortText, PVShortTextPlus },
 
 
     data() {

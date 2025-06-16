@@ -1,0 +1,138 @@
+{
+    "properties": [
+        {
+            "bg_color": {
+                "value": "green",
+                "title": "Hintergrundfarbe",
+                "selection": {
+                    "type": "color"
+                }
+            }
+        },
+        {
+            "is_fluid": {
+                "value": true,
+                "title": "Bis zum Rand",
+                "selection": {
+                    "type": "switch_yes_no"
+                }
+            },
+            "columns": {
+                "value": 1,
+                "title": "Spalten",
+                "selection": {
+                    "type": "list",
+                    "values": [
+                        {
+                            "value": 1
+                        },
+                        {
+                            "value": 2
+                        },
+                        {
+                            "value": 3
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "bag": [
+        {
+            "if": "columns >=1",
+            "name": "Spalte 1",
+            "type": {
+                "value": "text only",
+                "title": "Ausführung Spalte 1",
+                "selection": {
+                    "type": "list",
+                    "values": [
+                        {
+                            "value": "text only",
+                            "title": "Nur Text"
+                        },
+                        {
+                            "value": "image - text",
+                            "title": "Bild - Text"
+                        },
+                        {
+                            "value": "image only",
+                            "title": "Nur Bild"
+                        }
+                    ]
+                }
+            },
+            "is_visible": {
+                "value": true,
+                "title": "Sichtbar",
+                "selection": {
+                    "type": "switch_yes_no"
+                }
+            },
+            "text": {
+                "if": "selection == 'text only' || selection == 'image - text'",
+                "value": "Christian-Doppler-Gymnasium",
+                "title": "Text",
+                "selection": {
+                    "type": "text",
+                    "min": 0,
+                    "max": 255
+                }
+            },
+            "image": {
+                "if": "selection == 'image only' || selection == 'image - text'",
+                "value": "storage/images/logo.png",
+                "title": "URL",
+                "selection": {
+                    "type": "image"
+                }
+            }
+        },
+        {
+            "if": "columns >=2",
+            "name": "Spalte 2",
+            "type": {
+                "value": "text only",
+                "title": "Ausführung Spalte 2",
+                "selection": {
+                    "type": "list",
+                    "values": [
+                        {
+                            "value": "text only",
+                            "title": "Nur Text"
+                        },
+                        {
+                            "value": "image only",
+                            "title": "Nur Bild"
+                        }
+                    ]
+                }
+            },
+            "is_visible": {
+                "value": true,
+                "title": "Sichtbar",
+                "selection": {
+                    "type": "switch_yes_no"
+                }
+            },
+            "text": {
+                "if": "selection == 'text only'",
+                "value": "Christian-Doppler-Gymnasium",
+                "title": "Text",
+                "selection": {
+                    "type": "text",
+                    "min": 0,
+                    "max": 255
+                }
+            },
+            "image": {
+                "if": "selection == 'image only'",
+                "value": "storage/images/logo.png",
+                "title": "URL",
+                "selection": {
+                    "type": "image"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "switch_yes_no": {
+        "values": [
+            {
+                "value": true,
+                "title": "ja"
+            },
+            {
+                "value": true,
+                "title": "nein"
+            }
+        ]
+    }
+}

@@ -81,7 +81,7 @@ export default {
                                         font: { value: 'font-weight-medium ' },
                                         justify: { value: 'justify-start' },
                                         text: { value: 'Herzlich Wollkommen!' },
-                                        padding: { value: 'px-2' }
+                                        padding: { value: 'px-2' },
                                     },
                                     col_2: {
                                         component: { value: 'ShortText' },

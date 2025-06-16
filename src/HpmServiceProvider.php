@@ -37,6 +37,7 @@ class HpmServiceProvider extends PackageServiceProvider
             __DIR__ . '/../routes' => base_path('/routes/vendor/hpm'),
             __DIR__ . '/../resources/css' => base_path('/resources/vendor/hpm/css'),
             __DIR__ . '/../resources/js' => base_path('/resources/vendor/hpm/js'),
+            __DIR__ . '/../resources/hpm' => base_path('/resources/vendor/hpm/hpm'),
             __DIR__ . '/../resources/plugins' => base_path('/resources/vendor/hpm/plugins'),
             __DIR__ . '/../resources/routes' => base_path('/resources/vendor/hpm/routes'),
             __DIR__ . '/../resources/views' => base_path('/resources/vendor/hpm/views'),

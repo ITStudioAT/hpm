@@ -1,0 +1,338 @@
+{
+    "items": [
+        {
+            "type": "homepage",
+            "show_in_menu": true,
+            "title": "Homepage",
+            "icon": "mdi-home",
+            "properties": [
+                {
+                    "name": "is_online",
+                    "props": {
+                        "label": "Online",
+                        "value": true,
+                        "name": "Ja",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                },
+                {
+                    "name": "is_header",
+                    "props": {
+                        "label": "Kopfbereich",
+                        "value": true,
+                        "name": "Ja",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                },
+                {
+                    "name": "is_main",
+                    "props": {
+                        "label": "Hauptbereich",
+                        "value": true,
+                        "name": "Ja",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                },
+                {
+                    "name": "is_footer",
+                    "props": {
+                        "label": "Fußbereich",
+                        "value": true,
+                        "name": "Ja",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "type": "header",
+            "show_in_menu": true,
+            "title": "Header",
+            "icon": "mdi-home",
+            "properties": [
+                {
+                    "name": "is_fluid",
+                    "props": {
+                        "label": "Volle Breite",
+                        "value": true,
+                        "name": "Ja",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                },
+                {
+                    "name": "max_width",
+                    "props": {
+                        "label": "Max. Breite",
+                        "value": 1024,
+                        "selection": {
+                            "type": "integer",
+                            "min": 600,
+                            "max": 2048
+                        }
+                    }
+                },
+                {
+                    "name": "bg_color",
+                    "props": {
+                        "label": "Hintergrundfarbe",
+                        "value": "bg-primary",
+                        "selection": {
+                            "type": "text",
+                            "required": true,
+                            "max": 255
+                        }
+                    }
+                },
+                {
+                    "name": "color",
+                    "props": {
+                        "label": "Textfarbe",
+                        "value": "text-white",
+                        "selection": {
+                            "type": "text",
+                            "required": true,
+                            "max": 255
+                        }
+                    }
+                },
+                {
+                    "name": "density",
+                    "props": {
+                        "label": "Erscheinung",
+                        "value": "prominent",
+                        "name": "Prominent",
+                        "selection": {
+                            "type": "list_with_names",
+                            "items": [
+                                {
+                                    "value": "default",
+                                    "name": "Standard"
+                                },
+                                {
+                                    "value": "prominent",
+                                    "name": "Prominent"
+                                },
+                                {
+                                    "value": "comfortable",
+                                    "name": "Komfortabel"
+                                },
+                                {
+                                    "value": "compact",
+                                    "name": "Kompakt"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "is_flat",
+                    "props": {
+                        "label": "Schatten",
+                        "value": false,
+                        "name": "Nein",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                },
+                {
+                    "name": "is_tile",
+                    "props": {
+                        "label": "Eckig",
+                        "value": true,
+                        "name": "Ja",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                },
+                {
+                    "name": "scroll_behavior",
+                    "props": {
+                        "label": "Scroll-Verhalten",
+                        "value": "hide",
+                        "name": "Ein-/Ausblenden",
+                        "selection": {
+                            "type": "list_with_names",
+                            "items": [
+                                {
+                                    "value": "hide",
+                                    "name": "Runter:weg - Rauf:sichtbar (hide)"
+                                },
+                                {
+                                    "value": "inverted",
+                                    "name": "Runter:sichtbar - Rauf:weg (inverted)"
+                                },
+                                {
+                                    "value": "collapse",
+                                    "name": "Runter:schrumpft (collapse)"
+                                },
+                                {
+                                    "value": "elevate",
+                                    "name": "Scollen:abheben (elevate)"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "columns",
+                    "props": {
+                        "label": "Spalten",
+                        "value": 3,
+                        "selection": {
+                            "type": "list",
+                            "items": [
+                                1,
+                                2,
+                                3
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "is_topline",
+                    "props": {
+                        "label": "Kopfzeile",
+                        "value": true,
+                        "name": "Ja",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "type": "header",
+            "show_in_menu": false,
+            "title": "Kopfzeile",
+            "icon": "mdi-home",
+            "if": "header.properties.is_topline == true",
+            "properties": [
+                {
+                    "name": "is_fluid",
+                    "props": {
+                        "label": "Volle Breite",
+                        "value": true,
+                        "name": "Ja",
+                        "selection": {
+                            "type": "switch_yes_no"
+                        }
+                    }
+                },
+                {
+                    "name": "topline_columns",
+                    "props": {
+                        "label": "Spalten",
+                        "value": 1,
+                        "selection": {
+                            "type": "list",
+                            "items": [
+                                1,
+                                2,
+                                3
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "col_1_type",
+                    "props": {
+                        "label": "Art",
+                        "value": "Text",
+                        "selection": {
+                            "type": "list",
+                            "items": [
+                                "Text",
+                                "Telefon+Email",
+                                "Bild"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "col_1_text",
+                    "if": "header.properties.topline_columns >= 1 && header.properties.col_1_type == 'Text'",
+                    "props": {
+                        "label": "Text 1. Spalte",
+                        "value": "",
+                        "selection": {
+                            "type": "text",
+                            "max": 255
+                        }
+                    }
+                },
+                {
+                    "name": "col_1_phone",
+                    "if": "header.properties.topline_columns >= 1 && header.properties.col_1_type == 'Telefon+Email'",
+                    "props": {
+                        "label": "Telefon",
+                        "value": "",
+                        "selection": {
+                            "type": "text",
+                            "max": 255
+                        }
+                    }
+                },
+                {
+                    "name": "col_1_email",
+                    "if": "header.properties.topline_columns >= 1 && header.properties.col_1_type == 'Telefon+Email'",
+                    "props": {
+                        "label": "E-Mail",
+                        "value": "",
+                        "selection": {
+                            "type": "text",
+                            "max": 255
+                        }
+                    }
+                },
+                {
+                    "name": "col_1_image",
+                    "if": "header.properties.topline_columns >= 1 && header.properties.col_1_type == 'Bild'",
+                    "props": {
+                        "label": "Bild",
+                        "value": "",
+                        "selection": {
+                            "type": "image"
+                        }
+                    }
+                },
+                {
+                    "name": "col_2_text",
+                    "if": "header.properties.topline_columns >= 2",
+                    "props": {
+                        "label": "Text 2. Spalte",
+                        "value": "",
+                        "selection": {
+                            "type": "text",
+                            "max": 255
+                        }
+                    }
+                },
+                {
+                    "name": "col_3_text",
+                    "if": "header.properties.topline_columns >= 3",
+                    "props": {
+                        "label": "Text 3. Spalte",
+                        "value": "",
+                        "selection": {
+                            "type": "text",
+                            "max": 255
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

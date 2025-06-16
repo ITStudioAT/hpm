@@ -1,6 +1,6 @@
 
 export function useValidationRulesSetup() {
-    return { required, mail, mailOrNull, minLength, maxLength, exactLength, min, max, date, dateOrNull, shortDate, minOrNull, maxOrNull, time, timeOrNull, decimalOrNull, passwordMatch };
+    return { required, mail, mailOrNull, minLength, maxLength, exactLength, min, max, date, dateOrNull, shortDate, minOrNull, maxOrNull, time, timeOrNull, decimalOrNull, passwordMatch, integer, integerOrNull };
 }
 
 
@@ -15,6 +15,22 @@ export function mail() {
 
 export function passwordMatch(originalPassword) {
     return (v) => v === originalPassword || "Kennwörter stimmen nicht überein.";
+}
+
+export function integer() {
+    return (v) => {
+        const valid = Number.isInteger(Number(v));
+        return valid || 'Es muss eine ganze Zahl eingegeben werden.';
+    };
+}
+
+
+export function integerOrNull() {
+    return (v) => {
+        if (v == null || v === '') return true;
+        const valid = Number.isInteger(Number(v));
+        return valid || 'Es muss eine ganze Zahl eingegeben werden oder leer sein.';
+    };
 }
 
 

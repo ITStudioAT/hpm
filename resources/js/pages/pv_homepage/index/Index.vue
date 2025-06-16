@@ -4,7 +4,7 @@
         <Renderer :item="homepageStore.elementById(item.id)" v-for="(item, i) in main.parts" v-if="main" />
 
         <div style="height: 200vh;">
-            Hello World!
+            Hello World! Here is the Index!
         </div>
 
     </v-container>

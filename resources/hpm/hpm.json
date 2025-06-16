@@ -1,0 +1,19 @@
+{
+    "is_online": true,
+    "active": {
+        "json": "",
+        "type": {
+            "value": "hp",
+            "title": "Homepage",
+            "selection": {
+                "type": "list",
+                "values": [
+                    {
+                        "value": "hp",
+                        "title": "Standard"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -16,4 +16,7 @@ Route::prefix('hpm')->middleware(['web', 'throttle:global', 'throttle:api'])->gr
     Route::get('/admin/get_config',  [AdminController::class, 'getConfig']);
     Route::get('/admin/get_hpm',  [AdminController::class, 'getHpm']);
     Route::post('/admin/save_hpm',  [AdminController::class, 'saveHpm']);
+
+    Route::get('/admin/get_json',  [AdminController::class, 'getJson']);
+    Route::post('/admin/save_json',  [AdminController::class, 'saveJson']);
 });

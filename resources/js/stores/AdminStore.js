@@ -16,6 +16,7 @@ export const useAdminStore = defineStore("HpmAdminStore", {
                 timeout: 3000,
             },
             hpm: null,
+            hp: null,
 
         }
     },
@@ -37,14 +38,35 @@ export const useAdminStore = defineStore("HpmAdminStore", {
             }
         },
 
+        async getJson(source = null) {
+            this.is_loading++;
+            try {
+                const response = await axios.get("/api/hpm/admin/get_json", { params: { source: source } });
+                return response.data;
+            } catch (error) {
+                this.redirect(error.response.status, error.response.data.message, 'error');
+            } finally {
+                this.is_loading--;
+            }
+        },
+
+        async saveJson(source, data) {
+            this.is_loading++;
+            try {
+                const response = await axios.post("/api/hpm/admin/save_json", { source, data });
+
+            } catch (error) {
+                this.redirect(error.response.status, error.response.data.message, 'error');
+            } finally {
+                this.is_loading--;
+            }
+        },
+
         async getHpm(source) {
             this.is_loading++;
-
             try {
-
                 const response = await axios.get("/api/hpm/admin/get_hpm", { params: { source: source } });
                 this.hpm = response.data.hpm;
-
             } catch (error) {
                 this.redirect(error.response.status, error.response.data.message, 'error');
             } finally {
@@ -54,7 +76,6 @@ export const useAdminStore = defineStore("HpmAdminStore", {
 
         async saveHpm(source, data) {
             this.is_loading++;
-
             try {
 
                 const response = await axios.post("/api/hpm/admin/save_hpm", { source, data });
@@ -66,6 +87,8 @@ export const useAdminStore = defineStore("HpmAdminStore", {
                 this.is_loading--;
             }
         },
+
+
 
         redirect(status, message, type) {
             const redirectUrl = '/application/error?status=' + status + '&message=' + encodeURIComponent(message) + '&type=' + type;
