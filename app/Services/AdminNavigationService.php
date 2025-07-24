@@ -54,6 +54,15 @@ class AdminNavigationService
         return $menu;
     }
 
+    public function homeMenu(): array
+    /* HOME: Menü ganz oben */
+    {
+        $menu = [];
+        $menu[] = ['title' => '', 'subtitle' => 'Home', 'icon' => 'mdi-home', 'color' => 'secondary',  'to' => '/admin'];
+
+        return $menu;
+    }
+
     public function userMenu(): array
     /* BENUTZER/ROLLEN: Menü ganz oben */
     {

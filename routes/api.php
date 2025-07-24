@@ -10,6 +10,10 @@ use App\Http\Controllers\Admin\NavigationController;
 use App\Http\Controllers\Admin\UserWithRoleController;
 use App\Http\Controllers\Homepage\HomepageController;
 
+
+// navigation, menus
+Route::get('/admin/navigation/load_menu',  [NavigationController::class, 'loadMenu']);
+
 // Globales Throttle
 Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function () {
 
@@ -53,13 +57,13 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
         Route::post('/admin/users/save_password_with_code',  [UserController::class, 'savePasswordWithCode']);
     });
 
+
+
     /* SANCTUM - admin */
     Route::middleware(['auth:sanctum', 'api-allowed:admin'])->group(function () {
 
 
-        // navigation, menus
-        Route::get('/admin/navigation/profile_menu',  [NavigationController::class, 'profileMenu']);
-        Route::get('/admin/navigation/user_menu',  [NavigationController::class, 'userMenu']);
+
 
         // users
         Route::apiResource('/admin/users', UserController::class);
