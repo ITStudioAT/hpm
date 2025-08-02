@@ -16,10 +16,10 @@ class HomepageController extends Controller
 
         $data = [
             'logo' => config('spa.logo', ''),
-            'copyright' => config('hpm.copyright', ''),
+            'copyright' => config('spa.copyright', ''),
             'timeout' => config('spa.timeout', 3000),
-            'title' => config('hpm.title', 'Spa'),
-            'company' => config('hpm.company', 'ItStudio.at'),
+            'title' => config('spa.title', 'Spa'),
+            'company' => config('spa.company', 'ItStudio.at'),
         ];
 
         return response()->json($data, 200);

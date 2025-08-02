@@ -17,7 +17,7 @@ export const useNavigationStore = defineStore("AdminNavigationStore", {
             const adminStore = useAdminStore();
             adminStore.is_loading++;
             try {
-                const response =  await axios.get('/api/admin/navigation/load_menu', {  params: { action }});
+                const response = await axios.get('/api/admin/navigation/' + action, {});
                 this.menu = response.data.menu || [];
                 this.selection = response.data.selection || [];
                 return true;

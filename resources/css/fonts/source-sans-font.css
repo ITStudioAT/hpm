@@ -1,0 +1,16 @@
+@font-face {
+  font-family: 'SourceSans';
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('/fonts/sourcesans/source-sans-3_5.2.6_latin-wght-normal.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SourceSans';
+  font-style: italic;
+  font-weight: 100 900;
+  src: url('/fonts/sourcesans/source-sans-3_5.2.6_latin-wght-italic.woff2') format('woff2');
+  font-display: swap;
+}
+

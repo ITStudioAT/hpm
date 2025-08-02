@@ -29,10 +29,10 @@ class AdminController extends Controller
 
         $data = [
             'logo' => config('spa.logo', ''),
-            'copyright' => config('hpm.copyright', ''),
-            'title' => config('hpm.title', 'Fresh Laravel'),
-            'company' => config('hpm.company', 'ItStudio.at'),
-            'version' => config('hpm.version', '*'),
+            'copyright' => config('spa.copyright', ''),
+            'title' => config('spa.title', 'Fresh Laravel'),
+            'company' => config('spa.company', 'ItStudio.at'),
+            'version' => InstalledVersions::getPrettyVersion('itstudioat/spa'),
             'register_admin_allowed' => config('spa.register_admin_allowed', false),
             'timeout' => config('spa.timeout', 3000),
             'is_auth' => auth()->check(),

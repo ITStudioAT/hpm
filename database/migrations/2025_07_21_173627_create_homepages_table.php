@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('path')->nullable();
             $table->string('type')->nullable();
-            $table->text('structure')->nullable();
+            $table->json('structure')->nullable();
             $table->timestamps();
         });
     }

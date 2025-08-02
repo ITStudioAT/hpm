@@ -1,0 +1,16 @@
+@font-face {
+  font-family: 'Firava';
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('/fonts/firava/Firava.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Firava';
+  font-style: italic;
+  font-weight: 100 900;
+  src: url('/fonts/firava/FiravaItalic.woff2') format('woff2');
+  font-display: swap;
+}
+
