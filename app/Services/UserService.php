@@ -103,7 +103,7 @@ class UserService
 
         // ** 2-FA-WANTED ...
 
-        // 2-FA-E-Mail is the same, as the user entered and is verified => everything ok
+        // Die 2-FA-E-Mail darf nicht mit der Standard-E-Mail identisch sein
         if ($email_2fa == $user->email) {
             return TwoFaResult::TWO_FA_EMAIL_AND_2FA_EMAIL_MUST_NOT_BE_EQUAL;
         }
