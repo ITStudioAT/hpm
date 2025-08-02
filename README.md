@@ -1,6 +1,6 @@
 ## About HPM
 
-This package is in delepment. Dont use it!
+This package is in development. Don’t use it!
 
 ## License
 
