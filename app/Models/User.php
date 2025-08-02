@@ -68,12 +68,14 @@ class User extends Authenticatable
     {
         $uuid = $this->generateUuid();
 
+        $url = config('app.url') . '/admin/email_verification?email=' . $this->email . '&uuid=' . $uuid;
+
         $data = [
             'from_address' => env('MAIL_FROM_ADDRESS'),
             'from_name' => env('MAIL_FROM_NAME'),
             'subject' => 'E-Mail-Verifikation',
             'markdown' => 'spa::mails.admin.sendEmailVerification',
-            'url' => $data['url'] = config('app.url') . '/admin/email_verification?email=' . $this->email . '&uuid=' . $uuid,
+            'url' => $url,
             'token-expire-time' => config('spa.token_expire_time'),
         ];
 
@@ -86,12 +88,14 @@ class User extends Authenticatable
         // XXXXXXXXXXXXXXXXXXXXX
         $uuid = $this->generateUuid();
 
+        $url = config('app.url') . '/admin/email_verification?email=' . $this->email . '&uuid=' . $uuid;
+
         $data = [
             'from_address' => env('MAIL_FROM_ADDRESS'),
             'from_name' => env('MAIL_FROM_NAME'),
             'subject' => 'E-Mail-Verifikation',
             'markdown' => 'spa::mails.admin.sendEmailVerification',
-            'url' => $data['url'] = config('app.url') . '/admin/email_verification?email=' . $this->email . '&uuid=' . $uuid,
+            'url' => $url,
             'token-expire-time' => config('spa.token_expire_time'),
         ];
 
