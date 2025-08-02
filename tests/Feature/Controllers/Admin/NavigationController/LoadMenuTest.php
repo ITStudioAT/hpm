@@ -64,6 +64,13 @@ it('assert 403 for user or guest  /api/admin/navigation/load_menu', function () 
     $response->assertStatus(403)->assertJson(['message' => 'Sie haben keine Berechtigung']);
 });
 
+it('assert 401 for unauthenticated /api/admin/navigation/load_menu', function () {
+
+    $data = ['action' => 'users'];
+    $response = test()->getJson('/api/admin/navigation/load_menu?' . http_build_query($data));
+    $response->assertStatus(401)->assertJson(['message' => 'Unauthenticated.']);
+});
+
 it('assert 422 for wrong action /api/admin/navigation/load_menu', function () {
 
     // user
