@@ -27,6 +27,12 @@ class AdminNavigationService
             $menu[] = ['title' => 'Dashboard', 'icon' => 'mdi-view-dashboard', 'to' => '/admin/dashboard'];
         }
 
+
+        // HOMEPAGE
+        if ($this->userHasRole(['admin'])) {
+            $menu[] = ['title' => 'Homepage', 'icon' => 'mdi-domain', 'to' => '/admin/homepage'];
+        }
+
         // BENUTZER ALS admin
         if ($this->userHasRole(['admin'])) {
             $menu[] = ['title' => 'Benutzer/Rollen', 'icon' => 'mdi-account-multiple', 'to' => '/admin/users'];
@@ -50,7 +56,16 @@ class AdminNavigationService
             $menu[] = ['title' => '', 'subtitle' => 'Kennwort ändern', 'icon' => 'mdi-form-textbox-password', 'color' => 'secondary',  'action' => 'wantToChangePassword'];
             $menu[] = ['title' => '', 'subtitle' => '2-FA-Authentifizierung', 'icon' => 'mdi-two-factor-authentication', 'color' => 'secondary',  'action' => 'wantToChange2Fa'];
         }
+        return $menu;
+    }
 
+    /* MENÜ HOMEPAGE */
+    public function homepageMenu(): array
+    {
+        $menu = [];
+        if ($this->userHasRole(['admin'])) {
+            $menu[] = ['title' => '', 'subtitle' => 'Home', 'icon' => 'mdi-home', 'color' => 'secondary',  'to' => '/admin'];
+        }
         return $menu;
     }
 
@@ -62,9 +77,10 @@ class AdminNavigationService
         if ($this->userHasRole(['super_admin'])) {
             $menu[] = ['title' => '', 'subtitle' => 'Rollen', 'icon' => 'mdi-badge-account-horizontal-outline', 'color' => 'secondary',  'to' => '/admin/users/roles'];
         }
-
         return $menu;
     }
+
+
 
     /* BENUTZER/ROLLEN: Informationsblöcke */
     public function userSelection(): array

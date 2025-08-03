@@ -11,6 +11,10 @@ import Users_AllUsers from '@/pages/admin/users/AllUsers/Items.vue'
 import Users_Roles from '@/pages/admin/users/Roles/Items.vue'
 import Users_UsersWithRoles from '@/pages/admin/users/UsersWithRoles/Items.vue'
 
+import Homepage from '@/pages/admin/homepage/Index.vue'
+
+import Preview from '@/pages/admin/preview/Index.vue'
+
 
 const routes = [
     { path: '/admin', component: Index },
@@ -24,6 +28,10 @@ const routes = [
     { path: '/admin/users/all_users', component: Users_AllUsers },
     { path: '/admin/users/roles', component: Users_Roles },
     { path: '/admin/users/users_with_roles', component: Users_UsersWithRoles },
+
+    { path: '/admin/homepage', component: Homepage },
+
+    { path: '/admin/preview', component: Preview },
 ];
 
 const router = createRouter({

@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Homepage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\DeleteHomepageRequest;
 use App\Http\Resources\Admin\HomepageResource;
 use App\Http\Requests\Admin\ShowHomepageRequest;
+use App\Services\HomepageService;
 
 class HomepageController extends Controller
 {
@@ -47,8 +49,6 @@ class HomepageController extends Controller
             abort(403, 'Sie haben keine Berechtigung');
         }
 
-
-
         $homepageData = $request->homepage;
 
         $homepage = Homepage::findOrFail($homepageData['id']);
@@ -64,17 +64,20 @@ class HomepageController extends Controller
             abort(403, 'Sie haben keine Berechtigung');
         }
 
-        Homepage::create([
-            'name' => 'Neu ' . date('Y-m-d H:i:s'),
-            'path' => '/',
-            'type' => 'index',
-            'structure' => null,
-        ]);
+        $homepageService = new HomepageService();
+        $homepage = $homepageService->create();
 
-        $homepages = Homepage::where('type', 'index')
-            ->orderBy('name', 'desc')
-            ->get();
+        return response()->json(new HomepageResource($homepage), 200);
+    }
 
-        return response()->json(HomepageResource::collection($homepages), 200);
+    public function deleteHomepage(DeleteHomepageRequest $request)
+    {
+        if (! $auth_user = $this->userHasRole(['admin'])) {
+            abort(403, 'Sie haben keine Berechtigung');
+        }
+        $homepageService = new HomepageService();
+        $homepage = $homepageService->delete($request->id);
+
+        return response()->noContent();
     }
 }

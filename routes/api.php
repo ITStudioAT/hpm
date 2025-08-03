@@ -55,11 +55,17 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
 
     /* SANCTUM - admin */
     Route::middleware(['auth:sanctum', 'api-allowed:admin'])->group(function () {
+        Route::get('/admin/homepage/index',  [\App\Http\Controllers\Admin\HomepageController::class, 'loadHomepages']);
+        Route::get('/admin/homepage/load_homepage',  [\App\Http\Controllers\Admin\HomepageController::class, 'loadHomepage']);
+        Route::post('/admin/homepage/create',  [\App\Http\Controllers\Admin\HomepageController::class, 'createHomepage']);
+        Route::post('/admin/homepage/delete',  [\App\Http\Controllers\Admin\HomepageController::class, 'deleteHomepage']);
+        Route::post('/admin/homepage/save',  [\App\Http\Controllers\Admin\HomepageController::class, 'saveHomepage']);
+
+
 
 
         // navigation, menus
-        Route::get('/admin/navigation/profile_menu',  [NavigationController::class, 'profileMenu']);
-        Route::get('/admin/navigation/user_menu',  [NavigationController::class, 'userMenu']);
+        Route::get('/admin/navigation/load_menu',  [NavigationController::class, 'loadMenu']);
 
         // users
         Route::apiResource('/admin/users', UserController::class);

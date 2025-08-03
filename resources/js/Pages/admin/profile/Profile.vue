@@ -240,7 +240,7 @@ export default {
         this.userStore = useUserStore(); this.userStore.initialize(this.$router);
 
         this.navigationStore = useNavigationStore();
-        await this.navigationStore.loadMenu('profile_menu');
+        await this.navigationStore.loadMenu('profile');
 
         await this.userStore.show(this.config.user.id);
         if (this.item) this.data = JSON.parse(JSON.stringify(this.item));

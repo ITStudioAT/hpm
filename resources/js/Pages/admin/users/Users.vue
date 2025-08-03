@@ -12,9 +12,6 @@
                 </ItsInfoBox>
             </v-col>
         </v-row>
-        <v-row>
-            {{ config }}
-        </v-row>
 
     </v-container>
 </template>
@@ -38,7 +35,7 @@ export default {
         this.adminStore = useAdminStore(); this.adminStore.initialize(this.$router);
         this.userStore = useUserStore(); this.userStore.initialize(this.$router);
         this.navigationStore = useNavigationStore();
-        await this.navigationStore.loadMenu('user_menu');
+        await this.navigationStore.loadMenu('users');
     },
 
     unmounted() {

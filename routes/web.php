@@ -42,7 +42,10 @@ Route::middleware(['throttle:global', 'throttle:web', 'web-allowed'])->group(fun
     });
     */
 
-    /* WRONG ROUTES */
+    /*  ROUTES */
+
+
+
     Route::get('/{any?}', function () {
         return view('spa::homepage');
     });

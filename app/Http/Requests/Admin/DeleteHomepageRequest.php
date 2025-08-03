@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoadMenuRequest extends FormRequest
+class DeleteHomepageRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class LoadMenuRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'action' => 'required|in:homepage,profile,users',
+            'id' => 'required|exists:homepages,id',
         ];
     }
 }

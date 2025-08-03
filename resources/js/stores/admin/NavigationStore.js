@@ -12,12 +12,12 @@ export const useNavigationStore = defineStore("AdminNavigationStore", {
 
     actions: {
 
-        async loadMenu(action) {
+        async loadMenu(menu) {
             const notification = useNotificationStore();
             const adminStore = useAdminStore();
             adminStore.is_loading++;
             try {
-                const response = await axios.get('/api/admin/navigation/' + action, {});
+                const response = await axios.get('/api/admin/navigation/load_menu', { params: { action: menu } });
                 this.menu = response.data.menu || [];
                 this.selection = response.data.selection || [];
                 return true;
@@ -26,7 +26,7 @@ export const useNavigationStore = defineStore("AdminNavigationStore", {
                     status: error.response.status,
                     message: error.response.data.message || 'Fehler passiert.',
                     type: 'error',
-                    timeout: resourceStore.timeout,
+                    timeout: 3000,
                 });
                 return false;
             } finally {

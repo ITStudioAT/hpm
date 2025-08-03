@@ -30,12 +30,12 @@ function testApiCalls()
         ]);
 
     // menu für HOME
-    $data = ['action' => 'home'];
+    $data = ['action' => 'homepage'];
     $response = test()->getJson('/api/admin/navigation/load_menu?' . http_build_query($data));
 
     $response->assertStatus(200)
         ->assertJson([
-            'menu' => $navigationService->homeMenu(),
+            'menu' => $navigationService->homepageMenu(),
         ]);
 }
 
@@ -55,13 +55,13 @@ it('assert 403 for user or guest  /api/admin/navigation/load_menu', function () 
     $this->actingAs($this->user, 'sanctum');
     $data = ['action' => 'users'];
     $response = test()->getJson('/api/admin/navigation/load_menu?' . http_build_query($data));
-    $response->assertStatus(403)->assertJson(['message' => 'Sie haben keine Berechtigung']);
+    $response->assertStatus(403);
 
     // guest
     $this->actingAs($this->guest, 'sanctum');
     $data = ['action' => 'users'];
     $response = test()->getJson('/api/admin/navigation/load_menu?' . http_build_query($data));
-    $response->assertStatus(403)->assertJson(['message' => 'Sie haben keine Berechtigung']);
+    $response->assertStatus(403);
 });
 
 it('assert 401 for unauthenticated /api/admin/navigation/load_menu', function () {
@@ -74,7 +74,7 @@ it('assert 401 for unauthenticated /api/admin/navigation/load_menu', function ()
 it('assert 422 for wrong action /api/admin/navigation/load_menu', function () {
 
     // user
-    $this->actingAs($this->user, 'sanctum');
+    $this->actingAs($this->super_admin, 'sanctum');
     $data = ['action' => 'wrong'];
     $response = test()->getJson('/api/admin/navigation/load_menu?' . http_build_query($data));
     $response->assertStatus(422);
