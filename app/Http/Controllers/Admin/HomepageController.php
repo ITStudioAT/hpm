@@ -29,7 +29,7 @@ class HomepageController extends Controller
     }
 
 
-    public function showHomepage(ShowHomepageRequest $request)
+    public function loadHomepage(ShowHomepageRequest $request)
     {
 
         if (! $auth_user = $this->userHasRole(['admin'])) {

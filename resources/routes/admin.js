@@ -12,6 +12,7 @@ import Users_Roles from '@/pages/admin/users/Roles/Items.vue'
 import Users_UsersWithRoles from '@/pages/admin/users/UsersWithRoles/Items.vue'
 
 import Homepage from '@/pages/admin/homepage/Index.vue'
+import Homepage_Edit from '@/pages/admin/homepage/Edit.vue'
 
 import Preview from '@/pages/admin/preview/Index.vue'
 
@@ -30,6 +31,7 @@ const routes = [
     { path: '/admin/users/users_with_roles', component: Users_UsersWithRoles },
 
     { path: '/admin/homepage', component: Homepage },
+    { path: '/admin/homepage/edit', component: Homepage_Edit },
 
     { path: '/admin/preview', component: Preview },
 ];

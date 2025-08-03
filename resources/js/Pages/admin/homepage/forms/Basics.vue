@@ -8,33 +8,19 @@
         <v-form ref="form" @submit.prevent="$emit('save')">
             <!-- Menüleiste oben -->
             <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
-                <its-menu-button
-                    title="Abbruch"
-                    icon="mdi-close"
-                    color="warning"
-                    @click="abort"
-                />
+                <its-menu-button title="Abbruch" icon="mdi-close" color="warning" @click="abort" />
 
-                <its-menu-button
-                    title="Speichern"
-                    type="submit"
-                    icon="mdi-content-save"
-                    color="success"
-                    @click="save"
-                />
+                <its-menu-button title="Speichern" type="submit" icon="mdi-content-save" color="success"
+                    @click="save" />
             </v-row>
 
-            <v-row class="w-100 mb-2" no-gutters v-if="data">
+            <v-row class="w-100 mb-2" v-if="data">
                 <v-col cols="12" md="6" lg="4" xl="3">
                     <v-card>
                         <v-card-title>Einstellungen</v-card-title>
                         <v-card-text>
-                            <v-text-field
-                                autofocus
-                                v-model="data.name"
-                                label="Name der Homepage"
-                                required
-                            ></v-text-field>
+                            <v-text-field autofocus v-model="data.name" label="Name der Homepage"
+                                required></v-text-field>
                         </v-card-text>
                     </v-card>
                 </v-col>
@@ -43,36 +29,22 @@
                     <v-card>
                         <v-card-title>Farben</v-card-title>
                         <v-card-text>
-                            <v-text-field
-                                v-model="data.structure.colors.bgColor"
-                                label="Hintergrundfarbe"
-                                required
-                            ></v-text-field>
+                            <v-text-field v-model="data.structure.colors.bgColor" label="Hintergrundfarbe"
+                                required></v-text-field>
                         </v-card-text>
                     </v-card>
                 </v-col>
 
                 <v-col cols="12" md="6" lg="4" xl="3">
                     <v-card>
-                        <v-card-title
-                            class="d-flex flex-row align-center justify-space-between"
-                        >
+                        <v-card-title class="d-flex flex-row align-center justify-space-between">
                             <div>Schriften</div>
-                            <v-btn
-                                flat
-                                @click="clickInfo('fonts')"
-                                :color="info == 'fonts' ? 'success' : ''"
-                                ><v-icon icon="mdi-information-box"
-                            /></v-btn>
+                            <v-btn flat @click="clickInfo('fonts')" :color="info == 'fonts' ? 'success' : ''"><v-icon
+                                    icon="mdi-information-box" /></v-btn>
                         </v-card-title>
                         <v-card-text>
-                            <v-autocomplete
-                                v-model="data.structure.fonts.fontType"
-                                :items="fontTypes"
-                                item-title="label"
-                                item-value="value"
-                                label="Schriftentypus ausqählen"
-                            />
+                            <v-autocomplete v-model="data.structure.fonts.fontType" :items="fontTypes"
+                                item-title="label" item-value="value" label="Schriftentypus ausqählen" />
                         </v-card-text>
                     </v-card>
                 </v-col>
@@ -126,7 +98,7 @@ export default {
             ),
         };
     },
-    unmounted() {},
+    unmounted() { },
 
     data() {
         return {

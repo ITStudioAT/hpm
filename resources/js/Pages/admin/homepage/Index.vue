@@ -53,6 +53,11 @@
                             <v-col cols="6">
                                 <v-btn block prepend-icon="mdi-web" @click="" variant="tonal">Go Online</v-btn>
                             </v-col>
+
+                            <v-col cols="6">
+                                <v-btn block prepend-icon="mdi-file-edit" :to="'/admin/homepage/edit?id=' + homepage.id"
+                                    variant="tonal">Anpassen</v-btn>
+                            </v-col>
                         </v-row>
 
                         <!-- overview: action_2 == 'delete': Löschen -->
@@ -100,13 +105,6 @@
 
             </v-col>
         </v-row>
-
-        <v-row>
-            <div>{{ action }}</div>
-            <div>{{ action_2 }}</div>
-        </v-row>
-
-
 
     </v-container>
 </template>
