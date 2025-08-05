@@ -6,6 +6,7 @@ use App\Models\Homepage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DeleteHomepageRequest;
+use App\Http\Requests\Admin\SaveHomepageRequest;
 use App\Http\Resources\Admin\HomepageResource;
 use App\Http\Requests\Admin\ShowHomepageRequest;
 use App\Services\HomepageService;
@@ -15,11 +16,9 @@ class HomepageController extends Controller
 
     public function loadHomepages(Request $request)
     {
-
         if (! $auth_user = $this->userHasRole(['admin'])) {
             abort(403, 'Sie haben keine Berechtigung');
         }
-
 
         $homepages = Homepage::where('type', 'index')
             ->orderBy('name', 'desc')
@@ -42,7 +41,7 @@ class HomepageController extends Controller
     }
 
 
-    public function saveHomepage(Request $request)
+    public function saveHomepage(SaveHomepageRequest $request)
     {
 
         if (! $auth_user = $this->userHasRole(['admin'])) {

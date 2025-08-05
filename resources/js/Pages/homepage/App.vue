@@ -5,7 +5,7 @@
         <v-layout v-if="is_loading == 0" class="bg-background">
             <v-main>
                 <router-view></router-view>
-                <ItsNotification />
+                <its-notification />
             </v-main>
 
             <v-footer app>
@@ -39,11 +39,10 @@ import { useHomepageStore } from "@/stores/homepage/HomepageStore";
 
 export default {
 
-    components: {},
+    components: { ItsNotification },
 
     async beforeMount() {
-        this.homepageStore = useHomepageStore(); this.homepageStore.initialize(this.$router);
-        this.homepageStore.config();
+        this.homepageStore = useHomepageStore();
     },
 
     unmounted() {

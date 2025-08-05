@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
+import { useNotificationStore } from "@/stores/spa/NotificationStore";
 
 export const useHomepageStore = defineStore("HomepageStore", {
 
     state: () => {
         return {
-            router: null,
+
             config: null,
             is_loading: 0,
             error: {
@@ -18,27 +19,30 @@ export const useHomepageStore = defineStore("HomepageStore", {
     },
 
     actions: {
-        initialize(router) {
-            this.router = router;
-        },
 
-        async config(router) {
-            this.is_loading++;
+        async loadHomepage() {
+            return;
+            const notification = useNotificationStore();
+            this.is_loading++; this.api_response = null;
             try {
-                const response = await axios.get("/api/homepage/config", {});
-                this.config = response.data;
+                this.api_response = await axios.get("/api/admin/config", {});
+                this.config = this.api_response.data;
+                return this.api_response.data;
             } catch (error) {
-                this.redirect(error.response.status, error.response.data.message, 'error');
+                notification.notify({
+                    status: error.response.status,
+                    message: error.response.data.message || 'Fehler passiert.',
+                    type: 'error',
+                    timeout: 3000,
+                });
+                return false;
             } finally {
                 this.is_loading--;
             }
         },
 
 
-        redirect(status, message, type) {
-            const redirectUrl = '/application/error?status=' + status + '&message=' + encodeURIComponent(message) + '&type=' + type;
-            window.location.href = redirectUrl; // This is a real redirect
-        }
+
 
 
 

@@ -44,7 +44,7 @@
                         </v-card-title>
                         <v-card-text>
                             <v-autocomplete v-model="data.structure.fonts.fontType" :items="fontTypes"
-                                item-title="label" item-value="value" label="Schriftentypus ausqählen" />
+                                item-title="label" item-value="value" label="Schriftentypus auswählen" />
                         </v-card-text>
                     </v-card>
                 </v-col>
@@ -97,6 +97,11 @@ export default {
                 defaultStructure
             ),
         };
+
+
+        if (!this.data.structure.fonts.fontType) {
+            this.data.structure.fonts.fontType = 'default';
+        }
     },
     unmounted() { },
 

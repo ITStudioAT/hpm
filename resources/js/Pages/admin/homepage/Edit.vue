@@ -15,6 +15,9 @@
             <its-menu-button title="Übersicht" icon="mdi-view-grid-outline"
                 :color="action == 'overview' ? 'primary' : 'secondary'" @click="action = 'overview'" />
 
+            <its-menu-button title="Vorschau" icon="mdi-web" @click="action = 'preview'"
+                :color="action == 'previéw' ? 'primary' : 'secondary'" />
+
             <its-menu-button title="Basics" icon="mdi-cog" :color="action == 'basics' ? 'primary' : 'secondary'"
                 @click="action = 'basics'" />
 
