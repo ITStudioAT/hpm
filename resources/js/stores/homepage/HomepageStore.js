@@ -13,21 +13,39 @@ export const useHomepageStore = defineStore("HomepageStore", {
                 status: null,
                 message: null,
                 timeout: 3000,
-            }
+            },
+            homepage: null,
+            fontTitle: '',
+            fontSubtitle: '',
+            fontContent: '',
+            fontSubcontent: '',
 
         }
     },
 
     actions: {
 
-        async loadHomepage() {
-            return;
+        createFontClass(fontType) {
+            if (fontType) {
+                this.fontTitle = `${fontType}-responsive-title`;
+                this.fontSubtitle = `${fontType}-responsive-subtitle`;
+                this.fontContent = `${fontType}-responsive-content`;
+                this.fontSubcontent = `${fontType}-responsive-subcontent`;
+            }
+
+        },
+
+        async loadHomepage(preview = null) {
             const notification = useNotificationStore();
-            this.is_loading++; this.api_response = null;
+            this.is_loading++;
             try {
-                this.api_response = await axios.get("/api/admin/config", {});
-                this.config = this.api_response.data;
-                return this.api_response.data;
+                const response = await axios.get("/api/homepage/load_homepage", {
+                    params: { preview }
+                });
+                this.homepage = response.data;
+                console.log(this.homepage.structure.fonts);
+                this.createFontClass(this.homepage?.structure?.fonts?.fontType || null);
+
             } catch (error) {
                 notification.notify({
                     status: error.response.status,

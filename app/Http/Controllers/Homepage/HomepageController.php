@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers\Homepage;
 
-use Illuminate\Routing\Controller;
+use App\Models\Homepage;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Homepage\HomepageResource;
+use App\Http\Requests\Homepage\LoadHomepageRequest;
 
 class HomepageController extends Controller
 {
@@ -11,17 +15,19 @@ class HomepageController extends Controller
         return view('homepage');
     }
 
-    public function config()
+    public function loadHomepage(LoadHomepageRequest $request)
     {
+        $preview = $request->query('preview');
 
-        $data = [
-            'logo' => config('spa.logo', ''),
-            'copyright' => config('spa.copyright', ''),
-            'timeout' => config('spa.timeout', 3000),
-            'title' => config('spa.title', 'Spa'),
-            'company' => config('spa.company', 'ItStudio.at'),
-        ];
+        // Wenn Vorschau angefordert wird, prüfen, ob der Benutzer die Rolle 'admin' hat
+        if ($preview) {
+            if (! $auth_user = $this->userHasRole(['admin'])) {
+                abort(403, 'Sie haben keine Berechtigung');
+            }
+        }
 
-        return response()->json($data, 200);
+        $homepage = Homepage::findOrFail($preview);
+
+        return response()->json(new HomepageResource($homepage), 200);
     }
 }

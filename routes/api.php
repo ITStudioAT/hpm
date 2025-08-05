@@ -19,7 +19,7 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
 
     /***** HOMEPAGE ROUTES *****/
 
-    Route::get('/homepage/config',  [\App\Http\Controllers\Homepage\HomepageController::class, 'config']);
+    Route::get('/homepage/load_homepage',  [\App\Http\Controllers\Homepage\HomepageController::class, 'loadHomepage']);
 
     /***** ADMIN ROUTES *****/
 
