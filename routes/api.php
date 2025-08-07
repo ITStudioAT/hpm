@@ -13,6 +13,10 @@ use App\Http\Controllers\Homepage\HomepageController;
 // Globales Throttle
 Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function () {
 
+    /**** FONTSETS ****/
+    // Dynamic CSS serving
+    Route::get('css/fontset/{slug}.css', [\App\Http\Controllers\Homepage\FontsetController::class, 'serve']);
+
 
     /***** OTHER ROUTES *****/
     Route::post('/routes/is_route_allowed',  [RouteController::class, 'isRouteAllowed']);

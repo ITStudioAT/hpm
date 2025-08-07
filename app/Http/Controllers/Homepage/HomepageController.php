@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Homepage;
 
 use App\Models\Homepage;
 use Illuminate\Http\Request;
+use App\Services\FonttypeService;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Homepage\HomepageResource;
 use App\Http\Requests\Homepage\LoadHomepageRequest;
@@ -15,19 +16,26 @@ class HomepageController extends Controller
         return view('homepage');
     }
 
-    public function loadHomepage(LoadHomepageRequest $request)
+    public function loadHomepage(LoadHomepageRequest $request, FonttypeService $fonts)
     {
-        $preview = $request->query('preview');
+        $preview = $request->validated()['preview'] ?? null;
+        if ($preview !== null && !$this->userHasRole(['admin'])) abort(403);
 
-        // Wenn Vorschau angefordert wird, prüfen, ob der Benutzer die Rolle 'admin' hat
-        if ($preview) {
-            if (! $auth_user = $this->userHasRole(['admin'])) {
-                abort(403, 'Sie haben keine Berechtigung');
-            }
-        }
+        $homepage = Homepage::findOrFail($preview ?? 7);
 
-        $homepage = Homepage::findOrFail($preview);
+        $fontset = data_get($homepage->structure, 'fonts.fontType', 'default');
 
-        return response()->json(new HomepageResource($homepage), 200);
+        // compute mtime for version
+        $path = storage_path("app/private/fontsets/{$fontset}.json");
+        $version = is_file($path) ? filemtime($path) : time();
+
+        // Either return just the version...
+        return response()->json([
+            'data' => new HomepageResource($homepage),
+            'meta' => [
+                'fontset' => $fontset,
+                'fontVersion' => $version,
+            ],
+        ]);
     }
 }

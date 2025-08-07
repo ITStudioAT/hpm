@@ -1,8 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Services\FonttypeService;
 
-// Alles wird gethrottlet
+
+Route::middleware(['throttle:global', 'throttle:web'])->group(function () {
+    Route::get('/fontset/{fontset}.css', function (string $fontset, FonttypeService $svc) {
+        return $svc->serve($fontset);
+    })->name('fontset.css');
+});
 
 Route::middleware(['throttle:global', 'throttle:web', 'web-allowed'])->group(function () {
 

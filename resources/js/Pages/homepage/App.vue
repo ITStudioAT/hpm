@@ -52,9 +52,9 @@ export default {
     async beforeMount() {
         await axios.get('/sanctum/csrf-cookie');
 
-        const preview = this.$route.query.preview
+        var preview = this.$route.query.preview
         this.homepageStore = useHomepageStore();
-        this.homepageStore.loadHomepage(preview);
+        await this.homepageStore.loadHomepage(preview);
     },
 
 
