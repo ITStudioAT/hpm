@@ -29,7 +29,9 @@ Route::middleware(['throttle:global', 'throttle:web', 'web-allowed'])->group(fun
     });
 
 
-
+    Route::get('/admin/font-preview', function () {
+        return view('font-preview'); // <-- no SPA, just the blade above
+    })->middleware(['auth:sanctum']);
 
     /* restliche admin-Routen */
     Route::get('/admin/{any?}', function () {
@@ -49,6 +51,7 @@ Route::middleware(['throttle:global', 'throttle:web', 'web-allowed'])->group(fun
     */
 
     /*  ROUTES */
+
 
 
 

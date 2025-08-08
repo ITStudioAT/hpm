@@ -53,7 +53,7 @@
 
         <!-- Schriften -->
         <v-expand-transition>
-            <Overview v-if="info == 'fonts'" />
+            <FontsetShowCase v-if="info == 'fonts'" />
         </v-expand-transition>
     </v-container>
 </template>
@@ -68,11 +68,12 @@ import { useHomepageStore } from "@/stores/admin/HomepageStore";
 import ItsMenuButton from "@/pages/components/ItsMenuButton.vue";
 import ItsGridBox from "@/pages/components/ItsGridBox.vue";
 import Overview from "@/pages/admin/examples/fonts/Overview.vue";
+import FontsetShowCase from "@/pages/admin/examples/FontsetShowCase.vue";
 
 export default {
     props: ["homepage"],
 
-    components: { ItsMenuButton, ItsGridBox, Overview },
+    components: { ItsMenuButton, ItsGridBox, Overview, FontsetShowCase },
 
     async beforeMount() {
         this.adminStore = useAdminStore();

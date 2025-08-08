@@ -1,0 +1,10 @@
+@font-face {
+  font-family: 'IbmPlex';
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('/fonts/ibmplex/ibm-plex-sans-latin-wght-normal.woff2') format('woff2');
+  font-display: swap;
+}
+
+
+

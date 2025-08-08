@@ -15,6 +15,8 @@ import Homepage from '@/pages/admin/homepage/Index.vue'
 import Homepage_Edit from '@/pages/admin/homepage/Edit.vue'
 
 import Preview from '@/pages/admin/preview/Index.vue'
+import Fontsets from '@/pages/admin/examples/FontsetShowCase.vue'
+
 
 
 const routes = [
@@ -34,6 +36,8 @@ const routes = [
     { path: '/admin/homepage/edit', component: Homepage_Edit },
 
     { path: '/admin/preview', component: Preview },
+    { path: '/admin/fontsets', component: Fontsets },
+
 ];
 
 const router = createRouter({
