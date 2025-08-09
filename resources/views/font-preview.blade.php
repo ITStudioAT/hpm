@@ -188,7 +188,14 @@
                 </div>
                 <div class="subcontent muted">*) Hinweistext – nur eine Demo.</div>
             </div>
-            <div class="illus card" aria-hidden="true"></div>
+            <div class="card" aria-hidden="true" style="padding:0;overflow:hidden;align-self:start">
+                <img
+                    src="/storage/images/motiv.jpg"
+                    alt="Motivbild"
+                    style="display:block;width:100%;height:240px;object-fit:cover;border-radius:14px;">
+            </div>
+
+
         </section>
 
         <div style="height:24px"></div>

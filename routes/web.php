@@ -1,13 +1,17 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Services\FonttypeService;
+use Illuminate\Support\Facades\Route;
+
 
 
 Route::middleware(['throttle:global', 'throttle:web'])->group(function () {
     Route::get('/fontset/{fontset}.css', function (string $fontset, FonttypeService $svc) {
         return $svc->serve($fontset);
     })->name('fontset.css');
+
+    // Route::get('/api/css/colors/{slug}.css', [\App\Http\Controllers\Homepage\ColorsetController::class, 'css']);
+    // Route::get('/api/colorsets', [ColorsetController::class, 'list']);
 });
 
 Route::middleware(['throttle:global', 'throttle:web', 'web-allowed'])->group(function () {
@@ -31,6 +35,10 @@ Route::middleware(['throttle:global', 'throttle:web', 'web-allowed'])->group(fun
 
     Route::get('/admin/font-preview', function () {
         return view('font-preview'); // <-- no SPA, just the blade above
+    })->middleware(['auth:sanctum']);
+
+    Route::get('/admin/color-preview', function () {
+        return view('color-preview'); // <-- zeigt resources/views/color-preview.blade.php
     })->middleware(['auth:sanctum']);
 
     /* restliche admin-Routen */

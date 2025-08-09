@@ -38,13 +38,13 @@
                 <v-col cols="12" md="6" lg="4" xl="3">
                     <v-card>
                         <v-card-title class="d-flex flex-row align-center justify-space-between">
-                            <div>Schriften</div>
+                            <div>Schriftenprofil</div>
                             <v-btn flat @click="clickInfo('fonts')" :color="info == 'fonts' ? 'success' : ''"><v-icon
                                     icon="mdi-information-box" /></v-btn>
                         </v-card-title>
                         <v-card-text>
                             <v-autocomplete v-model="data.structure.fonts.fontType" :items="fontTypes"
-                                item-title="label" item-value="value" label="Schriftentypus auswählen" />
+                                item-title="label" item-value="value" label="Schriftenprofil auswählen" />
                         </v-card-text>
                     </v-card>
                 </v-col>

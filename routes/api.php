@@ -8,14 +8,20 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\NavigationController;
 use App\Http\Controllers\Admin\UserWithRoleController;
-use App\Http\Controllers\Homepage\HomepageController;
+
 
 // Globales Throttle
 Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function () {
 
     /**** FONTSETS ****/
     // Dynamic CSS serving
+    Route::get('/fontsets', [\App\Http\Controllers\Homepage\FontsetController::class, 'list']);
     Route::get('css/fontset/{slug}.css', [\App\Http\Controllers\Homepage\FontsetController::class, 'serve']);
+    Route::get('/colorsets', [\App\Http\Controllers\Homepage\ColorsetController::class, 'list']);
+    Route::get('/css/colors/{slug}.css', [\App\Http\Controllers\Homepage\ColorsetController::class, 'css']);
+
+
+
 
 
     /***** OTHER ROUTES *****/
