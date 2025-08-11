@@ -133,14 +133,12 @@ export default {
                 if (this.api_response.data.step == 'LOGIN_SUCCESS') {
                     this.step = "LOGIN_SUCCESS";
 
-                    console.log("login erfolreich");
                     const notification = useNotificationStore();
                     notification.notify({
                         message: 'Sie haben sich erfolreich angemeldet',
                         type: 'success',
                         timeout: this.adminStore.config?.timeout,
                     });
-                    console.log("login erfolreich - loadConfig");
                     await this.adminStore.loadConfig();
                     this.$router.push('/admin/');
                 } else {

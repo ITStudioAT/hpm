@@ -79,7 +79,6 @@ export default {
         async save(data) {
             this.userWithRoleStore.saveUserRoles(data);
             this.userWithRoleStore.reload++;
-            console.log("userWithRoleStore.reload: " + this.userWithRoleStore.reload);
 
             this.is_edit = false;
             this.$emit('abortShow');

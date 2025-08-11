@@ -63,7 +63,6 @@ export const useHomepageStore = defineStore("AdminHomepageStore", {
             try {
                 const response = await axios.post('/api/admin/homepage/delete', { id });
                 // this.homepage = response.data;
-                console.log(response.data);
                 return true;
             } catch (error) {
                 notification.notify({

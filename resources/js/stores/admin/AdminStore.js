@@ -204,8 +204,7 @@ export const useAdminStore = defineStore("AdminAdminStore", {
             try {
                 await axios.get('/sanctum/csrf-cookie');
                 this.api_response = await axios.post("/api/admin/login_step_2", { data });
-                console.log("loginStep2");
-                console.log(this.api_response);
+
                 return true;
             } catch (error) {
                 notification.notify({

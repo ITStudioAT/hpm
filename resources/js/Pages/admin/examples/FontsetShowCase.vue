@@ -1,21 +1,19 @@
 <template>
     <v-container fluid class="pa-4">
         <h2 class="mb-4">Beispiele zu Farben und Schriften</h2>
-
         <div class="text-grey text-body-2 mb-2">
-            Links: „Desktop“-Breite, rechts: „Handy“-Breite — beide laden denselben Fontset, reagieren aber
-            eigenständig.
+            Links: Desktop, rechts: Handy
         </div>
 
         <v-row class="flex-wrap" align="start" no-gutters>
             <v-col class="pa-2">
                 <div class="frame frame--desktop">
-                    <iframe :src="previewSrc(active)" title="Desktop Preview" />
+                    <iframe :src="src" :key="src + '-desktop'" title="Desktop Preview" />
                 </div>
             </v-col>
             <v-col class="pa-2">
                 <div class="frame frame--mobile">
-                    <iframe :src="previewSrc(active)" title="Mobile Preview" />
+                    <iframe :src="src" :key="src + '-mobile'" title="Mobile Preview" />
                 </div>
             </v-col>
         </v-row>
@@ -23,15 +21,48 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, onMounted, onBeforeUnmount, watch } from 'vue'
 
-const sets = ['default', 'education', 'nobel', 'manual'] as const
-const active = ref<typeof sets[number]>('default')
+const props = defineProps<{
+    colorset?: string
+    fontset?: string
+}>()
 
-const previewSrc = (fontset: string) =>
-    `/admin/color-fontset-preview?fontset=${encodeURIComponent(fontset)}&t=${Date.now()}`
+const emit = defineEmits<{
+    (e: 'update:colorset', v: string): void
+    (e: 'update:fontset', v: string): void
+}>()
 
-const sLabel = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+// Build iframe URL with initial selection (toolbar remains visible in iframe)
+const makeSrc = (c?: string, f?: string) => {
+    const params = new URLSearchParams()
+    if (c) params.set('colorset', c)
+    if (f) params.set('fontset', f)
+    params.set('t', String(Date.now())) // cache-bust on prop change
+    return `/admin/color-fontset-preview?${params.toString()}`
+}
+
+const src = computed(() => makeSrc(props.colorset || 'default', props.fontset || 'default'))
+
+// Listen to Blade -> parent messages and forward to the parent component
+function onMessage(e: MessageEvent) {
+    // Optional hardening:
+    // if (e.origin !== window.location.origin) return;
+
+    const d = (e?.data || {}) as { type?: string; colorset?: string; fontset?: string }
+    if (d.type === 'color-fontset-selection') {
+        if (typeof d.colorset === 'string') emit('update:colorset', d.colorset)
+        if (typeof d.fontset === 'string') emit('update:fontset', d.fontset)
+    }
+}
+
+onMounted(() => window.addEventListener('message', onMessage))
+onBeforeUnmount(() => window.removeEventListener('message', onMessage))
+
+// If parent changes props (e.g., loading another homepage), the computed `src` updates automatically
+watch(() => [props.colorset, props.fontset], () => {
+    /* no-op: computed handles src refresh */
+})
 </script>
 
 <style scoped>

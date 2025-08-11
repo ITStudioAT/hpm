@@ -34,7 +34,6 @@
         .toolbar {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
-            /* links | mitte | rechts */
             align-items: center;
             gap: 12px;
             padding: 10px 16px;
@@ -53,7 +52,6 @@
             justify-self: center;
         }
 
-        /* zentriert */
         .toolbar-right {
             justify-self: end;
             display: flex;
@@ -116,7 +114,6 @@
 
         .popover {
             position: relative;
-            /* wichtig für Panel-Position */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -348,12 +345,7 @@
 
     <div class="toolbar">
         <div class="toolbar-left">
-            <!-- optional: alte Selects/Labels
-      <label for="palette">Farbschema:</label>
-      <select id="palette"></select>
-      <label for="fontset">Schriftbild:</label>
-      <select id="fontset"></select>
-      -->
+            <!-- optional: alte Selects/Labels -->
         </div>
 
         <div class="toolbar-center">
@@ -388,8 +380,7 @@
         </div>
 
         <div class="toolbar-right">
-            <!-- optional: rechts Infos/Buttons -->
-            <!-- <a class="button content" href="#">Jetzt starten</a> -->
+            <!-- optional -->
         </div>
     </div>
 
@@ -487,6 +478,29 @@
             while ((m = re.exec(css)) !== null) vars[m[1]] = m[2].trim();
             colorCssCache.set(name, vars);
             return vars;
+        }
+
+        // Normalize backend response to an array of strings
+        function normalizeList(payload) {
+            const arr = Array.isArray(payload?.data) ? payload.data : (Array.isArray(payload) ? payload : []);
+            return arr.map(it =>
+                (typeof it === 'string') ? it :
+                (it.value ?? it.slug ?? it.id ?? it.code ?? it.name ?? it.title)
+            ).filter(Boolean);
+        }
+
+        // Tell parent (Vue) about the current selection
+        function broadcastState() {
+            try {
+                const u = new URL(location.href);
+                const colorset = u.searchParams.get('colorset') || 'default';
+                const fontset = u.searchParams.get('fontset') || 'default';
+                window.parent?.postMessage({
+                    type: 'color-fontset-selection',
+                    colorset,
+                    fontset
+                }, '*');
+            } catch {}
         }
 
         function applyColorPreviewToCard(root, vars) {
@@ -620,6 +634,7 @@
                 document.querySelector('#color-name').textContent = name;
                 closeAllPanels();
                 document.querySelector('#color-pop .trigger')?.focus();
+                broadcastState(); // NEW: inform parent after click selection
             };
             card.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -669,6 +684,7 @@
                 $('#font-name').textContent = name;
                 closeAllPanels();
                 $('#font-pop .trigger')?.focus();
+                broadcastState(); // NEW: inform parent after click selection
             };
             card.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -697,19 +713,21 @@
         }
 
         async function initFancyPickers() {
-            const [colors, fonts] = await Promise.all([getJson('/api/colorsets'), getJson('/api/fontsets')]);
+            const [colorsRaw, fontsRaw] = await Promise.all([getJson('/api/colorsets'), getJson('/api/fontsets')]);
+            const colors = normalizeList(colorsRaw);
+            const fonts = normalizeList(fontsRaw);
+
             const cPanel = $('#color-panel');
             colors.forEach(n => cPanel.appendChild(createColorCard(n)));
             const fPanel = $('#font-panel');
             fonts.forEach(n => fPanel.appendChild(createFontCard(n)));
 
-            // direkte Click-Handler (kein Delegation-Duplikat!)
             $('#color-pop .trigger').addEventListener('click', () => togglePanel('#color-pop', '#color-panel'));
             $('#font-pop  .trigger').addEventListener('click', () => togglePanel('#font-pop', '#font-panel'));
 
-            closeAllPanels(); // Startzustand sicher schließen
+            closeAllPanels();
             updateCurrentColorDots();
-            $('#palette')?.addEventListener('change', updateCurrentColorDots);
+            broadcastState(); // announce initial state to parent
         }
 
         // ---- Utilities / bestehend ----
@@ -776,7 +794,9 @@
         }
 
         async function init() {
-            const [colors, fonts] = await Promise.all([getJson('/api/colorsets'), getJson('/api/fontsets')]);
+            const [colorsRaw, fontsRaw] = await Promise.all([getJson('/api/colorsets'), getJson('/api/fontsets')]);
+            const colors = normalizeList(colorsRaw);
+            const fonts = normalizeList(fontsRaw);
 
             const colorNow = colors.includes(qs('colorset', '{{ $color }}')) ? qs('colorset', '{{ $color }}') : (colors[0] ?? 'default');
             const fontNow = fonts.includes(qs('fontset', '{{ $font }}')) ? qs('fontset', '{{ $font }}') : (fonts[0] ?? 'default');
@@ -788,6 +808,7 @@
                 colorset: colorNow,
                 fontset: fontNow
             });
+            broadcastState(); // also after syncing URL
 
             palette?.addEventListener('change', () => {
                 swapCss('colorset-css', `/api/css/colors/${encodeURIComponent(palette.value)}.css`)
@@ -795,12 +816,14 @@
                 syncQuery({
                     colorset: palette.value
                 });
+                broadcastState(); // inform parent
             });
             fontset?.addEventListener('change', () => {
                 swapCss('fontset-css', `/api/css/fontset/${encodeURIComponent(fontset.value)}.css`);
                 syncQuery({
                     fontset: fontset.value
                 });
+                broadcastState(); // inform parent
             });
         }
     </script>

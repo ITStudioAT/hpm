@@ -5,11 +5,11 @@
                 <div class="bg-primary pa-2 text-h5">Basics</div>
             </v-col>
         </v-row>
+
         <v-form ref="form" @submit.prevent="$emit('save')">
             <!-- Menüleiste oben -->
             <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
                 <its-menu-button title="Abbruch" icon="mdi-close" color="warning" @click="abort" />
-
                 <its-menu-button title="Speichern" type="submit" icon="mdi-content-save" color="success"
                     @click="save" />
             </v-row>
@@ -19,44 +19,59 @@
                     <v-card>
                         <v-card-title>Einstellungen</v-card-title>
                         <v-card-text>
-                            <v-text-field autofocus v-model="data.name" label="Name der Homepage"
-                                required></v-text-field>
+                            <v-text-field autofocus v-model="data.name" label="Name der Homepage" required />
                         </v-card-text>
                     </v-card>
                 </v-col>
 
+                <!-- Farbenprofil (read-only + mini preview) -->
                 <v-col cols="12" md="6" lg="4" xl="3">
                     <v-card>
-                        <v-card-title>Farbenprofil</v-card-title>
-                        <v-card-text>
-                            <v-autocomplete v-model="data.structure.colors.colorset" :items="colorsets"
-                                item-title="label" item-value="value" label="Colorset auswählen"
-                                :disabled="!colorsets.length && adminStore.is_loading > 0" hide-details="auto" />
-                        </v-card-text>
-                    </v-card>
-                </v-col>
-
-                <v-col cols="12" md="6" lg="4" xl="3">
-                    <v-card>
-                        <v-card-title class="d-flex flex-row align-center justify-space-between">
-                            <div>Schriftenprofil</div>
-                            <v-btn flat @click="clickInfo('fonts')" :color="info === 'fonts' ? 'success' : ''">
-                                <v-icon icon="mdi-information-box" />
+                        <v-card-title class="d-flex align-center justify-space-between">
+                            <span>Farbenprofil</span>
+                            <v-btn size="small" variant="tonal" :color="info == 'fonts' ? 'success' : 'primary'"
+                                :prepend-icon="info == 'fonts' ? 'mdi-close' : 'mdi-eye'" @click="clickInfo('fonts')">
+                                Auswahl
                             </v-btn>
                         </v-card-title>
                         <v-card-text>
-                            <v-autocomplete v-model="data.structure.fonts.fontset" :items="fontsets" item-title="label"
-                                item-value="value" label="Schriftenprofil auswählen"
-                                :disabled="!fontsets.length && adminStore.is_loading > 0" hide-details="auto" />
+                            <div class="text-caption text-medium-emphasis mb-1">Ausgewähltes Colorset</div>
+                            <div class="mini-row">
+                                <div class="text-body-1 font-weight-medium mr-4">{{ colorsetLabel }}</div>
+                                <ColorsetMini :value="data.structure.colors.colorset || 'default'" />
+                            </div>
+                        </v-card-text>
+                    </v-card>
+                </v-col>
+
+                <!-- Schriftenprofil (read-only + mini preview) -->
+                <v-col cols="12" md="6" lg="4" xl="3">
+                    <v-card>
+                        <v-card-title class="d-flex align-center justify-space-between">
+                            <span>Schriftenprofil</span>
+                            <v-btn size="small" variant="tonal" :color="info == 'fonts' ? 'success' : 'primary'"
+                                :prepend-icon="info == 'fonts' ? 'mdi-close' : 'mdi-eye'" @click="clickInfo('fonts')">
+                                Auswahl
+                            </v-btn>
+                        </v-card-title>
+                        <v-card-text>
+                            <div class="text-caption text-medium-emphasis mb-1">Ausgewähltes Schriftbild</div>
+                            <div class="mini-row">
+                                <div class="text-body-1 font-weight-medium mr-4">{{ fontsetLabel }}</div>
+                                <FontsetMini :value="data.structure.fonts.fontset || 'default'" />
+                            </div>
                         </v-card-text>
                     </v-card>
                 </v-col>
             </v-row>
         </v-form>
 
-        <!-- Schriften -->
+        <!-- Schriften & Farben (Blade-Picker unten ein-/ausblenden) -->
         <v-expand-transition>
-            <FontsetShowCase v-if="info == 'fonts'" />
+            <FontsetShowCase v-if="info === 'fonts' && data" :colorset="data.structure.colors.colorset || 'default'"
+                :fontset="data.structure.fonts.fontset || 'default'"
+                @update:colorset="val => (data.structure.colors.colorset = val)"
+                @update:fontset="val => (data.structure.fonts.fontset = val)" />
         </v-expand-transition>
     </v-container>
 </template>
@@ -70,16 +85,16 @@ import { useHomepageStore } from "@/stores/admin/HomepageStore";
 import { useFontsetStore } from "@/stores/admin/FontsetStore";
 import { useColorsetStore } from "@/stores/admin/ColorsetStore";
 
-
 import ItsMenuButton from "@/pages/components/ItsMenuButton.vue";
 import ItsGridBox from "@/pages/components/ItsGridBox.vue";
 import Overview from "@/pages/admin/examples/fonts/Overview.vue";
 import FontsetShowCase from "@/pages/admin/examples/FontsetShowCase.vue";
+import ColorsetMini from "@/pages/admin/examples/previews/ColorsetMini.vue";
+import FontsetMini from "@/pages/admin/examples/previews/FontsetMini.vue";
 
 export default {
     props: ["homepage"],
-
-    components: { ItsMenuButton, ItsGridBox, Overview, FontsetShowCase },
+    components: { ItsMenuButton, ItsGridBox, Overview, FontsetShowCase, ColorsetMini, FontsetMini },
 
     async beforeMount() {
         this.adminStore = useAdminStore();
@@ -87,9 +102,7 @@ export default {
         this.navigationStore = useNavigationStore();
         this.homepageStore = useHomepageStore();
         this.fontsetStore = useFontsetStore();
-
         this.colorsetStore = useColorsetStore();
-
 
         await Promise.all([
             this.fontsetStore.loadFontsets(),
@@ -97,30 +110,18 @@ export default {
         ]);
 
         const defaultStructure = {
-            colors: {
-                colorset: "",
-            },
-            fonts: {
-                fontset: "",
-            },
+            colors: { colorset: "" },
+            fonts: { fontset: "" },
         };
 
         this.data = {
             ...this.homepage,
-            structure: deepMergeDefaults(
-                this.homepage.structure ?? {},
-                defaultStructure
-            ),
+            structure: deepMergeDefaults(this.homepage.structure ?? {}, defaultStructure),
         };
 
-        if (!this.data.structure.fonts.fontset) {
-            this.data.structure.fonts.fontset = 'default';
-        }
-        if (!this.data.structure.colors.colorset) {
-            this.data.structure.colors.colorset = 'default';
-        }
+        if (!this.data.structure.fonts.fontset) this.data.structure.fonts.fontset = "default";
+        if (!this.data.structure.colors.colorset) this.data.structure.colors.colorset = "default";
     },
-    unmounted() { },
 
     data() {
         return {
@@ -130,11 +131,6 @@ export default {
             fontsetStore: null,
             colorsetStore: null,
             info: null,
-
-            // the selected (value) will be one of: 'nobel', 'default', 'education', 'manual'
-            selectedFontset: "default",
-
-
         };
     },
 
@@ -142,15 +138,22 @@ export default {
         ...mapWritableState(useHomepageStore, ["data"]),
         ...mapWritableState(useFontsetStore, ["fontsets"]),
         ...mapWritableState(useColorsetStore, ["colorsets"]),
+
+        colorsetLabel() {
+            const val = this.data?.structure?.colors?.colorset || "default";
+            const opt = this.colorsetStore?.options?.find(o => o.value === val);
+            return opt?.label || val;
+        },
+        fontsetLabel() {
+            const val = this.data?.structure?.fonts?.fontset || "default";
+            const opt = this.fontsetStore?.options?.find(o => o.value === val);
+            return opt?.label || val;
+        },
     },
 
     methods: {
         clickInfo(action) {
-            if (this.info == action) {
-                this.info = null;
-            } else {
-                this.info = action;
-            }
+            this.info = this.info === action ? null : action;
         },
         abort() {
             this.data = null;
@@ -161,10 +164,16 @@ export default {
             this.$emit("save");
         },
         runAction(methodName) {
-            if (typeof this[methodName] === "function") {
-                this[methodName]();
-            }
+            if (typeof this[methodName] === "function") this[methodName]();
         },
     },
 };
 </script>
+
+<style scoped>
+.mini-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+</style>
