@@ -1,10 +1,6 @@
 <template>
     <v-container fluid class="pa-4">
-        <h2 class="mb-4">Beispiele zu Schriften</h2>
-
-        <v-tabs v-model="active" class="mb-4" bg-color="grey-lighten-3" grow>
-            <v-tab v-for="s in sets" :key="s" :value="s">{{ sLabel(s) }}</v-tab>
-        </v-tabs>
+        <h2 class="mb-4">Beispiele zu Farben und Schriften</h2>
 
         <div class="text-grey text-body-2 mb-2">
             Links: „Desktop“-Breite, rechts: „Handy“-Breite — beide laden denselben Fontset, reagieren aber
@@ -33,7 +29,7 @@ const sets = ['default', 'education', 'nobel', 'manual'] as const
 const active = ref<typeof sets[number]>('default')
 
 const previewSrc = (fontset: string) =>
-    `/admin/font-preview?fontset=${encodeURIComponent(fontset)}&t=${Date.now()}`
+    `/admin/color-fontset-preview?fontset=${encodeURIComponent(fontset)}&t=${Date.now()}`
 
 const sLabel = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 </script>

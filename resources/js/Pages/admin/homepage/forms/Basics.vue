@@ -27,10 +27,11 @@
 
                 <v-col cols="12" md="6" lg="4" xl="3">
                     <v-card>
-                        <v-card-title>Farben</v-card-title>
+                        <v-card-title>Farbenprofil</v-card-title>
                         <v-card-text>
-                            <v-text-field v-model="data.structure.colors.bgColor" label="Hintergrundfarbe"
-                                required></v-text-field>
+                            <v-autocomplete v-model="data.structure.colors.colorset" :items="colorsets"
+                                item-title="label" item-value="value" label="Colorset auswählen"
+                                :disabled="!colorsets.length && adminStore.is_loading > 0" hide-details="auto" />
                         </v-card-text>
                     </v-card>
                 </v-col>
@@ -39,12 +40,14 @@
                     <v-card>
                         <v-card-title class="d-flex flex-row align-center justify-space-between">
                             <div>Schriftenprofil</div>
-                            <v-btn flat @click="clickInfo('fonts')" :color="info == 'fonts' ? 'success' : ''"><v-icon
-                                    icon="mdi-information-box" /></v-btn>
+                            <v-btn flat @click="clickInfo('fonts')" :color="info === 'fonts' ? 'success' : ''">
+                                <v-icon icon="mdi-information-box" />
+                            </v-btn>
                         </v-card-title>
                         <v-card-text>
-                            <v-autocomplete v-model="data.structure.fonts.fontType" :items="fontTypes"
-                                item-title="label" item-value="value" label="Schriftenprofil auswählen" />
+                            <v-autocomplete v-model="data.structure.fonts.fontset" :items="fontsets" item-title="label"
+                                item-value="value" label="Schriftenprofil auswählen"
+                                :disabled="!fontsets.length && adminStore.is_loading > 0" hide-details="auto" />
                         </v-card-text>
                     </v-card>
                 </v-col>
@@ -64,6 +67,9 @@ import { mapWritableState } from "pinia";
 import { useAdminStore } from "@/stores/admin/AdminStore";
 import { useNavigationStore } from "@/stores/admin/NavigationStore";
 import { useHomepageStore } from "@/stores/admin/HomepageStore";
+import { useFontsetStore } from "@/stores/admin/FontsetStore";
+import { useColorsetStore } from "@/stores/admin/ColorsetStore";
+
 
 import ItsMenuButton from "@/pages/components/ItsMenuButton.vue";
 import ItsGridBox from "@/pages/components/ItsGridBox.vue";
@@ -80,14 +86,22 @@ export default {
         this.adminStore.initialize(this.$router);
         this.navigationStore = useNavigationStore();
         this.homepageStore = useHomepageStore();
+        this.fontsetStore = useFontsetStore();
+
+        this.colorsetStore = useColorsetStore();
+
+
+        await Promise.all([
+            this.fontsetStore.loadFontsets(),
+            this.colorsetStore.loadColorsets(),
+        ]);
 
         const defaultStructure = {
             colors: {
-                frontColor: "#000000",
-                bgColor: "#ffffff",
+                colorset: "",
             },
             fonts: {
-                fontType: "",
+                fontset: "",
             },
         };
 
@@ -99,9 +113,11 @@ export default {
             ),
         };
 
-
-        if (!this.data.structure.fonts.fontType) {
-            this.data.structure.fonts.fontType = 'default';
+        if (!this.data.structure.fonts.fontset) {
+            this.data.structure.fonts.fontset = 'default';
+        }
+        if (!this.data.structure.colors.colorset) {
+            this.data.structure.colors.colorset = 'default';
         }
     },
     unmounted() { },
@@ -111,23 +127,21 @@ export default {
             adminStore: null,
             navigationStore: null,
             homepageStore: null,
+            fontsetStore: null,
+            colorsetStore: null,
             info: null,
 
             // the selected (value) will be one of: 'nobel', 'default', 'education', 'manual'
-            selectedFontType: "default",
+            selectedFontset: "default",
 
-            // items array: { value, label }
-            fontTypes: [
-                { value: "default", label: "Standard" },
-                { value: "manual", label: "Dokus" },
-                { value: "education", label: "Education" },
-                { value: "nobel", label: "Nobel" },
-            ],
+
         };
     },
 
     computed: {
         ...mapWritableState(useHomepageStore, ["data"]),
+        ...mapWritableState(useFontsetStore, ["fontsets"]),
+        ...mapWritableState(useColorsetStore, ["colorsets"]),
     },
 
     methods: {

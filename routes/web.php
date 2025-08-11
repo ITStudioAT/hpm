@@ -32,13 +32,13 @@ Route::middleware(['throttle:global', 'throttle:web', 'web-allowed'])->group(fun
         return view('spa::admin');
     });
 
-
+    /*
     Route::get('/admin/font-preview', function () {
         return view('font-preview'); // <-- no SPA, just the blade above
     })->middleware(['auth:sanctum']);
-
-    Route::get('/admin/color-preview', function () {
-        return view('color-preview'); // <-- zeigt resources/views/color-preview.blade.php
+*/
+    Route::get('/admin/color-fontset-preview', function () {
+        return view('color-fontset-preview'); // <-- zeigt resources/views/color-preview.blade.php
     })->middleware(['auth:sanctum']);
 
     /* restliche admin-Routen */
