@@ -141,13 +141,29 @@
                         </v-card-text>
                     </v-card>
                 </v-col>
+
+
+            </v-row>
+            <v-row>
+                <v-col cols="12" md="8">
+                    <div class="mb-2 font-weight-medium">Desktop</div>
+                    <!-- PASS THE COMPONENT -->
+                    <ThemeLivePreview :component="ThemeLiveRaw" :componentProps="themeProps" :width="1200"
+                        :height="800" />
+                </v-col>
+
+                <v-col cols="12" md="4">
+                    <div class="mb-2 font-weight-medium">Handy</div>
+                    <ThemeLivePreview :component="ThemeLiveRaw" :componentProps="themeProps" :width="390"
+                        :height="800" />
+                </v-col>
             </v-row>
         </v-form>
     </v-container>
 </template>
 
 <script>
-import { h } from "vue";
+import { h, markRaw } from "vue";
 import { mapWritableState } from "pinia";
 import { deepMergeDefaults } from "@/helpers/merge";
 import { useAdminStore } from "@/stores/admin/AdminStore";
@@ -156,6 +172,8 @@ import { useFontsetStore } from "@/stores/admin/FontsetStore";
 import { useColorsetStore } from "@/stores/admin/ColorsetStore";
 import ItsMenuButton from "@/pages/components/ItsMenuButton.vue";
 import { useThemePreview } from "../components/useThemePreview";
+import ThemeLivePreview from "../components/ThemeLivePreview.vue";
+import ThemeLive from "../components/ThemeLive.vue";
 
 /** Farben-Swatches (unverändert) */
 const _colorsetCssCache = new Map();
@@ -203,7 +221,7 @@ const ColorsetSwatches = {
 
 export default {
     props: ["homepage"],
-    components: { ItsMenuButton, ColorsetSwatches },
+    components: { ItsMenuButton, ColorsetSwatches, ThemeLivePreview },
 
     async beforeMount() {
         this.adminStore = useAdminStore();
@@ -250,6 +268,7 @@ export default {
             previewApi: null,
             _debouncedColors: null,
             _debouncedFonts: null,
+            ThemeLiveRaw: markRaw(ThemeLive),
 
             colorChoices: [],
             fontChoices: [],
@@ -267,6 +286,15 @@ export default {
         ...mapWritableState(useHomepageStore, ["data"]),
         ...mapWritableState(useFontsetStore, ["fontsets"]),
         ...mapWritableState(useColorsetStore, ["colorsets"]),
+
+        themeProps() {
+            return {
+                // whatever ThemeLive expects:
+                colorset: this.currentColorset,
+                fontset: this.currentFontset,
+                // anything else your ThemeLive needs…
+            };
+        },
 
         currentColorset() { return this.data?.structure?.colors?.colorset || "default"; },
         currentFontset() { return this.data?.structure?.fonts?.fontset || "default"; },
