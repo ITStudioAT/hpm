@@ -22,19 +22,11 @@ const frame = ref(null)
 let app = null
 
 function copyHostStyles(doc) {
+    // copy Vuetify + your CSS into the iframe
     document.querySelectorAll('link[rel="stylesheet"], style').forEach(n => {
-        const href = n.getAttribute?.('href') || ''
-        const id = n.id || ''
-        if (
-            id === 'colorset-css' || id === 'fontset-css' ||
-            href.includes('/api/css/colors/') || href.includes('/api/css/fontset/')
-        ) {
-            return  // skip theme links; ThemeLive will inject fresh ones
-        }
         doc.head.appendChild(n.cloneNode(true))
     })
 }
-
 
 function mountInIframe() {
     const el = frame.value

@@ -65,7 +65,7 @@
                                         </div>
                                         <div class="sel-text">
                                             <div class="sel-label">{{ item?.raw?.label ?? prettyLabel(currentColorset)
-                                                }}</div>
+                                            }}</div>
                                             <div class="sel-sub">{{ item?.raw?.value ?? currentColorset }}</div>
                                         </div>
                                     </div>
@@ -144,20 +144,20 @@
 
 
             </v-row>
-            <v-row>
+            <v-row v-if="previewsReady">
                 <v-col cols="12" md="8">
                     <div class="mb-2 font-weight-medium">Desktop</div>
-                    <!-- PASS THE COMPONENT -->
-                    <ThemeLivePreview :component="ThemeLiveRaw" :componentProps="themeProps" :width="1200"
-                        :height="800" />
+                    <ThemeLivePreview :component="ThemeLiveRaw" :componentProps="themeProps" :width="1200" :height="800"
+                        :force="previewNonce" />
                 </v-col>
 
                 <v-col cols="12" md="4">
                     <div class="mb-2 font-weight-medium">Handy</div>
-                    <ThemeLivePreview :component="ThemeLiveRaw" :componentProps="themeProps" :width="390"
-                        :height="800" />
+                    <ThemeLivePreview :component="ThemeLiveRaw" :componentProps="themeProps" :width="390" :height="800"
+                        :force="previewNonce" />
                 </v-col>
             </v-row>
+
         </v-form>
     </v-container>
 </template>
@@ -250,6 +250,12 @@ export default {
         await this.updateMiniColors();
         await this.updateFontMini();
 
+        await this.$nextTick()
+        await new Promise(r => requestAnimationFrame(r))
+        // one-time nudge so iframes mount after stores + CSS are ready
+        this.previewsReady = true
+        this.previewNonce++
+
         // Debounced Watcher
         this._debouncedColors = this.previewApi.debounce(async (slug) => {
             this.mini = await this.previewApi.getColorsetPreview(slug || "default");
@@ -257,6 +263,11 @@ export default {
         this._debouncedFonts = this.previewApi.debounce(async (slug) => {
             this.fontMini = await this.previewApi.getFontsetPreview(slug || "default");
         }, 150);
+
+    },
+
+    mounted() {
+
     },
 
     data() {
@@ -279,6 +290,8 @@ export default {
                 content: { fontFamily: "system-ui, Arial", fontWeight: "400", fontStyle: "normal" },
                 button: { fontFamily: "system-ui, Arial", fontWeight: "700" },
             },
+            previewsReady: false,
+            previewNonce: 0,
         };
     },
 
