@@ -1,0 +1,99 @@
+.background {
+    background-color: var(--backgroundBackground);
+    color: var(--backgroundText);
+}
+
+.main {
+    background-color: var(--mainBackground);
+    color: var(--mainText);
+}
+
+
+.text-heroTitle {
+    color: var(--heroTitleText);
+}
+
+
+.text-heroLead {
+    color: var(--heroLeadText);
+}
+
+
+.text-title {
+    color: var(--titleText);
+}
+
+
+.text-subtitle {
+    color: var(--subtitleText);
+}
+
+
+.text-content {
+    color: var(--contentText);
+}
+
+
+.text-subcontent {
+    color: var(--subcontentText);
+}
+
+
+
+.button {
+    color: var(--buttonText);
+    background-color: var(--button);
+}
+
+.text-button {
+    color: var(--buttonText);
+}
+
+.bg-button {
+    background-color: var(--button);
+}
+
+
+.first {
+    color: var(--firstText);
+    background-color: var(--firstBackground);
+}
+
+.text-first {
+    color: var(--firstText) !important;
+}
+
+.bg-first {
+    background-color: var(--firstBackground);
+}
+
+.second {
+    color: var(--secondText);
+    background-color: var(--secondBackground);
+}
+
+.text-second {
+    color: var(--secondText);
+}
+
+.bg-second {
+    background-color: var(--secondBackground);
+}
+
+.third {
+    color: var(--thirdText);
+    background-color: var(--thirdBackground);
+}
+
+.text-third {
+    color: var(--thirdText);
+}
+
+.bg-third {
+    background-color: var(--thirdBackground);
+}
+
+
+.stroke {
+    border-color: var(--strokeColor);
+}

@@ -4,829 +4,476 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>App-Vorschau</title>
+    <title>Typography & Colors Preview</title>
 
     @php
-    $color = request('colorset','default');
-    $font = request('fontset','default');
-    $v = request('t') ?? time();
+    // Slugs aus Query (wenn vorhanden)
+    $colorsetSlug = request('colorset');
+    $fontsetSlug = request('fontset');
+    $v = request('v') ?? time();
     @endphp
 
-    <!-- Colors & Fonts -->
-    <link id="colorset-css" rel="stylesheet" href="/api/css/colors/{{ rawurlencode($color) }}.css?v={{ $v }}">
-    <link rel="stylesheet" href="/fonts/fonts.css">
-    <link id="fontset-css" rel="stylesheet" href="/api/css/fontset/{{ rawurlencode($font) }}.css?v={{ $v }}">
+    <!-- Fonts immer global laden -->
+    <link rel="stylesheet" href="{{ url('/fonts/fonts.css') }}?v={{ $v }}">
+    <!-- Wenn Slugs vorhanden: echte CSS-Dateien laden -->
+    @if($colorsetSlug)
+    <link rel="stylesheet" href="{{ url('/api/css/colors/'.rawurlencode($colorsetSlug).'.css') }}?v={{ $v }}">
+    @endif
+    @if($fontsetSlug)
+    <link rel="stylesheet" href="{{ url('/api/css/fontset/'.rawurlencode($fontsetSlug).'.css') }}?v={{ $v }}">
+    @endif
 
+    @php
+    // --- Farb-Fallback (neue Keys) ---
+    $fallback = [
+    "backgroundBackground" => "#FAF3E0",
+    "backgroundText" => "#4B2E23",
+    "mainBackground" => "#F5E6C8",
+    "mainText" => "#4B2E23",
+    "heroTitleText" => "#5E3023",
+    "heroLeadText" => "#E6C68E",
+    "titleText" => "#5E3023",
+    "subtitleText" => "#8B5E3C",
+    "contentText" => "#4B2E23",
+    "subcontentText" => "#7A5C46",
+    "buttonBackground" => "#C89F5D",
+    "buttonText" => "#FFFFFF",
+    "firstBackground" => "#A97142",
+    "firstText" => "#FFFFFF",
+    "secondBackground" => "#E6C68E",
+    "secondText" => "#4B2E23",
+    "thirdBackground" => "#D9B48F",
+    "thirdText" => "#4B2E23",
+    "strokeColor" => "#5E3023",
+    ];
+
+    // --- $colors aus Controller/Query robust mergen ---
+    $fromController = [];
+    if (isset($colors)) {
+    if (is_string($colors)) $colors = json_decode($colors, true) ?: [];
+    if (is_array($colors)) $fromController = $colors;
+    }
+    $fromQuery = [];
+    if ($qp = request('colors')) {
+    $decoded = json_decode($qp, true);
+    if (is_array($decoded)) $fromQuery = $decoded;
+    }
+    $colors = array_merge($fallback, $fromController, $fromQuery);
+
+    // --- Sichere CSS-Variablen erzeugen (als fertige :root-Regel) ---
+    $decls = [];
+    foreach ($colors as $k => $v) {
+    $safeK = preg_replace('/[^a-zA-Z0-9_-]/', '', $k);
+    $decls[] = "--{$safeK}: {$v}";
+    }
+    $rootCss = ':root{'.implode(';', $decls).';}';
+
+    // --- Realistische Texte je Klasse (für alle Varianten gleich) ---
+    $textSamples = [
+    'text-heroTitle' => 'Digitale Lösungen, die begeistern.',
+    'text-heroLead' => 'Wir planen, gestalten und entwickeln Websites und Apps für Bildung und Unternehmen – schnell, barrierearm und wartungsfreundlich.',
+    'text-title' => 'Unsere Leistungen',
+    'text-subtitle' => 'Webdesign, Branding & Entwicklung',
+    'text-content' => 'Von der ersten Idee bis zum Go-Live begleiten wir Ihr Projekt. Wir kombinieren klares Design mit stabiler Technik und achten auf Performance sowie SEO-Basics.',
+    'text-subcontent' => 'Hinweis: Wir arbeiten agil mit kurzen Feedback-Schleifen und transparenten Angeboten.',
+    ];
+    $textOrder = ['text-heroTitle','text-heroLead','text-title','text-subtitle','text-content','text-subcontent'];
+
+    // --- Varianten ---
+    $variants = [
+    ['key' => 'standard', 'label' => 'Standard', 'class' => 'variant--standard', 'bgVar' => 'mainBackground', 'textVar' => 'mainText'],
+    ['key' => 'first', 'label' => 'First', 'class' => 'variant--first', 'bgVar' => 'firstBackground', 'textVar' => 'firstText'],
+    ['key' => 'second', 'label' => 'Second', 'class' => 'variant--second', 'bgVar' => 'secondBackground', 'textVar' => 'secondText'],
+    ['key' => 'third', 'label' => 'Third', 'class' => 'variant--third', 'bgVar' => 'thirdBackground', 'textVar' => 'thirdText'],
+    ];
+    @endphp
+
+    <!-- 1) Nur die Farb-Variablen als fertiges CSS (kein Blade im CSS) -->
+    @if(!$colorsetSlug)
+    <style id="color-vars">
+        <?= $rootCss ?>
+    </style>
+    @endif
+
+    <!-- 2) Statische Styles (valide CSS) -->
     <style>
+        /* Aliase (alt -> neu) in eigenem :root-Block */
+        :root {
+            --background: var(--backgroundBackground);
+            --main: var(--mainBackground);
+            --heroTitleColor: var(--heroTitleText);
+            --heroLeadColor: var(--heroLeadText);
+            --titleColor: var(--titleText);
+            --subtitleColor: var(--subtitleText);
+            --contentColor: var(--contentText);
+            --subcontentColor: var(--subcontentText);
+            --button: var(--buttonBackground);
+            --highlight: var(--firstBackground);
+            --highlightText: var(--firstText);
+            --secondary: var(--secondBackground);
+            --secondaryText: var(--secondText);
+            --tertiary: var(--thirdBackground);
+            --tertiaryText: var(--thirdText);
+            --illustrationStroke: var(--strokeColor);
+        }
+
+        /* Utilities (neu) – Farben anwenden */
+        .background {
+            background-color: var(--backgroundBackground);
+            color: var(--backgroundText);
+        }
+
+        .main {
+            background-color: var(--mainBackground);
+            color: var(--mainText);
+        }
+
+        .text-heroTitle {
+            color: var(--heroTitleText);
+        }
+
+        .text-heroLead {
+            color: var(--heroLeadText);
+        }
+
+        .text-title {
+            color: var(--titleText);
+        }
+
+        .text-subtitle {
+            color: var(--subtitleText);
+        }
+
+        .text-content {
+            color: var(--contentText);
+        }
+
+        .text-subcontent {
+            color: var(--subcontentText);
+        }
+
+        .button {
+            color: var(--buttonText);
+            background-color: var(--buttonBackground);
+            display: inline-block;
+            padding: .6rem .9rem;
+            border: 2px solid var(--strokeColor);
+            text-decoration: none;
+            border-radius: .6rem;
+        }
+
+        .text-button {
+            color: var(--buttonText);
+        }
+
+        .bg-button {
+            background-color: var(--buttonBackground);
+        }
+
+        .first {
+            color: var(--firstText);
+            background-color: var(--firstBackground);
+        }
+
+        .second {
+            color: var(--secondText);
+            background-color: var(--secondBackground);
+        }
+
+        .third {
+            color: var(--thirdText);
+            background-color: var(--thirdBackground);
+        }
+
+        .text-first {
+            color: var(--firstText) !important;
+        }
+
+        .text-second {
+            color: var(--secondText) !important;
+        }
+
+        .text-third {
+            color: var(--thirdText) !important;
+        }
+
+        .bg-first {
+            background-color: var(--firstBackground);
+        }
+
+        .bg-second {
+            background-color: var(--secondBackground);
+        }
+
+        .bg-third {
+            background-color: var(--thirdBackground);
+        }
+
+        .stroke {
+            border-color: var(--strokeColor);
+        }
+
+        /* Layout */
         * {
-            border-radius: 0 !important;
+            box-sizing: border-box;
         }
 
         html,
         body {
+            height: 100%;
+        }
+
+        body {
             margin: 0;
-            padding: 0;
-            background: var(--background);
-            color: var(--contentColor);
-        }
-
-        /* Toolbar + Ausrichtung (zentriert oben) */
-        .toolbar {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 16px;
-            background: #f2f2f2;
-            border-bottom: 1px solid rgba(0, 0, 0, .06);
-        }
-
-        .toolbar-left {
-            justify-self: start;
-            display: flex;
-            align-items: center;
-            gap: .5rem;
-        }
-
-        .toolbar-center {
-            justify-self: center;
-        }
-
-        .toolbar-right {
-            justify-self: end;
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-        }
-
-        label {
-            font-size: .95rem;
-        }
-
-        select {
-            padding: .4rem .6rem;
-        }
-
-        /* Picker in Toolbar */
-        .picker {
-            display: flex;
-            flex-direction: row;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .picker .trigger {
-            border: 2px solid var(--illustrationStroke);
-            background: #fff;
-            padding: .45rem .7rem;
-            cursor: pointer;
-        }
-
-        .current-chip {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 6px;
-        }
-
-        .current-chip .dot {
-            width: 14px;
-            height: 14px;
-            border: 1px solid rgba(0, 0, 0, .2);
-        }
-
-        .current-chip .dots {
-            display: flex;
-            gap: 4px;
-        }
-
-        .dots {
-            display: flex;
-            gap: 4px;
-        }
-
-        .dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            border: 1px solid rgba(0, 0, 0, .2);
-        }
-
-        .popover {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .popover-panel {
-            position: absolute;
-            z-index: 30;
-            top: 110%;
-            left: 0;
-            background: #fff;
-            border: 2px solid var(--illustrationStroke);
-            padding: 12px;
-            display: grid;
-            grid-template-columns: repeat(3, minmax(180px, 1fr));
-            gap: 12px;
-            max-height: 60vh;
-            overflow: auto;
-            min-width: 560px;
-            box-shadow: 0 10px 0 var(--accent, transparent);
-        }
-
-        .popover-panel[hidden] {
-            display: none !important;
-        }
-
-        @media (max-width:800px) {
-            .toolbar {
-                grid-template-columns: 1fr;
-                grid-auto-rows: auto;
-            }
-
-            .toolbar-center {
-                order: 1;
-                justify-self: center;
-            }
-
-            .toolbar-left,
-            .toolbar-right {
-                order: 2;
-                justify-self: stretch;
-            }
-        }
-
-        @media (max-width:680px) {
-            .popover-panel {
-                grid-template-columns: 1fr;
-                min-width: 320px;
-            }
-        }
-
-        .opt-card {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            border: 2px solid var(--illustrationStroke);
-            padding: 10px;
-            background: #fafafa;
-            cursor: pointer;
-        }
-
-        .opt-card:hover {
-            outline: 3px solid var(--accent, #ddd);
-        }
-
-        .opt-name {
-            font-size: .9rem;
-            opacity: .9;
-        }
-
-        .swatch-row {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 6px;
-        }
-
-        .sw {
-            height: 22px;
-            border: 1px solid rgba(0, 0, 0, .15);
-        }
-
-        .font-demo {
-            display: grid;
-            gap: 6px;
-        }
-
-        .font-Aa {
-            font-size: 28px;
-            line-height: 1;
-        }
-
-        .font-sample {
-            font-size: 14px;
-            opacity: .9;
-        }
-
-        /* Layout / Demo-Seite */
-        .header {
-            background: var(--highlight);
-            color: var(--highlightText);
-            border-bottom: 2px solid var(--illustrationStroke);
-        }
-
-        .header .wrap {
-            padding: 24px 20px;
-            max-width: 1100px;
-            margin: 0 auto;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans",
+                "Apple Color Emoji", "Segoe UI Emoji";
         }
 
         .wrap {
-            padding: 28px 20px;
-            max-width: 1100px;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hero {
+            padding: 3.5rem 1.25rem;
+            border-bottom: 4px solid var(--strokeColor);
+            display: grid;
+            gap: 1.25rem;
+            place-items: center;
+            text-align: center;
+            background: var(--mainBackground);
+            color: var(--mainText);
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(2rem, 3vw + 1rem, 3rem);
+        }
+
+        .hero p {
+            margin: 0;
+            max-width: 70ch;
+            font-size: clamp(1rem, 1.2vw + .6rem, 1.35rem);
+        }
+
+        .hero .img {
+            width: min(100%, 980px);
+            aspect-ratio: 21/9;
+            object-fit: cover;
+            border: 3px solid var(--strokeColor);
+            border-radius: 14px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, .09);
+        }
+
+        .container {
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 2rem 1.25rem;
         }
 
         .grid {
             display: grid;
-            gap: 24px;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
         }
 
-        @media (min-width:980px) {
-            .grid {
-                grid-template-columns: 1.2fr .8fr;
-            }
+        .panel {
+            border: 2px solid var(--strokeColor);
+            border-radius: 18px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, .08);
         }
 
-        .section-main {
-            background: var(--main);
-            border: 2px solid var(--illustrationStroke);
-            padding: 24px;
+        .panel__head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: .9rem 1rem;
+            background: rgba(255, 255, 255, .12);
+            border-bottom: 2px solid var(--strokeColor);
         }
 
-        .card.secondary {
-            background: var(--secondary);
-            color: var(--secondaryText) !important;
-            border: 2px solid var(--illustrationStroke);
-            padding: 20px;
+        .panel__body {
+            display: grid;
+            gap: .75rem;
+            padding: 1rem;
         }
 
-        .card.secondary .subtitle,
-        .card.secondary .content,
-        .card.secondary .subcontent {
-            color: var(--secondaryText) !important;
+        .img-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
-        .card {
-            background: var(--tertiary);
-            color: var(--tertiaryText) !important;
-            border: 2px solid var(--illustrationStroke);
-            padding: 20px;
+        .thumb {
+            width: min(100%, 520px);
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border: 2px solid var(--strokeColor);
+            border-radius: 12px;
         }
 
-        .card .subtitle,
-        .card .content,
-        .card .subcontent {
-            color: var(--tertiaryText) !important;
+        .stack {
+            display: grid;
+            gap: .35rem;
         }
 
-        .heroTitle {
-            color: var(--heroTitleColor);
-        }
-
-        .heroLead {
-            color: var(--heroLeadColor);
-        }
-
-        .title {
-            color: var(--titleColor);
-        }
-
-        .subtitle {
-            color: var(--subtitleColor);
-        }
-
-        .content {
-            color: var(--contentColor);
-        }
-
-        .subcontent {
-            color: var(--subcontentColor);
-        }
-
-        .note {
-            margin-top: 6px;
+        .badge {
+            font-size: .85rem;
+            padding: .25rem .55rem;
+            border-radius: 999px;
+            border: 2px solid var(--strokeColor);
             opacity: .85;
         }
 
-        .row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: nowrap;
+        /* Varianten via lokale Variablen */
+        .variant {
+            background: var(--_variantBg);
+            color: var(--_variantText);
         }
 
-        .row>* {
-            white-space: nowrap;
+        .variant--standard {
+            --_variantBg: var(--mainBackground);
+            --_variantText: var(--mainText);
         }
 
-        .button {
-            display: inline-block;
-            padding: .6rem .9rem;
-            background: var(--button, #fff);
-            color: var(--buttonText, #000);
-            border: 2px solid var(--illustrationStroke);
-            text-decoration: none;
-            box-shadow: 0 6px 0 var(--accent, transparent);
-            font-family: inherit !important;
-            font-size: inherit;
-            line-height: inherit;
-            font-style: inherit;
-            font-weight: inherit;
+        .variant--first {
+            --_variantBg: var(--firstBackground);
+            --_variantText: var(--firstText);
         }
 
-        .hero-img {
-            width: 100%;
-            height: 240px;
-            object-fit: cover;
-            border: 2px solid var(--illustrationStroke);
+        .variant--second {
+            --_variantBg: var(--secondBackground);
+            --_variantText: var(--secondText);
         }
 
-        .spacer24 {
-            height: 24px;
+        .variant--third {
+            --_variantBg: var(--thirdBackground);
+            --_variantText: var(--thirdText);
+        }
+
+        /* Erzwinge Textfarben je Variante */
+        .variant .text-heroTitle,
+        .variant .text-heroLead,
+        .variant .text-title,
+        .variant .text-subtitle,
+        .variant .text-content,
+        .variant .text-subcontent {
+            color: var(--_variantText) !important;
+        }
+
+        /* --- Kanten eckig (Overrides) --- */
+        .button,
+        .thumb,
+        .panel,
+        .panel__head,
+        .hero .img,
+        .badge {
+            border-radius: 0 !important;
         }
     </style>
+
+    @php
+    // --- Fontset-Fallback (JSON-Struktur) ---
+    $fontFallback = [
+    "heroTitle" => ["fontFamily"=>"Roboto, sans-serif","fontWeight"=>700,"fontSize"=>"clamp(32px, 6vw, 64px)","lineHeight"=>"1.1","letterSpacing"=>"-0.02em","marginBottom"=>"16px"],
+    "heroLead" => ["fontFamily"=>"Roboto, sans-serif","fontWeight"=>400,"fontSize"=>"clamp(18px, 2.5vw, 22px)","lineHeight"=>"1.5","marginBottom"=>"24px"],
+    "title" => ["fontFamily"=>"Roboto, sans-serif","fontWeight"=>500,"fontSize"=>"clamp(28px, 4vw, 32px)","lineHeight"=>"clamp(36px, 5vw, 40px)","fontStyle"=>"normal","marginBottom"=>"16px"],
+    "subtitle" => ["fontFamily"=>"Roboto, sans-serif","fontWeight"=>500,"fontSize"=>"clamp(22px, 3vw, 24px)","lineHeight"=>"clamp(28px, 4vw, 30px)","fontStyle"=>"normal","marginBottom"=>"8px"],
+    "content" => ["fontFamily"=>"Roboto, sans-serif","fontWeight"=>400,"fontSize"=>"clamp(14px, 1.4vw, 16px)","lineHeight"=>"clamp(18px, 2.2vw, 20px)","fontStyle"=>"normal"],
+    "subcontent"=> ["fontFamily"=>"Roboto, sans-serif","fontWeight"=>300,"fontSize"=>"clamp(13px, 1.2vw, 14px)","lineHeight"=>"clamp(16px, 2vw, 18px)","fontStyle"=>"normal"],
+    ];
+
+    // --- Fontset aus Controller/Query mergen (optional) ---
+    $fontFromCtrl = [];
+    if (isset($fontset)) {
+    if (is_string($fontset)) $fontset = json_decode($fontset, true) ?: [];
+    if (is_array($fontset)) $fontFromCtrl = $fontset;
+    }
+    $fontFromQuery = [];
+    if ($fp = request('fontset')) {
+    $decoded = json_decode($fp, true);
+    if (is_array($decoded)) $fontFromQuery = $decoded;
+    }
+    $fontSpec = array_replace_recursive($fontFallback, $fontFromCtrl, $fontFromQuery);
+
+    // --- Erlaubte Properties → CSS-Namen ---
+    $allowedProps = ['fontFamily','fontWeight','fontSize','lineHeight','letterSpacing','fontStyle','marginBottom'];
+    $toKebab = function(string $p){ return strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $p)); };
+
+    // --- Mapping Fontset-Key → CSS-Selector ---
+    $selectorMap = [
+    'heroTitle' => '.text-heroTitle',
+    'heroLead' => '.text-heroLead',
+    'title' => '.text-title',
+    'subtitle' => '.text-subtitle',
+    'content' => '.text-content',
+    'subcontent'=> '.text-subcontent',
+    ];
+
+    // --- CSS-Regeln für das Fontset generieren ---
+    $fontCss = '';
+    foreach ($selectorMap as $key => $selector) {
+    if (!isset($fontSpec[$key]) || !is_array($fontSpec[$key])) continue;
+    $rules = [];
+    foreach ($allowedProps as $prop) {
+    if (!array_key_exists($prop, $fontSpec[$key])) continue;
+    $val = $fontSpec[$key][$prop];
+    if (is_bool($val)) { $val = $val ? 'true' : 'false'; }
+    elseif (is_numeric($val)) { $val = (string)$val; }
+    elseif (!is_string($val)) { continue; }
+    $rules[] = $toKebab($prop) . ':' . $val;
+    }
+    if ($rules) $fontCss .= $selector . '{' . implode(';', $rules) . ';}';
+    }
+    @endphp
+
+    <!-- 3) Fontset-Regeln nur ausgeben, wenn kein Slug geladen wurde -->
+    @if(!$fontsetSlug)
+    <style id="fontset-rules">
+        <?= $fontCss ?>
+    </style>
+    @endif
 </head>
 
-<body>
-
-    <div class="toolbar">
-        <div class="toolbar-left">
-            <!-- optional: alte Selects/Labels -->
-        </div>
-
-        <div class="toolbar-center">
-            <div class="picker">
-                <!-- Farbschema -->
-                <div class="popover" id="color-pop">
-                    <button class="trigger" type="button" aria-haspopup="listbox" aria-expanded="false">🎨 Farbschema wählen</button>
-                    <div class="current-chip" id="color-chip" aria-hidden="true" title="Aktuelles Farbschema">
-                        <div class="dots">
-                            <div class="dot" id="dot-bg"></div>
-                            <div class="dot" id="dot-main"></div>
-                            <div class="dot" id="dot-sec"></div>
-                            <div class="dot" id="dot-ter"></div>
-                            <div class="dot" id="dot-hi"></div>
-                            <div class="dot" id="dot-btn"></div>
-                        </div>
-                        <span id="color-name">{{ $color }}</span>
-                    </div>
-                    <div class="popover-panel" hidden id="color-panel" role="listbox" aria-label="Farbschema"></div>
-                </div>
-
-                <!-- Schriftbild -->
-                <div class="popover" id="font-pop">
-                    <button class="trigger" type="button" aria-haspopup="listbox" aria-expanded="false">🔤 Schriftbild wählen</button>
-                    <div class="current-chip" id="font-chip" aria-hidden="true" title="Aktuelles Schriftbild">
-                        <div class="font-sample" style="margin:0;">Aa</div>
-                        <span id="font-name">{{ $font }}</span>
-                    </div>
-                    <div class="popover-panel" hidden id="font-panel" role="listbox" aria-label="Schriftbild"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="toolbar-right">
-            <!-- optional -->
-        </div>
-    </div>
-
-    <!-- Hero -->
-    <div class="header">
-        <div class="wrap">
-            <div class="heroTitle" style="margin-bottom:8px;">Willkommen!</div>
-            <div class="heroLead">So sieht Ihre Anwendung mit diesem Stil aus.</div>
-            <div class="subcontent note">(highlight / highlightText)</div>
-        </div>
-    </div>
-
-    <!-- Inhalt -->
+<body class="background">
     <div class="wrap">
-        <section class="section-main">
-            <div class="title" style="margin-top:0;">Aktuelles</div>
-            <div class="content">Alles Wichtige auf einen Blick – klar strukturiert und gut lesbar.</div>
-            <div class="subcontent note">(main, Textfarben: titleColor / contentColor / subcontentColor)</div>
+        <!-- HERO -->
+        <header class="hero">
+            <h1 class="text-heroTitle">{{ $textSamples['text-heroTitle'] }}</h1>
+            <p class="text-heroLead">{{ $textSamples['text-heroLead'] }}</p>
+            <img class="img" src="/storage/images/motiv.jpg" alt="Stimmungsbild" loading="lazy">
+        </header>
 
-            <div class="spacer24"></div>
-
+        <main class="container">
             <div class="grid">
-                <div class="card">
-                    <div class="subtitle" style="margin-top:0;">Neuigkeiten</div>
-                    <div class="content">Kurze Hinweise, Ankündigungen und Termine erscheinen hier.</div>
-                    <div class="subcontent" style="opacity:.8; margin-top:8px;">Stand: heute</div>
-                    <div class="subcontent note">(tertiary / tertiaryText, Rahmen: illustrationStroke)</div>
-                </div>
-
-                <div class="card secondary">
-                    <div class="subtitle" style="margin-top:0;">Schnellzugriff</div>
-                    <div class="content">Direkt zu den häufig genutzten Bereichen wechseln.</div>
-                    <div class="row content" style="margin-top:12px; flex-wrap:wrap;">
-                        <a class="button" href="#">Übersicht</a>
-                        <a class="button" href="#">Dokumente</a>
-                        <a class="button" href="#">Kontakt</a>
+                @foreach($variants as $v)
+                <section class="panel variant {{ $v['class'] }} stroke">
+                    <div class="panel__head">
+                        <strong class="text-title">{{ $v['label'] }}</strong>
+                        <span class="badge">{{ $v['bgVar'] }} / {{ $v['textVar'] }}</span>
                     </div>
-                    <div class="subcontent note" style="margin-top:8px;">
-                        (secondary / secondaryText, Buttons: button / buttonText, Rahmen: illustrationStroke)
+                    <div class="panel__body">
+                        <div class="img-row">
+                            <img class="thumb" src="/storage/images/motiv.jpg" alt="Motiv {{ $v['label'] }}" loading="lazy">
+                            <div class="stack">
+                                @foreach($textOrder as $cls)
+                                <div class="{{ $cls }}">{{ $textSamples[$cls] }}</div>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </section>
+                @endforeach
             </div>
-        </section>
+        </main>
 
-        <div class="spacer24"></div>
-
-        <section class="grid">
-            <div class="card">
-                <div class="subtitle" style="margin-top:0;">Information</div>
-                <div class="content">
-                    Klare Überschriften, angenehme Fließtexte und dezente Hinweistexte – alles im gewählten Stil.
-                </div>
-                <div class="subcontent" style="opacity:.8; margin-top:8px;">Beispieltext zur Illustration.</div>
-                <div class="subcontent note">(Textfarben: titleColor / contentColor / subcontentColor)</div>
-            </div>
-
-            <div class="card" aria-hidden="true" style="padding:0; overflow:hidden; align-self:start;">
-                <img src="/storage/images/motiv.jpg" alt="Motivbild" class="hero-img">
-                <div class="subcontent" style="padding:10px 12px;">
-                    (Bildrahmen: illustrationStroke)
-                </div>
-            </div>
-        </section>
+        <footer class="text-subcontent">
+            Vorschau • Colorset: {{ $colorsetSlug ?? 'fallback' }}, Fontset: {{ $fontsetSlug ?? 'fallback' }} • {{ now() }}
+        </footer>
     </div>
-
-    <script>
-        // Robust starten – egal ob DOM schon ready ist
-        function startAll() {
-            initFancyPickers().catch(console.error);
-            init().catch(console.error);
-        }
-        if (document.readyState === 'loading') {
-            window.addEventListener('DOMContentLoaded', startAll);
-        } else {
-            startAll();
-        }
-
-        // ---------- Helpers ----------
-        const $ = sel => document.querySelector(sel);
-        const $$ = sel => Array.from(document.querySelectorAll(sel));
-
-        // Colorset-Variablen aus CSS lesen (pro Option) – kein Shadow-Import
-        const colorCssCache = new Map();
-        async function getColorVars(name) {
-            if (colorCssCache.has(name)) return colorCssCache.get(name);
-            const res = await fetch(`/api/css/colors/${encodeURIComponent(name)}.css`, {
-                headers: {
-                    'Accept': 'text/css'
-                }
-            });
-            const css = await res.text();
-            const vars = {};
-            const re = /--([\w-]+)\s*:\s*([^;]+);/g;
-            let m;
-            while ((m = re.exec(css)) !== null) vars[m[1]] = m[2].trim();
-            colorCssCache.set(name, vars);
-            return vars;
-        }
-
-        // Normalize backend response to an array of strings
-        function normalizeList(payload) {
-            const arr = Array.isArray(payload?.data) ? payload.data : (Array.isArray(payload) ? payload : []);
-            return arr.map(it =>
-                (typeof it === 'string') ? it :
-                (it.value ?? it.slug ?? it.id ?? it.code ?? it.name ?? it.title)
-            ).filter(Boolean);
-        }
-
-        // Tell parent (Vue) about the current selection
-        function broadcastState() {
-            try {
-                const u = new URL(location.href);
-                const colorset = u.searchParams.get('colorset') || 'default';
-                const fontset = u.searchParams.get('fontset') || 'default';
-                window.parent?.postMessage({
-                    type: 'color-fontset-selection',
-                    colorset,
-                    fontset
-                }, '*');
-            } catch {}
-        }
-
-        function applyColorPreviewToCard(root, vars) {
-            const pick = (key, fallback = '#ccc') => (vars[key] || fallback);
-            const map = [
-                ['--background', 'background'],
-                ['--main', 'main'],
-                ['--secondary', 'secondary'],
-                ['--tertiary', 'tertiary'],
-                ['--highlight', 'highlight'],
-                ['--button', 'button'],
-            ];
-            root.querySelectorAll('.dot').forEach((el, i) => {
-                const [varName] = map[i];
-                const val = pick(varName.replace(/^--/, ''), '#ccc');
-                el.style.background = val;
-                el.title = `${varName}: ${val}`;
-            });
-            const bars = root.querySelectorAll('.sw');
-            bars.forEach((bar, i) => {
-                const [varName] = map[i];
-                const val = pick(varName.replace(/^--/, ''), '#ccc');
-                bar.style.background = val;
-                bar.title = `${varName}: ${val}`;
-            });
-            const txt = root.querySelector('.font-sample');
-            if (txt) txt.style.color = pick('contentColor', '#333');
-        }
-
-        function closePanel(popSel, panelSel) {
-            const pop = $(popSel);
-            const panel = $(panelSel);
-            panel.hidden = true;
-            pop.querySelector('.trigger')?.setAttribute('aria-expanded', 'false');
-        }
-
-        function closeAllPanels() {
-            $$('.popover-panel').forEach(p => p.hidden = true);
-            $$('.popover .trigger').forEach(b => b.setAttribute('aria-expanded', 'false'));
-        }
-
-        function openPanel(popSel, panelSel) {
-            closeAllPanels();
-            const pop = $(popSel);
-            const panel = $(panelSel);
-            panel.hidden = false;
-            pop.querySelector('.trigger')?.setAttribute('aria-expanded', 'true');
-        }
-
-        function togglePanel(popSel, panelSel) {
-            const panel = $(panelSel);
-            if (panel.hidden) openPanel(popSel, panelSel);
-            else closePanel(popSel, panelSel);
-            if (!panel.hidden) {
-                const off = (e) => {
-                    if (!$(popSel).contains(e.target)) {
-                        closePanel(popSel, panelSel);
-                        document.removeEventListener('click', off);
-                    }
-                };
-                setTimeout(() => document.addEventListener('click', off), 0);
-            }
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeAllPanels();
-        });
-
-        function makeOptionA11y(card, onSelect) {
-            card.setAttribute('tabindex', '0');
-            card.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onSelect();
-                }
-            });
-        }
-
-        // --------- Karten ----------
-        function createColorCard(name) {
-            const card = document.createElement('button');
-            card.type = 'button';
-            card.className = 'opt-card';
-            card.setAttribute('role', 'option');
-            card.setAttribute('aria-label', name);
-
-            const host = document.createElement('div');
-            card.appendChild(host);
-            const root = host.attachShadow({
-                mode: 'open'
-            });
-
-            const style = document.createElement('style');
-            style.textContent = `
-        .dots{ display:flex; gap:4px; align-items:center; }
-        .dot{ width:14px; height:14px; border:1px solid rgba(0,0,0,.2); border-radius:50%; }
-        .swatch-row{ display:grid; grid-template-columns:repeat(6,1fr); gap:6px; margin-top:6px; }
-        .sw{ height:22px; border:1px solid rgba(0,0,0,.15); }
-        .font-sample{ font-size:14px; opacity:.9; margin-top:6px; }
-      `;
-            root.appendChild(style);
-
-            const wrapper = document.createElement('div');
-            wrapper.innerHTML = `
-        <div class="dots">
-          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        </div>
-        <div class="swatch-row" aria-hidden="true">
-          <div class="sw"></div><div class="sw"></div><div class="sw"></div>
-          <div class="sw"></div><div class="sw"></div><div class="sw"></div>
-        </div>
-        <div class="font-sample">Beispieltext</div>
-      `;
-            root.appendChild(wrapper);
-
-            const label = document.createElement('div');
-            label.className = 'opt-name';
-            label.textContent = name;
-            card.appendChild(label);
-
-            // Farben sofort laden/anzeigen
-            getColorVars(name).then(vars => applyColorPreviewToCard(root, vars)).catch(() => {});
-
-            const select = () => {
-                swapCss('colorset-css', `/api/css/colors/${encodeURIComponent(name)}.css`)
-                    .then(() => updateCurrentColorDots()); // nach Lade-Event
-                syncQuery({
-                    colorset: name
-                });
-                document.querySelector('#color-name').textContent = name;
-                closeAllPanels();
-                document.querySelector('#color-pop .trigger')?.focus();
-                broadcastState(); // NEW: inform parent after click selection
-            };
-            card.addEventListener('click', (e) => {
-                e.stopPropagation();
-                select();
-            });
-            makeOptionA11y(card, select);
-            return card;
-        }
-
-        function createFontCard(name) {
-            const card = document.createElement('button');
-            card.type = 'button';
-            card.className = 'opt-card';
-            card.setAttribute('role', 'option');
-            card.setAttribute('aria-label', name);
-
-            const host = document.createElement('div');
-            card.appendChild(host);
-            const root = host.attachShadow({
-                mode: 'open'
-            });
-
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = `/api/css/fontset/${encodeURIComponent(name)}.css`;
-            root.appendChild(link);
-
-            const demo = document.createElement('div');
-            demo.className = 'font-demo';
-            demo.innerHTML = `
-        <div class="font-Aa heroTitle">Aa</div>
-        <div class="font-sample content">Grumpy wizards make toxic brew.</div>
-        <div class="font-sample subcontent">1234567890 — !?@€%&</div>
-      `;
-            root.appendChild(demo);
-
-            const label = document.createElement('div');
-            label.className = 'opt-name';
-            label.textContent = name;
-            card.appendChild(label);
-
-            const select = () => {
-                swapCss('fontset-css', `/api/css/fontset/${encodeURIComponent(name)}.css`);
-                syncQuery({
-                    fontset: name
-                });
-                $('#font-name').textContent = name;
-                closeAllPanels();
-                $('#font-pop .trigger')?.focus();
-                broadcastState(); // NEW: inform parent after click selection
-            };
-            card.addEventListener('click', (e) => {
-                e.stopPropagation();
-                select();
-            });
-            makeOptionA11y(card, select);
-            return card;
-        }
-
-        // ---------- Status / Init ----------
-        function updateCurrentColorDots() {
-            const styles = getComputedStyle(document.documentElement);
-            const map = {
-                '#dot-bg': '--background',
-                '#dot-main': '--main',
-                '#dot-sec': '--secondary',
-                '#dot-ter': '--tertiary',
-                '#dot-hi': '--highlight',
-                '#dot-btn': '--button'
-            };
-            Object.entries(map).forEach(([sel, varName]) => {
-                const v = styles.getPropertyValue(varName).trim();
-                const el = $(sel);
-                if (el) el.style.background = v || '#ccc';
-            });
-        }
-
-        async function initFancyPickers() {
-            const [colorsRaw, fontsRaw] = await Promise.all([getJson('/api/colorsets'), getJson('/api/fontsets')]);
-            const colors = normalizeList(colorsRaw);
-            const fonts = normalizeList(fontsRaw);
-
-            const cPanel = $('#color-panel');
-            colors.forEach(n => cPanel.appendChild(createColorCard(n)));
-            const fPanel = $('#font-panel');
-            fonts.forEach(n => fPanel.appendChild(createFontCard(n)));
-
-            $('#color-pop .trigger').addEventListener('click', () => togglePanel('#color-pop', '#color-panel'));
-            $('#font-pop  .trigger').addEventListener('click', () => togglePanel('#font-pop', '#font-panel'));
-
-            closeAllPanels();
-            updateCurrentColorDots();
-            broadcastState(); // announce initial state to parent
-        }
-
-        // ---- Utilities / bestehend ----
-        const qs = (k, d) => new URL(location.href).searchParams.get(k) ?? d;
-
-        async function getJson(url) {
-            const r = await fetch(url, {
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
-            if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + url);
-            return r.json();
-        }
-
-        function cacheBust(url) {
-            const u = new URL(url, location.origin);
-            u.searchParams.set('v', Date.now());
-            return u.toString();
-        }
-
-        // Warten bis CSS-Link geladen ist (für zuverlässige Dots)
-        function swapCss(id, href) {
-            return new Promise((resolve) => {
-                const link = document.getElementById(id);
-                const newHref = cacheBust(href);
-                if (link.getAttribute('href') === newHref) {
-                    resolve();
-                    return;
-                }
-                const done = () => {
-                    link.removeEventListener('load', done);
-                    link.removeEventListener('error', done);
-                    resolve();
-                };
-                link.addEventListener('load', done, {
-                    once: true
-                });
-                link.addEventListener('error', done, {
-                    once: true
-                });
-                link.setAttribute('href', newHref);
-            });
-        }
-
-        function syncQuery(p) {
-            const u = new URL(location.href);
-            Object.entries(p).forEach(([k, v]) => u.searchParams.set(k, v));
-            history.replaceState(null, '', u);
-        }
-
-        async function fillSelect(id, items, current) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            el.innerHTML = '';
-            items.forEach(n => {
-                const o = document.createElement('option');
-                o.value = n;
-                o.textContent = n;
-                if (n === current) o.selected = true;
-                el.appendChild(o);
-            });
-            return el;
-        }
-
-        async function init() {
-            const [colorsRaw, fontsRaw] = await Promise.all([getJson('/api/colorsets'), getJson('/api/fontsets')]);
-            const colors = normalizeList(colorsRaw);
-            const fonts = normalizeList(fontsRaw);
-
-            const colorNow = colors.includes(qs('colorset', '{{ $color }}')) ? qs('colorset', '{{ $color }}') : (colors[0] ?? 'default');
-            const fontNow = fonts.includes(qs('fontset', '{{ $font }}')) ? qs('fontset', '{{ $font }}') : (fonts[0] ?? 'default');
-
-            const palette = await fillSelect('palette', colors, colorNow);
-            const fontset = await fillSelect('fontset', fonts, fontNow);
-
-            syncQuery({
-                colorset: colorNow,
-                fontset: fontNow
-            });
-            broadcastState(); // also after syncing URL
-
-            palette?.addEventListener('change', () => {
-                swapCss('colorset-css', `/api/css/colors/${encodeURIComponent(palette.value)}.css`)
-                    .then(() => updateCurrentColorDots());
-                syncQuery({
-                    colorset: palette.value
-                });
-                broadcastState(); // inform parent
-            });
-            fontset?.addEventListener('change', () => {
-                swapCss('fontset-css', `/api/css/fontset/${encodeURIComponent(fontset.value)}.css`);
-                syncQuery({
-                    fontset: fontset.value
-                });
-                broadcastState(); // inform parent
-            });
-        }
-    </script>
 </body>
 
 </html>

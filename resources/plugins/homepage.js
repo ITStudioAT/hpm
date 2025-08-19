@@ -4,8 +4,10 @@ import { createVuetify } from 'vuetify'
 const lightTheme = {
     dark: false,
     colors: {
+      /*
         // Main brand color for buttons, links, highlights
-        primary: '#3949AB',         // indigo.darken1
+        primary: '#ff0000',         // indigo.darken1
+          
         // Used for secondary buttons, cards, less emphasis
         secondary: '#B0BEC5',       // blue-grey.lighten3
         // Optional highlight or accent tone
@@ -20,13 +22,14 @@ const lightTheme = {
         success: '#00897B',         // teal.darken1
         // For errors, alerts
         error: '#E53935',           // red.darken1
+        */
     },
 }
 
 const darkTheme = {
     dark: true,
     colors: {
-
+/*
         // Main brand color for buttons, links, highlights
         primary: '#7986CB',         // indigo.lighten2
         // Used for secondary buttons, cards, less emphasis
@@ -43,11 +46,13 @@ const darkTheme = {
         success: '#4DB6AC',         // teal.lighten2
         // For errors, alerts
         error: '#EF5350',           // red.lighten2
+        */
     },
 }
 
 export default createVuetify({
     theme: {
+        /*
         defaultTheme: 'light',
         variations: {
             colors: ['primary', 'secondary', 'accent', 'background', 'surface', 'text', 'success', 'error'],
@@ -58,7 +63,7 @@ export default createVuetify({
             light: lightTheme, // Use your custom theme here
             dark: darkTheme, // Use your custom theme here
         },
-
+*/
     },
 
 })

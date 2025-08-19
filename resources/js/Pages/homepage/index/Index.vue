@@ -1,81 +1,54 @@
 <template>
-    <v-container fluid class="h-100 w-100 d-flex flex-column align-center justify-center">
+    <v-layout ref="app" min-height="100vh">
+        <!--
+        <v-app-bar color="hightlight" name="app-bar">
 
-        <div>
-            <div class="heroTitle">Das ist der Titel </div>
-            <div class="heroLead">Das ist der Unteritel</div>
-
-            <div class="title">Das ist der Titel </div>
-            <div class="subtitle">Das ist der Unteritel</div>
-            <div class="content">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur asperiores provident maxime at quam
-                aspernatur
-                numquam culpa esse voluptas. Laudantium reprehenderit minima dolore eum? Hic nam impedit ratione quod
-                consequuntur? Illum quae sed perferendis distinctio error vero doloribus nostrum ipsam, praesentium
-                facere
-                ex
-                totam alias adipisci at quod nulla in obcaecati voluptatum aliquid quo optio fugit. Obcaecati eius
-                minima
-                suscipit, optio minus voluptates saepe. Ut commodi ea aperiam animi fugiat harum itaque expedita modi
-                magni
-                tenetur magnam maiores exercitationem rerum dignissimos temporibus voluptatum nulla quam, iste quia
-                repudiandae
-                laudantium. Qui expedita pariatur aspernatur quaerat adipisci aliquid asperiores suscipit accusantium
-                mollitia.
-            </div>
-            <div class="subcontent">Das ist eine ergänzende Bemerkung</div>
-        </div>
-
-
-        <div style="max-width: 500px;">
-            <div class="heroTitle">Das ist der Titel </div>
-            <div class="heroLead">Das ist der Unteritel</div>
-
-            <div class="title">Das ist der Titel </div>
-            <div class="subtitle">Das ist der Unteritel</div>
-            <div class="content">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur asperiores provident maxime at quam
-                aspernatur
-                numquam culpa esse voluptas. Laudantium reprehenderit minima dolore eum? Hic nam impedit ratione quod
-                consequuntur? Illum quae sed perferendis distinctio error vero doloribus nostrum ipsam, praesentium
-                facere
-                ex
-                totam alias adipisci at quod nulla in obcaecati voluptatum aliquid quo optio fugit. Obcaecati eius
-                minima
-                suscipit, optio minus voluptates saepe. Ut commodi ea aperiam animi fugiat harum itaque expedita modi
-                magni
-                tenetur magnam maiores exercitationem rerum dignissimos temporibus voluptatum nulla quam, iste quia
-                repudiandae
-                laudantium. Qui expedita pariatur aspernatur quaerat adipisci aliquid asperiores suscipit accusantium
-                mollitia.
-            </div>
-            <div class="subcontent">Das ist eine ergänzende Bemerkung</div>
-        </div>
-
-
-        <div class="mt-10">
-            {{ homepage }}
-        </div>
+        </v-app-bar>
+        -->
 
 
 
 
-    </v-container>
+        <v-main class="background">
+            <v-container class="h-100 d-flex flex-column align-center justify-center main">
+                <div>Text im Main</div>
+                <div class="heroTitle">HeroTitle</div>
+                <div class="heroLead">HeroLead</div>
+
+                <div class="first">
+                    <div class="heroTitle">HeroTitle bg-first</div>
+                    <div class="heroLead">HeroLead bg-first</div>
+                </div>
+
+                <div class="second">
+                    <div class="heroTitle">HeroTitle bg-second</div>
+                    <div class="heroLead">HeroLead bg-second</div>
+                </div>
+
+                <div class="third">
+                    <div class="heroTitle">HeroTitle bg-second</div>
+                    <div class="heroLead">HeroLead bg-second</div>
+                </div>
+
+
+
+            </v-container>
+        </v-main>
+        <!--
+        <v-footer color="surface-light" name="footer" app>
+            Footer
+        </v-footer>
+        -->
+    </v-layout>
 </template>
+
 <script>
 import { mapWritableState } from "pinia";
 import { useHomepageStore } from "@/stores/homepage/HomepageStore";
 
 export default {
-
-    components: {},
-
     async beforeMount() {
         this.homepageStore = useHomepageStore();
-    },
-
-
-    unmounted() {
     },
 
     data() {
@@ -84,16 +57,9 @@ export default {
         };
     },
 
-
     computed: {
-        ...mapWritableState(useHomepageStore, ['homepage', 'fontTitle', 'fontSubtitle', 'fontContent', 'fontSubcontent']),
+        // Kept for debugging; typography comes from CSS classes (.heroTitle, .content, ...)
+        ...mapWritableState(useHomepageStore, ["homepage"]),
     },
-
-    methods: {
-
-
-
-    }
-
-}
+};
 </script>

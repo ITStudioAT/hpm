@@ -34,16 +34,8 @@
         <Basics :homepage="homepage" v-if="action == 'basics'" @abort="action = 'overview'" @save="action = 'overview'">
         </Basics>
 
-        <v-sheet width="1280" height="1024" color="accent">
-            <div class="text-h5">Preview</div>
-            <div>DATA:</div>
-            <div>{{ data }}</div>
-            <div>HOMEPAGE:</div>
-            <div>{{ homepage }}</div>
-        </v-sheet>
 
         <v-row class="w-100" no-gutters>
-            <v-col cols="12" md="6" lg="4" xl="3">HALLO </v-col>
             <v-col cols="12" md="6" lg="4" xl="3"> {{ homepage }} </v-col>
         </v-row>
     </v-container>

@@ -17,7 +17,6 @@ Route::middleware(['api'])->group(function () {
     // Dynamic CSS serving
 
     Route::get('css/fontset/{slug}.css', [\App\Http\Controllers\Homepage\FontsetController::class, 'serve']);
-
     Route::get('/css/colors/{slug}.css', [\App\Http\Controllers\Homepage\ColorsetController::class, 'css']);
 });
 // Globales Throttle

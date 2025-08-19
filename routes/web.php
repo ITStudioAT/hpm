@@ -52,18 +52,11 @@ Route::middleware(['throttle:global', 'throttle:web', 'web-allowed'])->group(fun
         return view('spa::application');
     })->where('any', '.*');
 
-    /* HOMEPAGE ROUTES 
-    Route::get('/', function () {
-        return view('spa::homepage');
-    });
-    */
-
-    /*  ROUTES */
 
 
 
 
     Route::get('/{any?}', function () {
-        return view('spa::homepage');
+        return view('homepage');
     });
 });

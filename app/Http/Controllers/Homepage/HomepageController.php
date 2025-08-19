@@ -21,7 +21,7 @@ class HomepageController extends Controller
         $preview = $request->validated()['preview'] ?? null;
         if ($preview !== null && !$this->userHasRole(['admin'])) abort(403);
 
-        $homepage = Homepage::findOrFail($preview ?? 7);
+        $homepage = Homepage::findOrFail($preview ?? 1);
 
         $fontset = data_get($homepage->structure, 'fonts.fontType', 'default');
 
