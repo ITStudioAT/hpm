@@ -34,10 +34,6 @@
         <Basics :homepage="homepage" v-if="action == 'basics'" @abort="action = 'overview'" @save="action = 'overview'">
         </Basics>
 
-
-        <v-row class="w-100" no-gutters>
-            <v-col cols="12" md="6" lg="4" xl="3"> {{ homepage }} </v-col>
-        </v-row>
     </v-container>
 </template>
 
