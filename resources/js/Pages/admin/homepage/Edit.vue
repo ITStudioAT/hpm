@@ -10,13 +10,12 @@
 
         <!-- Menüleiste oben -->
         <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
-            <its-menu-button title="Zurück" icon="mdi-arrow-left" color="secondary" to="/admin/homepage" />
+            <its-menu-button title="Auswahl" icon="mdi-arrow-left" color="secondary" to="/admin/homepage" />
 
-            <its-menu-button title="Übersicht" icon="mdi-view-grid-outline"
+            <its-menu-button title="Homepage" icon="mdi-view-grid-outline"
                 :color="action == 'overview' ? 'primary' : 'secondary'" @click="action = 'overview'" />
 
-            <its-menu-button title="Vorschau" icon="mdi-web" @click="action = 'preview'"
-                :color="action == 'previéw' ? 'primary' : 'secondary'" />
+
 
             <its-menu-button title="Basics" icon="mdi-cog" :color="action == 'basics' ? 'primary' : 'secondary'"
                 @click="action = 'basics'" />
@@ -29,7 +28,12 @@
 
             <its-menu-button title="Fußzeile" icon="mdi-page-layout-footer"
                 :color="action == 'footer' ? 'primary' : 'secondary'" @click="action = 'footer'" />
+
+            <its-menu-button title="Vorschau" icon="mdi-web" @click="action = 'preview'"
+                :color="action == 'previéw' ? 'primary' : 'secondary'" />
         </v-row>
+
+
 
         <Basics :homepage="homepage" v-if="action == 'basics'" @abort="action = 'overview'" @save="action = 'overview'">
         </Basics>

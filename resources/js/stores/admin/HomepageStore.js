@@ -7,6 +7,7 @@ export const useHomepageStore = defineStore("AdminHomepageStore", {
     state: () => ({
         homepages: [],
         homepage: null,
+        homepage_copy: null,
         data: null,
 
     }),

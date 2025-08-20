@@ -20,7 +20,8 @@
             <v-col cols="12" sm="4" md="3" xl="2">
 
                 <!-- OVERVIEW -->
-                <v-card title="Ausgewählte Homepage" color="primary" variant="tonal" v-if="action === 'overview'">
+                <v-card variant="tonal" v-if="action === 'overview'">
+                    <!-- Auswahl, wenn keine Homepage gewählt ist -->
                     <v-card-text v-if="!homepage">
                         <div>Keine Homepage ausgewählt.</div>
                         <div>Bitte wählen Sie eine Homepage zur Bearbeitung aus.</div>
@@ -32,15 +33,18 @@
                             </v-list-item>
                         </v-list>
                     </v-card-text>
-                    <v-card-text v-if="homepage">
-                        {{ homepage.name }}
+
+                    <!-- Anzeige Homepage, falls eine gewählt ist -->
+                    <v-card-text v-if="homepage" class="bg-primary h-100 d-flex align-center justify-center">
+                        <div class="text-body-1 font-weight-medium">{{ homepage.name }}</div>
+
                     </v-card-text>
                     <v-card-actions v-if="homepage">
                         <v-row v-if="action_2 === ''">
                             <!-- overview: action_2 == '': Standardauswahl -->
                             <v-col cols="6">
                                 <v-btn block prepend-icon="mdi-select-remove" @click="homepage = null"
-                                    variant="tonal">Übersicht</v-btn>
+                                    variant="tonal">Alle</v-btn>
                             </v-col>
                             <v-col cols="6">
                                 <v-btn block prepend-icon="mdi-rename" @click="action_2 = 'rename'"
@@ -105,6 +109,18 @@
 
             </v-col>
         </v-row>
+        <v-row>
+            <v-col>
+                HP:
+                {{ homepage }}
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                HP_COPY:
+                {{ homepage_copy }}
+            </v-col>
+        </v-row>
 
     </v-container>
 </template>
@@ -141,12 +157,11 @@ export default {
             action: "overview",
             action_2: "",
             is_valid: false,
-            homepage_copy: null,
         };
     },
 
     computed: {
-        ...mapWritableState(useHomepageStore, ["homepages", "homepage", "data"]),
+        ...mapWritableState(useHomepageStore, ["homepages", "homepage", "homepage_copy", "data"]),
     },
 
     methods: {
@@ -182,7 +197,6 @@ export default {
 
         async loadHomepages() {
             await this.homepageStore.loadHomepages();
-
         },
 
 
