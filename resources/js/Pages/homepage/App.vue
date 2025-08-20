@@ -1,16 +1,10 @@
 <template>
     <v-app>
 
-        <main v-if="appReady">
-                               <div>
-           C:  {{  homepage?.structure?.colors?.colorset }}
-        </div>
+        <main style="min-height: 100vh;" class="background" v-if="appReady">
             <router-view />
             <its-notification />
- 
         </main>
-
-
 
 
         <!-- Es wird aktuell etwas geladen-->
