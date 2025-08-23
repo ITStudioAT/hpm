@@ -1,0 +1,119 @@
+* {
+    font-family: 'Roboto', sans-serif;
+}
+
+:root {
+    --mm-primary: #3949AB;
+    --mm-secondary: #B0BEC5;
+    --mm-accent: #18FFFF;
+    --mm-background: #FAFAFA;
+    --mm-surface: #FFFFFF;
+    --mm-text: #424242;
+    --mm-success: #00897B;
+    --mm-error: #E53935;
+
+    --mm-bg-color-folder: #FFEA00;
+    --mm-text-color-folder: #37474F;
+    --mm-border-folder: 3px solid #FBC02D;
+    --mm-icon-color-folder: #FBC02D;
+
+    --mm-file-color: #FBC02D;
+    --mm-video-color: #1E88E5;
+    --mm-image-color: #3F51B5;
+    --mm-pdf-color: #E53935;
+    --mm-word-color: #2B579A;
+    --mm-excel-color: #217346;
+    --mm-powerpoint-color: #D24726;
+    --mm-access-color: #A4373A;
+    --mm-publisher-color: #217346;
+}
+
+
+/* Folder color classes */
+.mm-bg-folder {
+    background-color: var(--mm-bg-color-folder) !important;
+}
+
+.mm-text-folder {
+    color: var(--mm-text-color-folder) !important;
+}
+
+.mm-border-folder {
+    border: var(--mm-border-folder) !important;
+}
+
+.mm-icon-folder {
+    color: var(--mm-icon-color-folder) !important;
+}
+
+/* Background color classes */
+.mm-bg-primary {
+    background-color: var(--mm-primary) !important;
+}
+
+.mm-bg-secondary {
+    background-color: var(--mm-secondary) !important;
+}
+
+.mm-bg-accent {
+    background-color: var(--mm-accent) !important;
+}
+
+.mm-bg-background {
+    background-color: var(--mm-background) !important;
+}
+
+.mm-bg-surface {
+    background-color: var(--mm-surface) !important;
+}
+
+.mm-bg-text {
+    background-color: var(--mm-text) !important;
+}
+
+.mm-bg-success {
+    background-color: var(--mm-success) !important;
+}
+
+.mm-bg-error {
+    background-color: var(--mm-error) !important;
+}
+
+/* Text color classes */
+.mm-text-primary {
+    color: var(--mm-primary) !important;
+}
+
+.mm-text-secondary {
+    color: var(--mm-secondary) !important;
+}
+
+.mm-text-accent {
+    color: var(--mm-accent) !important;
+}
+
+.mm-text-background {
+    color: var(--mm-background) !important;
+}
+
+.mm-text-surface {
+    color: var(--mm-surface) !important;
+}
+
+.mm-text-text {
+    color: var(--mm-text) !important;
+}
+
+.mm-text-success {
+    color: var(--mm-success) !important;
+}
+
+.mm-text-error {
+    color: var(--mm-error) !important;
+}
+
+
+
+.mm-hover {
+    cursor: pointer;
+}

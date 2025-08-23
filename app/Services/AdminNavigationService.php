@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Traits\HasRoleTrait;
+use Illuminate\Support\Facades\Auth;
 
 class AdminNavigationService
 {
@@ -13,11 +14,11 @@ class AdminNavigationService
     public function dashboardMenu(): array
     {
         $menu = [];
-        if (! auth()->check()) {
+        if (! Auth::check()) {
             return [];
         }
 
-        $user = User::findOrFail(auth()->user()->id);
+        $user = User::findOrFail(Auth::user()->id);
         $user_name = substr($user->last_name . ' ' . $user->first_name, 0, 17);
 
         $menu[] = ['title' => 'Home', 'icon' => 'mdi-home', 'to' => '/admin'];
@@ -31,6 +32,11 @@ class AdminNavigationService
         // HOMEPAGE
         if ($this->userHasRole(['admin'])) {
             $menu[] = ['title' => 'Homepage', 'icon' => 'mdi-domain', 'to' => '/admin/homepage'];
+        }
+
+        // MEDIAMANAGER
+        if ($this->userHasRole(['mediamanager_admin'])) {
+            $menu[] = ['title' => 'Mediamanager', 'icon' => 'mdi-domain', 'to' => '/admin/mm'];
         }
 
         // BENUTZER ALS admin

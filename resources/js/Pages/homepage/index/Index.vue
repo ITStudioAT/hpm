@@ -1,12 +1,27 @@
 <template>
 
 
-    <v-app-bar color="primary" density="comfortable" scroll-behavior="elevate" image="/storage/images/motiv.jpg">
-        <v-app-bar-title>My App</v-app-bar-title>
+
+
+
+
+    <v-app-bar color="primary" density="comfortable" scroll-behavior="elevate">
+
     </v-app-bar>
+    <div style="position:relative;">
+        <div class="bg-green w-100"
+            style="height:500px; background-image: url(storage/images/motiv.jpg); background-size: cover; background-position: 00px -900px;">
+        </div>
+
+        <div style="position: absolute; top:200px; left: 0px;" class="heroTitle">HELLO</div>
+
+
+    </div>
+
+
 
     <v-main>
-        <v-container class="h-100 d-flex flex-column align-center justify-center main">
+        <v-container class=" h-100 d-flex flex-column align-center justify-center main">
             <div>Text im Main</div>
             <div class="heroTitle">HeroTitle</div>
             <div class="heroLead">HeroLead</div>

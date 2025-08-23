@@ -1,4 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
+
+import mediaRoutes from '../vendor/mediamanager/routes/routes'
+
 import Index from '@/pages/admin/index/Index.vue'
 import Auth_Login from '@/pages/admin/auth/Login.vue'
 import Auth_UnknownPassword from '@/pages/admin/auth/UnknownPassword.vue'
@@ -20,6 +23,7 @@ import Preview from '@/pages/admin/preview/Index.vue'
 
 
 const routes = [
+    ...mediaRoutes,
     { path: '/admin', component: Index },
     { path: '/admin/login', component: Auth_Login },
     { path: '/admin/unknown_password', component: Auth_UnknownPassword },
