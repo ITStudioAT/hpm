@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid class="ma-0 w-100 pa-2">
+    <v-container fluid class="ma-0 w-100 pa-2" v-if="is_ready">
         <v-row class="w-100 mb-2" no-gutters>
             <v-col>
                 <div class="bg-primary pa-2 text-h5">Basics</div>
@@ -142,22 +142,24 @@
                     </v-card>
                 </v-col>
 
-
             </v-row>
-            <v-row v-if="previewsReady">
+            <v-row>
                 <v-col cols="12" md="8">
                     <div class="mb-2 font-weight-medium">Desktop</div>
-                    <ThemeLivePreview :component="ThemeLiveRaw" :componentProps="themeProps" :width="1200" :height="800"
-                        :force="previewNonce" />
+                    <iframe :key="reloadKey" src="/homepage/example/colors_and_fonts" title="Example website"
+                        loading="lazy" style="width:1200px; height:800px; border:1;"
+                        referrerpolicy="no-referrer-when-downgrade" allow="fullscreen; clipboard-read; clipboard-write">
+                    </iframe>
                 </v-col>
 
                 <v-col cols="12" md="4">
                     <div class="mb-2 font-weight-medium">Handy</div>
-                    <ThemeLivePreview :component="ThemeLiveRaw" :componentProps="themeProps" :width="390" :height="800"
-                        :force="previewNonce" />
+                    <iframe :key="reloadKey" src="/homepage/example/colors_and_fonts" title="Example website"
+                        loading="lazy" style="width:390px; height:800px; border:1;"
+                        referrerpolicy="no-referrer-when-downgrade" allow="fullscreen; clipboard-read; clipboard-write">
+                    </iframe>
                 </v-col>
             </v-row>
-
         </v-form>
     </v-container>
 </template>
@@ -174,6 +176,7 @@ import ItsMenuButton from "@/pages/components/ItsMenuButton.vue";
 import { useThemePreview } from "../components/useThemePreview";
 import ThemeLivePreview from "../components/ThemeLivePreview.vue";
 import ThemeLive from "../components/ThemeLive.vue";
+import { STRUCTURE_DEFAULTS } from '@/constants/homepageDefaults'
 
 /** Farben-Swatches (unverändert) */
 const _colorsetCssCache = new Map();
@@ -240,8 +243,9 @@ export default {
             this.fetchChoices(),
         ]);
 
-        const def = { colors: { colorset: "" }, fonts: { fontset: "" } };
+        const def = STRUCTURE_DEFAULTS;
         this.data = { ...this.homepage, structure: deepMergeDefaults(this.homepage.structure ?? {}, def) };
+        this.data_90 = { ...this.homepage, structure: deepMergeDefaults(this.homepage.structure ?? {}, def) };
 
         if (!this.data.structure.fonts.fontset) this.data.structure.fonts.fontset = "default";
         if (!this.data.structure.colors.colorset) this.data.structure.colors.colorset = "default";
@@ -263,6 +267,8 @@ export default {
         this._debouncedFonts = this.previewApi.debounce(async (slug) => {
             this.fontMini = await this.previewApi.getFontsetPreview(slug || "default");
         }, 150);
+
+        this.is_ready = true;
 
     },
 
@@ -292,10 +298,14 @@ export default {
             },
             previewsReady: false,
             previewNonce: 0,
+            data_90: null,
+            reloadKey: 0,
+            is_ready: false,
         };
     },
 
     computed: {
+        ...mapWritableState(useAdminStore, ["is_loading"]),
         ...mapWritableState(useHomepageStore, ["data"]),
         ...mapWritableState(useFontsetStore, ["fontsets"]),
         ...mapWritableState(useColorsetStore, ["colorsets"]),
@@ -344,8 +354,21 @@ export default {
     },
 
     methods: {
-        async onColorsetChanged(v) { this.data.structure.colors.colorset = v || "default"; },
-        async onFontsetChanged(v) { this.data.structure.fonts.fontset = v || "default"; },
+        async onColorsetChanged(v) {
+            this.data.structure.colors.colorset = v || "default";
+            this.is_loading++;
+            await this.homepageStore.saveHomepage(this.data);
+            this.reloadKey++;
+            this.is_loading--;
+
+        },
+        async onFontsetChanged(v) {
+            this.data.structure.fonts.fontset = v || "default";
+            this.is_loading++;
+            awaitthis.homepageStore.saveHomepage(this.data);
+            this.reloadKey++;
+            this.is_loading--;
+        },
 
         async updateMiniColors() {
             this.mini = await this.previewApi.getColorsetPreview(this.currentColorset || "default");
@@ -380,7 +403,10 @@ export default {
         },
 
         uniqueByValue(items) { const seen = new Set(); return items.filter(x => (seen.has(x.value) ? false : (seen.add(x.value), true))); },
-        abort() { this.data = null; this.$emit("abort"); },
+        async abort() {
+            await this.homepageStore.saveHomepage(this.data_90);
+            this.data = null; this.$emit("abort");
+        },
         async save() { await this.homepageStore.saveHomepage(this.data); this.$emit("save"); },
 
         prettyLabel(slug) {

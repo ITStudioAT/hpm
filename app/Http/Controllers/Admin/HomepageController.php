@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Homepage;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DeleteHomepageRequest;
+use App\Http\Requests\Admin\LoadRecordRequest;
 use App\Http\Requests\Admin\SaveHomepageRequest;
-use App\Http\Resources\Admin\HomepageResource;
+use App\Http\Requests\Admin\SaveRecordRequest;
 use App\Http\Requests\Admin\ShowHomepageRequest;
+use App\Http\Resources\Admin\HomepageResource;
+use App\Http\Resources\Admin\RecordResource;
+use App\Models\Homepage;
 use App\Services\HomepageService;
+use Illuminate\Http\Request;
 
 class HomepageController extends Controller
 {
@@ -20,7 +23,7 @@ class HomepageController extends Controller
             abort(403, 'Sie haben keine Berechtigung');
         }
 
-        $homepages = Homepage::where('type', 'index')
+        $homepages = Homepage::where('type', 'homepage')
             ->orderBy('name', 'desc')
             ->get();
 
@@ -36,8 +39,25 @@ class HomepageController extends Controller
         }
 
         $homepage = Homepage::findOrFail($request->id);
+        if ($homepage->type !== 'homepage') abort(406, "Keine korrekte Anforderung einer Homepage");
 
         return response()->json(new HomepageResource($homepage), 200);
+    }
+
+    public function loadRecord(LoadRecordRequest $request)
+    {
+
+        if (! $auth_user = $this->userHasRole(['admin'])) {
+            abort(403, 'Sie haben keine Berechtigung');
+        }
+
+        $homepage = Homepage::findOrFail($request->homepage_id);
+        if ($homepage->type !== 'homepage') abort(406, "Keine korrekte Anforderung einer Homepage");
+
+        $record = Homepage::findOrFail($request->record_id);
+        if ($record->homepage_id != $homepage->id) abort(406, "Keine korrekte Anforderung einer Seite einer Homepage");
+
+        return response()->json(new RecordResource($record), 200);
     }
 
 
@@ -56,9 +76,24 @@ class HomepageController extends Controller
         return response()->json(new HomepageResource($homepage), 200);
     }
 
-    public function createHomepage(Request $request)
+
+    public function saveRecord(SaveRecordRequest $request)
     {
 
+        if (! $auth_user = $this->userHasRole(['admin'])) {
+            abort(403, 'Sie haben keine Berechtigung');
+        }
+
+        $recordData = $request->record;
+
+        $record = Homepage::findOrFail($recordData['id']);
+        $record->update($recordData);
+
+        return response()->json(new RecordResource($record), 200);
+    }
+
+    public function createHomepage(Request $request)
+    {
         if (! $auth_user = $this->userHasRole(['admin'])) {
             abort(403, 'Sie haben keine Berechtigung');
         }

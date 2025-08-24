@@ -53,8 +53,9 @@ Route::middleware(['throttle:global', 'throttle:web', 'web-allowed'])->group(fun
     })->where('any', '.*');
 
 
-
-
+    Route::get('/homepage/example/{any?}', function () {
+        return view('homepage');
+    });
 
     Route::get('/{any?}', function () {
         return view('homepage');

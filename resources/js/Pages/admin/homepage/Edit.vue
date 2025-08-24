@@ -20,6 +20,9 @@
             <its-menu-button title="Basics" icon="mdi-cog" :color="action == 'basics' ? 'primary' : 'secondary'"
                 @click="action = 'basics'" />
 
+            <its-menu-button title="Startseite" icon="mdi-airplane-landing"
+                :color="action == 'landing_page' ? 'primary' : 'secondary'" @click="action = 'landing_page'" />
+
             <its-menu-button title="Kopfzeile" icon="mdi-page-layout-header"
                 :color="action == 'header' ? 'primary' : 'secondary'" @click="action = 'header'" />
 
@@ -35,8 +38,15 @@
 
 
 
-        <Basics :homepage="homepage" v-if="action == 'basics'" @abort="action = 'overview'" @save="action = 'overview'">
-        </Basics>
+        <Basics :homepage="homepage" v-if="action == 'basics'" @abort="action = 'overview'"
+            @save="action = 'overview'" />
+
+        <LandingPage :homepage="homepage" v-if="action == 'landing_page'" @abort="action = 'overview'"
+            @save="action = 'overview'" />
+
+        <Header :homepage="homepage" v-if="action == 'header'" @abort="action = 'overview'"
+            @save="action = 'overview'" />
+
 
     </v-container>
 </template>
@@ -47,12 +57,15 @@ import { useAdminStore } from "@/stores/admin/AdminStore";
 import { useNavigationStore } from "@/stores/admin/NavigationStore";
 import { useHomepageStore } from "@/stores/admin/HomepageStore";
 import Basics from "./forms/Basics.vue";
+import LandingPage from "./forms/LandingPage.vue";
+import Header from "./forms/Header.vue";
+
 
 import ItsMenuButton from "@/pages/components/ItsMenuButton.vue";
 import ItsGridBox from "@/pages/components/ItsGridBox.vue";
 
 export default {
-    components: { ItsMenuButton, ItsGridBox, Basics },
+    components: { ItsMenuButton, ItsGridBox, Basics, Header, LandingPage },
 
     async beforeMount() {
         this.adminStore = useAdminStore();

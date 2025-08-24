@@ -7,8 +7,9 @@ return [
         '/admin/login' => [],
         '/admin/register' => [],
         '/admin/unknown_password' => [],
+        '/admin/font-preview' => [],
 
         // new entries detected
-        '/admin/font-preview' => [],
+        '/admin/color-fontset-preview' => [],
     ]
 ];

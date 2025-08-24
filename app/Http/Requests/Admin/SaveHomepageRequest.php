@@ -26,7 +26,7 @@ class SaveHomepageRequest extends FormRequest
             'homepage.id' => ['required', 'integer', 'exists:homepages,id'],
             'homepage.name' => ['required', 'string', 'max:255'],
             'homepage.type' => ['required', 'string', 'max:255'],
-            'homepage.path' => ['required', 'string', 'max:255'],
+            'homepage.path' => ['nullable', 'string', 'max:255'],
             // structure can be nullable, adjust as needed
             'homepage.structure' => ['nullable'],
         ];

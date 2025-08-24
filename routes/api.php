@@ -68,9 +68,14 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
     Route::middleware(['auth:sanctum', 'api-allowed:admin'])->group(function () {
         Route::get('/admin/homepage/index',  [\App\Http\Controllers\Admin\HomepageController::class, 'loadHomepages']);
         Route::get('/admin/homepage/load_homepage',  [\App\Http\Controllers\Admin\HomepageController::class, 'loadHomepage']);
+        Route::get('/admin/homepage/load_record',  [\App\Http\Controllers\Admin\HomepageController::class, 'loadRecord']);
         Route::post('/admin/homepage/create',  [\App\Http\Controllers\Admin\HomepageController::class, 'createHomepage']);
         Route::post('/admin/homepage/delete',  [\App\Http\Controllers\Admin\HomepageController::class, 'deleteHomepage']);
         Route::post('/admin/homepage/save',  [\App\Http\Controllers\Admin\HomepageController::class, 'saveHomepage']);
+        Route::post('/admin/homepage/save_record',  [\App\Http\Controllers\Admin\HomepageController::class, 'saveRecord']);
+
+
+
 
 
 

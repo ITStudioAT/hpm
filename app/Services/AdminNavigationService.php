@@ -13,6 +13,8 @@ class AdminNavigationService
     /* MENÜ AUF DER LINKEN SEITE */
     public function dashboardMenu(): array
     {
+
+
         $menu = [];
         if (! Auth::check()) {
             return [];

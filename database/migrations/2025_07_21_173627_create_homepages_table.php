@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('homepages', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('homepage_id')->nullable();
             $table->string('name')->nullable();
             $table->string('path')->nullable();
             $table->string('type')->nullable();

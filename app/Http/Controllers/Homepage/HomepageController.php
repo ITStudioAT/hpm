@@ -21,7 +21,14 @@ class HomepageController extends Controller
         $preview = $request->validated()['preview'] ?? null;
         if ($preview !== null && !$this->userHasRole(['admin'])) abort(403);
 
-        $homepage = Homepage::findOrFail($preview ?? 1);
+        if ($preview) {
+            $homepage = Homepage::findOrFail($preview);
+        } else {
+            $homepage = Homepage::where('type', 'homepage')->first();
+        }
+
+
+        if (!$homepage) abort(406, "Es konnte keine Homepage gefunden werden.");
 
         $fontset = data_get($homepage->structure, 'fonts.fontType', 'default');
 
@@ -30,6 +37,7 @@ class HomepageController extends Controller
         $version = is_file($path) ? filemtime($path) : time();
 
         // Either return just the version...
+
         return response()->json([
             'data' => new HomepageResource($homepage),
             'meta' => [
@@ -37,5 +45,8 @@ class HomepageController extends Controller
                 'fontVersion' => $version,
             ],
         ]);
+
+
+        // return response()->json(new HomepageResource($homepage));
     }
 }

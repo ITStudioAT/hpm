@@ -1,23 +1,9 @@
 <template>
 
 
-
-
-
-
-    <v-app-bar color="primary" density="comfortable" scroll-behavior="elevate">
-
+    <v-app-bar color="primary" density="comfortable" flat scroll-behavior="hide">
+        APPBAR
     </v-app-bar>
-    <div style="position:relative;">
-        <div class="bg-green w-100"
-            style="height:500px; background-image: url(storage/images/motiv.jpg); background-size: cover; background-position: 00px -900px;">
-        </div>
-
-        <div style="position: absolute; top:200px; left: 0px;" class="heroTitle">HELLO</div>
-
-
-    </div>
-
 
 
     <v-main>
@@ -39,6 +25,46 @@
             <div class="third">
                 <div class="heroTitle">HeroTitle bg-second</div>
                 <div class="heroLead">HeroLead bg-second</div>
+            </div>
+
+
+            <!-- IMAGE -->
+            <v-card height="800" class="overflow-hidden w-100 my-10">
+                <v-img src="storage/images/motiv.jpg" height="100%" cover position="center calc(50% + 500px)">
+                    <!-- Overlay -->
+                    <div class="d-flex flex-column justify-end align-start w-100 h-100 pa-4"
+                        style="background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,.55) 100%);">
+                        <div class="text-white text-h5 font-weight-bold">TEXT ÜBER DEM IMAGE</div>
+                        <div class="mt-2">
+                            <v-btn color="primary" variant="flat" class="mr-2" href="/dein-link">Zum Link</v-btn>
+                            <v-btn color="white" variant="outlined" @click="() => { }">Aktion</v-btn>
+                        </div>
+                    </div>
+                </v-img>
+            </v-card>
+
+            <div v-for="i in 10">
+                <div style="width: 600px;" class="mt-10">
+                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ea alias sed aut. Labore, odio,
+                    praesentium
+                    delectus tenetur illum a molestiae id deleniti magni dicta tempore illo aut sapiente nobis
+                    commodi
+                    accusantium architecto aspernatur debitis asperiores voluptates perspiciatis blanditiis
+                    excepturi
+                    ab?
+                    Consequuntur, quae debitis recusandae, earum voluptas ea nobis quam unde corrupti quasi porro
+                    sunt
+                    dolorum nisi optio non sed deleniti hic beatae ex blanditiis molestiae adipisci? Tempore
+                    expedita
+                    ipsam
+                    sint aperiam accusamus, eos fugiat nihil facilis quis quam ratione optio ut nobis totam
+                    explicabo,
+                    quo
+                    voluptate reiciendis placeat? Porro esse aliquam facilis error vel maiores doloremque tenetur
+                    cum
+                    labore
+                    aperiam.
+                </div>
             </div>
 
 
