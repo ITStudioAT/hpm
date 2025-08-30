@@ -8,9 +8,15 @@
         "framework"
     ],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../mediamanager"
+        }
+    ],
     "require": {
         "php": "^8.2",
-        "itstudioat/mediamanager": "^1.0",
+        "itstudioat/mediamanager": "dev-main",
         "itstudioat/spa": "^0.3.3",
         "james-heinrich/getid3": "^1.9",
         "laravel/framework": "^12.0",

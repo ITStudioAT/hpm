@@ -4,7 +4,7 @@
         <!-- MENÜ -->
         <v-row class="d-flex flex-row ga-2 mt-0 w-100 my-4" no-gutters>
             <v-col cols="12" class="d-flex flex-row flex-wrap align-center ga-2">
-                <its-menu-button color="mm-bg-secondary" title="Auswahl" icon="mdi-image-size-select-actual"
+                <its-menu-button color="mm-bg-secondary" title="AuswahlX" icon="mdi-image-size-select-actual"
                     @click="select" />
             </v-col>
         </v-row>
@@ -203,7 +203,7 @@ export default {
             is_create_folder: false,
             data: {},
             is_valid: false,
-            is_select: true,
+            is_select: false,
         };
     },
 

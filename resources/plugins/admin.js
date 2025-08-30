@@ -1,6 +1,13 @@
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 
+import {
+    mediamanagerLightTheme,
+    mediamanagerDarkTheme,
+} from '../../vendor/itstudioat/mediamanager/resources/plugins/mediamanager.js'
+
+
+
 const lightTheme = {
     dark: false,
     colors: {
@@ -20,6 +27,7 @@ const lightTheme = {
         success: '#00897B',         // teal.darken1
         // For errors, alerts
         error: '#E53935',           // red.darken1
+        ...mediamanagerLightTheme.colors,
     },
 }
 
@@ -43,6 +51,7 @@ const darkTheme = {
         success: '#4DB6AC',         // teal.lighten2
         // For errors, alerts
         error: '#EF5350',           // red.lighten2
+        ...mediamanagerDarkTheme.colors,
     },
 }
 

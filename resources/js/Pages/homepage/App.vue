@@ -3,7 +3,9 @@
     <v-app>
         <main style="min-height: 100vh;" class="background" v-if="appReady">
             <router-view />
+            <!--
             <VueQueryDevtools v-if="isDev" :initialIsOpen="false" />
+            -->
             <its-notification />
         </main>
 
@@ -57,6 +59,7 @@ export default {
     computed: {
         ...mapWritableState(useHomepageStore, ['is_loading', 'homepage']),
         colorsetSlug() {
+
             return this.homepage?.structure?.colors?.colorset || null
         },
         fontsetSlug() {
@@ -67,6 +70,7 @@ export default {
     watch: {
         // Watch only the slugs that matter (fast + minimal work)
         colorsetSlug: {
+
             immediate: true,
             handler(val, oldVal) {
                 if (val && val !== oldVal) this.applyTheme(val, this.fontsetSlug)
@@ -81,6 +85,73 @@ export default {
     },
 
     methods: {
+
+        hexToRgbTriple(hexOrRgb) {
+            if (!hexOrRgb) return '0,0,0'
+            const v = hexOrRgb.trim()
+            const m = v.match(/rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i)
+            if (m) return `${m[1]},${m[2]},${m[3]}`
+            let hex = v.startsWith('#') ? v.slice(1) : v
+            if (hex.length === 3) hex = hex.split('').map(c => c + c).join('')
+            const r = parseInt(hex.slice(0, 2), 16)
+            const g = parseInt(hex.slice(2, 4), 16)
+            const b = parseInt(hex.slice(4, 6), 16)
+            return `${r},${g},${b}`
+        },
+
+        bridgeVuetifyThemeFromHpm() {
+
+            const map = [
+                ['background', '--backgroundBackground', '--backgroundText'],
+                ['surface', '--mainBackground', '--mainText'],
+                ['first', '--firstBackground', '--firstText'],
+                ['second', '--secondBackground', '--secondText'],
+                ['third', '--thirdBackground', '--thirdText'],
+                ['button', '--button', '--buttonText'],
+            ]
+
+            const cs = getComputedStyle(document.documentElement)
+
+            const build = (selector) => {
+                let css = `${selector}{`
+                for (const [token, bgVar, onVar] of map) {
+                    const bg = cs.getPropertyValue(bgVar).trim()
+                    if (bg) css += `--v-theme-${token}: ${this.hexToRgbTriple(bg)} !important;`
+                    const on = onVar ? cs.getPropertyValue(onVar).trim() : ''
+                    if (on) css += `--v-theme-on-${token}: ${this.hexToRgbTriple(on)} !important;`
+                }
+                css += '}'
+                return css
+            }
+
+            // Write to ALL relevant scopes so Vuetify picks them up
+            let css = ''
+            css += build(':root')
+            css += build('.v-theme--light')
+            css += build('.v-theme--dark')
+
+            // (nice-to-have) utility text helpers
+            css += `
+.text-on-background{ color: rgb(var(--v-theme-on-background)); }
+.text-on-surface{ color: rgb(var(--v-theme-on-surface)); }
+.text-on-first{ color: rgb(var(--v-theme-on-first)); }
+.text-on-second{ color: rgb(var(--v-theme-on-second)); }
+.text-on-third{ color: rgb(var(--v-theme-on-third)); }
+.text-on-button{ color: rgb(var(--v-theme-on-button)); }
+`
+
+            let style = document.getElementById('hpm-vuetify-theme-bridge')
+            if (!style) {
+                style = document.createElement('style')
+                style.id = 'hpm-vuetify-theme-bridge'
+                document.head.appendChild(style)
+            }
+            if (style.textContent !== css) style.textContent = css
+
+
+        },
+
+
         /**
          * Load/refresh a stylesheet only when its semantic 'key' changes.
          * Keeps a stable URL so the browser cache is effective.
@@ -146,36 +217,25 @@ export default {
          * No cache-busting; only re-run when slugs change.
          */
         async applyTheme(colorset, fontset) {
+
             if (!colorset || !fontset || applyingTheme) return
             applyingTheme = true
-
             try {
                 await Promise.all([
-                    // Static, load once
                     this.ensureStylesheet('fonts-core', '/fonts/fonts.css', 'static'),
                     this.ensureStylesheet('color-bindings', '/css/colors.css', 'static'),
-
-                    // Slugged: only change when slug changes
-                    this.ensureStylesheet(
-                        'colorset-css',
-                        `/api/css/colors/${encodeURIComponent(colorset)}.css`,
-                        `colors:${colorset}`
-                    ),
-                    this.ensureStylesheet(
-                        'fontset-css',
-                        `/api/css/fontset/${encodeURIComponent(fontset)}.css`,
-                        `font:${fontset}`
-                    ),
+                    this.ensureStylesheet('colorset-css', `/api/css/colors/${encodeURIComponent(colorset)}.css`, `colors:${colorset}`),
+                    this.ensureStylesheet('fontset-css', `/api/css/fontset/${encodeURIComponent(fontset)}.css`, `font:${fontset}`),
                 ])
 
-                // Wait for fonts to settle (non-blocking if already ready)
-                try {
-                    await document.fonts.ready
-                } catch { }
+                try { await document.fonts.ready } catch { }
 
                 const fam = this.getContentFontFamily()
                 this.setBaseFontFamily(fam)
                 this.setVuetifyFontVariable(fam)
+
+                // 🔗 NEW: make HPM vars usable via Vuetify's `color` prop
+                this.bridgeVuetifyThemeFromHpm()
             } finally {
                 applyingTheme = false
             }

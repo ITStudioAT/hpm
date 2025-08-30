@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Homepage;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class LoadRecordRequest extends FormRequest
 {
@@ -12,7 +11,7 @@ class LoadRecordRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check();
+        return true;
     }
 
     /**

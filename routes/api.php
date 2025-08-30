@@ -31,6 +31,7 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
     /***** HOMEPAGE ROUTES *****/
 
     Route::get('/homepage/load_homepage',  [\App\Http\Controllers\Homepage\HomepageController::class, 'loadHomepage']);
+    Route::get('/homepage/load_record',  [\App\Http\Controllers\Homepage\HomepageController::class, 'loadRecord']);
 
     /***** ADMIN ROUTES *****/
 

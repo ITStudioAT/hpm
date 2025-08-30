@@ -33,6 +33,7 @@ export const useHomepageStore = defineStore("HomepageStore", {
         fontSubtitle: '',
         fontContent: '',
         fontSubcontent: '',
+        record: null,
     }),
 
     actions: {
@@ -66,7 +67,28 @@ export const useHomepageStore = defineStore("HomepageStore", {
             } finally {
                 this.is_loading--;
             }
-        }
+        },
+
+        async loadRecord(homepage_id, record_id) {
+            const notification = useNotificationStore();
+
+            this.is_loading++;
+            try {
+                const response = await axios.get('/api/homepage/load_record', { params: { homepage_id, record_id } });
+                this.record = response.data;
+                return true;
+            } catch (error) {
+                notification.notify({
+                    status: error.response.status,
+                    message: error.response.data.message || 'Fehler passiert.',
+                    type: 'error',
+                    timeout: adminStore.timeout,
+                });
+                return false;
+            } finally {
+                this.is_loading--;
+            }
+        },
 
     },
 })

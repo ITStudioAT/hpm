@@ -3,7 +3,7 @@
     <div class=" background">
         <v-container fluid class="background">
             <div class="ma-4 main">
-                <v-row no-gutters="">
+                <v-row no-gutters>
                     <v-col cols="12" md="6">
                         <div class="d-flex flex-row justify-center w-100 mt-2">
                             <div style=" width:80%;" class="mt-md-16">
@@ -41,7 +41,7 @@
                     </v-col>
                 </v-row>
 
-                <v-row no-gutters="">
+                <v-row no-gutters>
                     <v-col cols="12" md="6">
 
                         <div class="d-flex flex-row justify-center w-100 mt-16 second">

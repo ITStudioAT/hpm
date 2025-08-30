@@ -38,10 +38,30 @@ class HomepageController extends Controller
             abort(403, 'Sie haben keine Berechtigung');
         }
 
-        $homepage = Homepage::findOrFail($request->id);
-        if ($homepage->type !== 'homepage') abort(406, "Keine korrekte Anforderung einer Homepage");
+        $id = $request->id;
+        if ($id) {
+            $homepage = Homepage::findOrFail($request->id);
+            if ($homepage->type !== 'homepage') abort(406, "Keine korrekte Anforderung einer Homepage");
+        } else {
+            $homepage = Homepage::where('type', 'homepage')->first();
+            if (!$homepage) abort(406, "Es existiert keine Homepage");
+        }
 
-        return response()->json(new HomepageResource($homepage), 200);
+
+
+        $fontset = data_get($homepage->structure, 'fonts.fontType', 'default');
+
+        // compute mtime for version
+        $path = storage_path("app/private/fontsets/{$fontset}.json");
+        $version = is_file($path) ? filemtime($path) : time();
+
+        return response()->json([
+            'data' => new HomepageResource($homepage),
+            'meta' => [
+                'fontset' => $fontset,
+                'fontVersion' => $version,
+            ],
+        ]);
     }
 
     public function loadRecord(LoadRecordRequest $request)

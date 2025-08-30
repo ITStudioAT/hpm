@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Admin;
+namespace App\Http\Resources\Homepage;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class HomepageResource extends JsonResource
+class RecordResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,8 +15,7 @@ class HomepageResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'homepage_id' => $this->homepage_id,
+
             'name' => $this->name,
             'path' => $this->path,
             'type' => $this->type,

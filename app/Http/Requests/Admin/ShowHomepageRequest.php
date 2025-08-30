@@ -22,7 +22,7 @@ class ShowHomepageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|exists:homepages,id',
+            'id' => 'nullable|exists:homepages,id',
         ];
     }
 }

@@ -1,0 +1,21 @@
+# Project rules for Cline (Laravel + Vue/Vuetify)
+
+## Scope & Safety
+- Ask before running any terminal command. Prefer read-only plan first.
+- Never commit `.env` or secrets. Do not modify `resources/vendor/*` unless I say so.
+- For npm/Node tasks, use: `npm run dev`, `npm run build`. For PHP tasks, use `php artisan ...`.
+
+## Laravel
+- Follow PSR-12. Use Pest for tests. Generate tests under `tests/Feature` or `tests/Unit`.
+- When adding features, create: migration, model, factory, seeder, policy as needed.
+- Use Spatie Permission conventions already in project.
+- Keep DB-writes inside transactions when touching multiple tables.
+
+## Vue 3 + Vuetify 3
+- Prefer Composition API + `<script setup>`. No deep watchers unless necessary.
+- For theming, load styles in parallel; avoid cache-busting each render.
+- Components must be responsive; use Vuetify grid and `aspect-ratio` for iframes.
+
+## Output Preferences
+- Propose a short **plan** first, then diffs. Keep diffs minimal and well-scoped.
+- When creating files, include brief docblocks and usage notes.

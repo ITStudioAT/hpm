@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Homepage;
 
-use App\Models\Homepage;
-use Illuminate\Http\Request;
-use App\Services\FonttypeService;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Homepage\HomepageResource;
 use App\Http\Requests\Homepage\LoadHomepageRequest;
+use App\Http\Requests\Homepage\LoadRecordRequest;
+use App\Http\Resources\Homepage\HomepageResource;
+use App\Http\Resources\Homepage\RecordResource;
+use App\Models\Homepage;
+use App\Services\FonttypeService;
+use Illuminate\Http\Request;
 
 class HomepageController extends Controller
 {
@@ -45,8 +47,18 @@ class HomepageController extends Controller
                 'fontVersion' => $version,
             ],
         ]);
+    }
+
+    public function loadRecord(LoadRecordRequest $request)
+    {
 
 
-        // return response()->json(new HomepageResource($homepage));
+        $homepage = Homepage::findOrFail($request->homepage_id);
+        if ($homepage->type !== 'homepage') abort(406, "Keine korrekte Anforderung einer Homepage");
+
+        $record = Homepage::findOrFail($request->record_id);
+        if ($record->homepage_id != $homepage->id) abort(406, "Keine korrekte Anforderung einer Seite einer Homepage");
+
+        return response()->json(new RecordResource($record), 200);
     }
 }

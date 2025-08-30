@@ -143,6 +143,7 @@
                 </v-col>
 
             </v-row>
+            <!-- VORSCHAU -->
             <v-row>
                 <v-col cols="12" md="8">
                     <div class="mb-2 font-weight-medium">Desktop</div>
@@ -176,7 +177,7 @@ import ItsMenuButton from "@/pages/components/ItsMenuButton.vue";
 import { useThemePreview } from "../components/useThemePreview";
 import ThemeLivePreview from "../components/ThemeLivePreview.vue";
 import ThemeLive from "../components/ThemeLive.vue";
-import { STRUCTURE_DEFAULTS } from '@/constants/homepageDefaults'
+import { cloneStructure, HPM_SCHEMAS } from '@/constants/structures.generated'
 
 /** Farben-Swatches (unverändert) */
 const _colorsetCssCache = new Map();
@@ -243,12 +244,29 @@ export default {
             this.fetchChoices(),
         ]);
 
-        const def = STRUCTURE_DEFAULTS;
-        this.data = { ...this.homepage, structure: deepMergeDefaults(this.homepage.structure ?? {}, def) };
-        this.data_90 = { ...this.homepage, structure: deepMergeDefaults(this.homepage.structure ?? {}, def) };
+        const base = cloneStructure('homepage');
+        // Bestehende Struktur beibehalten, aber fonts/colors sicherstellen:
+        const current = this.homepage.structure ?? {};
+        const merged = deepMergeDefaults(current, {
+            fonts: base.fonts,
+            colors: base.colors,
+        });
 
-        if (!this.data.structure.fonts.fontset) this.data.structure.fonts.fontset = "default";
-        if (!this.data.structure.colors.colorset) this.data.structure.colors.colorset = "default";
+        try {
+            HPM_SCHEMAS.homepage.shape.fonts.parse(merged.fonts);
+            HPM_SCHEMAS.homepage.shape.colors.parse(merged.colors);
+        } catch (e) {
+            console.warn('Invalid fonts/colors structure:', e);
+        }
+
+        this.data = { ...this.homepage, structure: merged };
+        this.data_90 = {
+            ...this.homepage, structure: deepMergeDefaults(current, { fonts: base.fonts, colors: base.colors })
+        };
+
+        if (!this.data.structure.fonts?.fontset) this.data.structure.fonts = { ...(this.data.structure.fonts ?? {}), fontset: 'default' };
+        if (!this.data.structure.colors?.colorset) this.data.structure.colors = { ...(this.data.structure.colors ?? {}), colorset: 'default' };
+
 
         // Initiale Previews (mit Cache & Messung)
         await this.updateMiniColors();
@@ -356,6 +374,7 @@ export default {
     methods: {
         async onColorsetChanged(v) {
             this.data.structure.colors.colorset = v || "default";
+            HPM_SCHEMAS.homepage.shape.colors.parse(this.data.structure.colors);
             this.is_loading++;
             await this.homepageStore.saveHomepage(this.data);
             this.reloadKey++;
@@ -364,8 +383,9 @@ export default {
         },
         async onFontsetChanged(v) {
             this.data.structure.fonts.fontset = v || "default";
+            HPM_SCHEMAS.homepage.shape.fonts.parse(this.data.structure.fonts);
             this.is_loading++;
-            awaitthis.homepageStore.saveHomepage(this.data);
+            await this.homepageStore.saveHomepage(this.data);
             this.reloadKey++;
             this.is_loading--;
         },
@@ -407,7 +427,12 @@ export default {
             await this.homepageStore.saveHomepage(this.data_90);
             this.data = null; this.$emit("abort");
         },
-        async save() { await this.homepageStore.saveHomepage(this.data); this.$emit("save"); },
+        async save() {
+            HPM_SCHEMAS.homepage.shape.fonts.parse(this.data.structure.fonts);
+            HPM_SCHEMAS.homepage.shape.colors.parse(this.data.structure.colors);
+            await this.homepageStore.saveHomepage(this.data);
+            this.$emit("save");
+        },
 
         prettyLabel(slug) {
             if (!slug || typeof slug !== "string") return "Unbenannt";

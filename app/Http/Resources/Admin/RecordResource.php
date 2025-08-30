@@ -16,6 +16,7 @@ class RecordResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'homepage_id' => $this->homepage_id,
             'name' => $this->name,
             'path' => $this->path,
             'type' => $this->type,

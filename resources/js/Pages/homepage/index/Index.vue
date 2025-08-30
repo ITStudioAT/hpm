@@ -1,13 +1,22 @@
 <template>
 
 
-    <v-app-bar color="primary" density="comfortable" flat scroll-behavior="hide">
+    <v-app-bar :color="header.structure.props.color" :border="header.structure.props.border"
+        :density="!header.structure.props.height ? header.structure.props.density : ''"
+        :height="header.structure.props.height >= 24 ? header.structure.props.height : undefined"
+        :elevation="header.structure.props.elevation" :flat="header.structure.props.flat"
+        :scroll-behavior="header.structure.props.scroll_behavior"
+        v-if="index && index.structure.header.is_visible && header">
         APPBAR
     </v-app-bar>
+
+    <v-img src="storage/images/motiv.jpg" height="1024" width="1920" />
 
 
     <v-main>
         <v-container class=" h-100 d-flex flex-column align-center justify-center main">
+            <div>{{ homepage }}</div>
+            <div>{{ index }}</div>
             <div>Text im Main</div>
             <div class="heroTitle">HeroTitle</div>
             <div class="heroLead">HeroLead</div>
@@ -87,17 +96,35 @@ import { useHomepageStore } from "@/stores/homepage/HomepageStore";
 export default {
     async beforeMount() {
         this.homepageStore = useHomepageStore();
+        const homepage_id = this.homepage.id;
+
+        const index_id = this.homepage.structure.index.id;
+        await this.homepageStore.loadRecord(homepage_id, index_id);
+        this.index = JSON.parse(JSON.stringify(this.record));
+
+        const header_id = this.index.structure.header.id;
+        await this.homepageStore.loadRecord(homepage_id, header_id);
+        this.header = JSON.parse(JSON.stringify(this.record));
+
+        const footer_id = this.index.structure.footer.id;
+        await this.homepageStore.loadRecord(homepage_id, footer_id);
+        this.footer = JSON.parse(JSON.stringify(this.record));
+
+
     },
 
     data() {
         return {
             homepageStore: null,
+            index: null,
+            header: null,
+            footer: null,
         };
     },
 
     computed: {
         // Kept for debugging; typography comes from CSS classes (.heroTitle, .content, ...)
-        ...mapWritableState(useHomepageStore, ["homepage"]),
+        ...mapWritableState(useHomepageStore, ["homepage", "record"]),
     },
 };
 </script>

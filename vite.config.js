@@ -18,6 +18,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'resources/js'),  // Resolves the @ to resources/js
+            '@mediamanager': path.resolve(__dirname, 'vendor/itstudioat/mediamanager/resources'),
         },
         dedupe: ['vuetify'],
     },
