@@ -400,16 +400,39 @@
                                                                 <v-expand-transition>
                                                                     <div
                                                                         v-if="header.structure.rows.row_1.desktop.columns.col_1.has_image">
-                                                                        <div class="bg-secondary pa-1">Bild:</div>
-                                                                        <div
-                                                                            v-if="header.structure.rows.row_1.desktop.columns.col_1.image">
-                                                                            BILD</div>
-                                                                        <div class="text-warning" v-else>Kein Bild
+                                                                        <div class="bg-secondary pa-1">Bild: {{
+                                                                            header.structure.rows.row_1.desktop.columns.col_1.image
+                                                                            }}</div>
+
+                                                                        <v-img contain
+                                                                            :height="header.structure.rows.row_1.desktop.columns.col_1.image_height"
+                                                                            :width="header.structure.rows.row_1.desktop.columns.col_1.image_width"
+                                                                            :src="header.structure.rows.row_1.desktop.columns.col_1.image" />
+
+
+
+                                                                        <!-- Height -->
+
+                                                                        <div class="text-warning"
+                                                                            v-if="!header.structure.rows.row_1.desktop.columns.col_1.has_image">
+                                                                            Kein Bild
                                                                             ausgewählt</div>
+
+
+                                                                        <v-number-input clearable
+                                                                            label="Bildhöhe (24-128px)"
+                                                                            v-model="header.structure.rows.row_1.desktop.columns.col_1.image_height"
+                                                                            :min="24" :max="128" />
+
+                                                                        <v-number-input clearable
+                                                                            label="Bildbreite (24-128px)"
+                                                                            v-model="header.structure.rows.row_1.desktop.columns.col_1.image_width"
+                                                                            :min="24" :max="128" />
+
                                                                         <div class="d-flex flex-row justify-end">
                                                                             <v-btn flat color="primary" variant="tonal"
                                                                                 prepend-icon="mdi-form-select"
-                                                                                @click="is_select = true">
+                                                                                @click="is_select = 'line_1_col_1_desktop'">
                                                                                 Bild auswählen
                                                                             </v-btn>
                                                                         </div>
@@ -459,11 +482,12 @@
 
             </v-expand-transition>
 
-            <Select v-if="is_select" @abort="is_select = false" @takeIt="selectTakeIt" />
+            <Select v-if="is_select != ''" @abort="is_select = false" @takeIt="selectTakeIt" />
 
             <v-row>
                 {{ header.structure.rows.row_1.desktop }}
             </v-row>
+            <v-row>{{ is_select }}</v-row>
 
             <!-- VORSCHAU -->
             <v-row>
@@ -600,7 +624,7 @@ export default {
             line_2_options: 1,
             line_1_col_options: 1,
             is_valid: false,
-            is_select: false,
+            is_select: '',
         };
     },
 
@@ -648,7 +672,20 @@ export default {
         },
         selectTakeIt(data) {
             console.log(data); // shows path and filename
-            this.is_select = false;
+
+
+            switch (this.is_select) {
+                case 'line_1_col_1_desktop':
+                    this.header.structure.rows.row_1.desktop.columns.col_1.image = data.current_folder + '/' + data.file;;
+                    break;
+                // weitere Fälle hier hinzufügen
+            }
+
+            this.is_select = '';
+
+            return;
+
+
         },
     }
 };

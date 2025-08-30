@@ -15,15 +15,21 @@
                     <v-container class="h-100 py-0 my-0" :fluid="header.structure.rows.row_1.desktop.fluid"
                         :max-width="header.structure.rows.row_1.desktop.max_width">
                         <div class="h-100 d-flex flex-row align-center">
-                            <div class="h-100 flex-grow-1 d-flex align-center"
+                            <div class="h-100 flex-grow-1 d-flex flex-row align-center"
                                 :class="header.structure.rows.row_1.desktop.columns.col_1.justify">
                                 <!-- MENÜ -->
                                 <v-btn icon="mdi-menu" flat
                                     v-if="header.structure.rows.row_1.desktop.columns.col_1.has_menu" />
                                 <!-- BILD -->
-                                <div flat v-if="header.structure.rows.row_1.desktop.columns.col_1.has_image">BILD</div>
+                                <div v-if="header.structure.rows.row_1.desktop.columns.col_1.has_image">
+
+                                    <img :height="header.structure.rows.row_1.desktop.columns.col_1.image_height"
+                                        :width="header.structure.rows.row_1.desktop.columns.col_1.image_width"
+                                        :src="header.structure.rows.row_1.desktop.columns.col_1.image" />
+
+                                </div>
                                 <!-- TEXT -->
-                                <div v-if="header.structure.rows.row_1.desktop.columns.col_1.has_text"
+                                <div v-if="header.structure.rows.row_1.desktop.columns.col_1.has_text" class="ml-2"
                                     :class="header.structure.rows.row_1.desktop.columns.col_1.text_variant">{{
                                         header.structure.rows.row_1.desktop.columns.col_1.text }}</div>
                             </div>
