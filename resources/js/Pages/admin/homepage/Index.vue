@@ -109,18 +109,7 @@
 
             </v-col>
         </v-row>
-        <v-row>
-            <v-col>
-                HP:
-                {{ homepage }}
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                HP_COPY:
-                {{ homepage_copy }}
-            </v-col>
-        </v-row>
+
 
     </v-container>
 </template>

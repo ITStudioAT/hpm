@@ -13,481 +13,53 @@
                     @click="save" />
             </v-row>
 
-            <v-row class="w-100 mb-2" v-if="index && action === ''">
-                <v-col cols="12" md="6" lg="4" xl="3">
-                    <v-card>
-                        <v-card-title>Kopf- und Fußzeile</v-card-title>
-                        <v-card-text>
-                            <div class="d-flex flex-row align-center justify-space-between">
-                                <v-checkbox v-model="index.structure.header.is_visible" color="success"
-                                    label="Kopfzeile" hide-details @update:model-value="update" />
-                                <v-btn flat color="primary" :disabled="!index.structure.header.is_visible"
-                                    @click="action = 'header'">
-                                    Bearbeiten
-                                </v-btn>
-                            </div>
-                            <div class="d-flex flex-row align-center justify-space-between">
-                                <v-checkbox v-model="index.structure.footer.is_visible" color="success" label="Fußzeile"
-                                    hide-details @update:model-value="update" />
-                                <v-btn flat color="primary" :disabled="!index.structure.footer.is_visible"
-                                    @click="action = 'footer'">
-                                    Bearbeiten
-                                </v-btn>
-                            </div>
-                        </v-card-text>
-                    </v-card>
-                </v-col>
-            </v-row>
+            <!-- Header and Footer-->
+            <HeaderAndFooter :index="index" @update="update" @clickAction="action = $event"
+                v-if="index && action === ''" />
 
+
+            <!-- HEADER-->
             <v-expand-transition>
+
                 <v-row class="w-100 mb-2" v-if="index && action === 'header'">
+                    <!-- Spalte KOPFZEILE -->
                     <v-col cols="12" md="6" lg="4" xl="3">
-                        <v-card>
-                            <v-card-title class="d-flex flex-column">
-                                <div class="d-flex flex-row align-center justify-space-between">
-                                    <div>Kopfzeile</div>
-                                    <v-btn flat size="small" color="warning" variant="tonal" @click="action = ''">
-                                        <v-icon icon="mdi-close" />
-                                    </v-btn>
-                                </div>
-                            </v-card-title>
-                            <v-card-subtitle>
-                                <div>{{ header?.name }}</div>
-                            </v-card-subtitle>
-                            <v-card-text>
-                                <!-- Rahmen -->
-                                <v-checkbox hide-details label="Rahmen"
-                                    :color="header.structure.props.border ? 'success' : ''"
-                                    v-model="header.structure.props.border" />
-
-                                <!-- Farbe -->
-                                <div class="d-flex flex-row flex-wrap ga-2">
-                                    <div class="color-box first d-flex align-center justify-center">A</div>
-                                    <div class="color-box second d-flex align-center justify-center">B</div>
-                                    <div class="color-box third d-flex align-center justify-center">C</div>
-                                </div>
-                                <v-select label="Farbe" v-model="header.structure.props.color" :items="colorItems"
-                                    item-title="label" item-value="value" />
-
-                                <!-- Density -->
-                                <v-select label="Vordefinierte Höhe" v-model="header.structure.props.density"
-                                    :items="densityItems" item-title="label" item-value="value" />
-                                <div class="text-caption font-weight-medium">oder</div>
-
-                                <!-- Height -->
-                                <v-number-input clearable label="Individuelle Höhe (24-128px)"
-                                    v-model="header.structure.props.height" :min="24" :max="128" />
-
-                                <!-- Elevation -->
-                                <v-number-input label="Schatten (0-24px)" v-model="header.structure.props.elevation"
-                                    :min="0" :max="24" />
-
-                                <!-- Flat -->
-                                <v-checkbox hide-details label="Flach"
-                                    :color="header.structure.props.flat ? 'success' : ''"
-                                    v-model="header.structure.props.flat" />
-
-                                <!-- Scroll behavior -->
-                                <v-select label="Rollverhalten" v-model="header.structure.props.scroll_behavior"
-                                    :items="scrollBehaviorItems" item-title="label" item-value="value" />
-
-
-
-
-                                <div class="d-flex flex-row justify-end">
-                                    <v-btn flat color="success" variant="tonal" prepend-icon="mdi-check"
-                                        @click="confirm('header')">
-                                        Bestätigen
-                                    </v-btn>
-                                </div>
-                            </v-card-text>
-                        </v-card>
+                        <Header :header="header" :colorItems="colorItems" :densityItems="densityItems"
+                            :scrollBehaviorItems="scrollBehaviorItems" @clickAction="action = $event"
+                            @confirmAction="(header) => confirmHeader(header)" />
                     </v-col>
 
                     <!-- Zeilen/Spalten - Aufbau der Kopfzeile -->
                     <v-col cols="12" md="6" lg="4" xl="3">
-                        <v-card>
-                            <v-card-title class="d-flex flex-column">
-                                <div class="d-flex flex-row align-center justify-space-between">
-                                    <div>Zeilen / Spalten</div>
-                                    <v-btn flat size="small" color="warning" variant="tonal" @click="action = ''">
-                                        <v-icon icon="mdi-close" />
-                                    </v-btn>
-                                </div>
-                            </v-card-title>
-                            <v-card-subtitle>
-                                <div>Aufbau der Kopfzeile</div>
-                            </v-card-subtitle>
-                            <v-card-text>
-                                <!-- Rows (Hinweis: dein Schema erlaubt aktuell 1..2 statisch; count wirkt rein visuell) -->
-                                <v-number-input label="Zeilen (1-2)" v-model="header.structure.rows.count" :min="1"
-                                    :max="2" />
+                        <RowsAndColumns :header="header" @clickAction="action = $event"
+                            @confirmAction="(header) => confirmHeader(header)" />
 
-                                <!-- ZEILE 1-->
-                                <v-card>
-
-                                    <div class="bg-primary pa-1">Zeile 1:</div>
-
-
-
-                                    <v-tabs v-model="line_1_options" align-tabs="center">
-                                        <v-tab :value="1">Desktop</v-tab>
-                                        <v-tab :value="2">Tablet</v-tab>
-                                        <v-tab :value="3">Handy</v-tab>
-                                    </v-tabs>
-                                    <v-tabs-window v-model="line_1_options">
-                                        <!-- DESKTOP -->
-                                        <v-tabs-window-item :key="1" :value="1">
-                                            <v-container fluid>
-                                                <v-row>
-                                                    <v-col>
-                                                        <!-- Fluid -->
-                                                        <v-checkbox hide-details label="Volle Breite"
-                                                            :color="header.structure.rows.row_1.desktop.fluid ? 'success' : ''"
-                                                            v-model="header.structure.rows.row_1.desktop.fluid" />
-                                                        <div class="text-caption font-weight-medium">oder</div>
-
-                                                        <!-- max-width -->
-                                                        <v-number-input label="Maximale Breite  (600-1920px)" clearable
-                                                            v-model="header.structure.rows.row_1.desktop.max_width"
-                                                            :min="600" :max="1920" />
-
-                                                        <!-- columns.count -->
-                                                        <v-number-input label="Anzahl Spalten  (1-3)"
-                                                            v-model="header.structure.rows.row_1.desktop.columns.count"
-                                                            :min="1" :max="3" />
-
-
-                                                    </v-col>
-                                                </v-row>
-                                            </v-container>
-                                        </v-tabs-window-item>
-
-                                        <!-- TABLET -->
-                                        <v-tabs-window-item :key="2" :value="2">
-                                            <v-container fluid>
-                                                <v-row>
-                                                    <v-col>
-                                                        <!-- Fluid -->
-                                                        <v-checkbox hide-details label="Volle Breite"
-                                                            :color="header.structure.rows.row_1.tablet.fluid ? 'success' : ''"
-                                                            v-model="header.structure.rows.row_1.tablet.fluid" />
-                                                        <div class="text-caption font-weight-medium">oder</div>
-
-                                                        <!-- max-width -->
-                                                        <v-number-input label="Maximale Breite  (600-1920px)" clearable
-                                                            v-model="header.structure.rows.row_1.tablet.max_width"
-                                                            :min="600" :max="1920" />
-
-                                                        <!-- columns.count -->
-                                                        <v-number-input label="Anzahl Spalten  (1-3)"
-                                                            v-model="header.structure.rows.row_1.tablet.columns.count"
-                                                            :min="1" :max="3" />
-
-
-                                                    </v-col>
-                                                </v-row>
-                                            </v-container>
-                                        </v-tabs-window-item>
-
-                                        <!-- HANDY -->
-                                        <v-tabs-window-item :key="3" :value="3">
-                                            <v-container fluid>
-                                                <v-row>
-                                                    <v-col>
-                                                        <!-- Fluid -->
-                                                        <v-checkbox hide-details label="Volle Breite"
-                                                            :color="header.structure.rows.row_1.handy.fluid ? 'success' : ''"
-                                                            v-model="header.structure.rows.row_1.handy.fluid" />
-                                                        <div class="text-caption font-weight-medium">oder</div>
-
-                                                        <!-- max-width -->
-                                                        <v-number-input label="Maximale Breite  (600-1920px)" clearable
-                                                            v-model="header.structure.rows.row_1.handy.max_width"
-                                                            :min="600" :max="1920" />
-
-                                                        <!-- columns.count -->
-                                                        <v-number-input label="Anzahl Spalten  (1-3)"
-                                                            v-model="header.structure.rows.row_1.handy.columns.count"
-                                                            :min="1" :max="3" />
-
-
-                                                    </v-col>
-                                                </v-row>
-                                            </v-container>
-                                        </v-tabs-window-item>
-                                    </v-tabs-window>
-                                </v-card>
-
-
-                                <!-- ZEILE 2-->
-                                <v-card v-if="header.structure.rows.count > 1" class="mt-6">
-
-                                    <div class="bg-primary pa-1">Zeile 2:</div>
-
-
-
-                                    <v-tabs v-model="line_2_options" align-tabs="center">
-                                        <v-tab :value="1">Desktop</v-tab>
-                                        <v-tab :value="2">Tablet</v-tab>
-                                        <v-tab :value="3">Handy</v-tab>
-                                    </v-tabs>
-                                    <v-tabs-window v-model="line_2_options">
-                                        <!-- DESKTOP -->
-                                        <v-tabs-window-item :key="1" :value="1">
-                                            <v-container fluid>
-                                                <v-row>
-                                                    <v-col>
-                                                        <!-- Fluid -->
-                                                        <v-checkbox hide-details label="Volle Breite"
-                                                            :color="header.structure.rows.row_2.desktop.fluid ? 'success' : ''"
-                                                            v-model="header.structure.rows.row_2.desktop.fluid" />
-                                                        <div class="text-caption font-weight-medium">oder</div>
-
-                                                        <!-- max-width -->
-                                                        <v-number-input label="Maximale Breite  (600-1920px)" clearable
-                                                            v-model="header.structure.rows.row_2.desktop.max_width"
-                                                            :min="600" :max="1920" />
-
-                                                        <!-- columns.count -->
-                                                        <v-number-input label="Anzahl Spalten  (1-3)"
-                                                            v-model="header.structure.rows.row_2.desktop.columns.count"
-                                                            :min="1" :max="3" />
-
-
-                                                    </v-col>
-                                                </v-row>
-                                            </v-container>
-                                        </v-tabs-window-item>
-
-                                        <!-- TABLET -->
-                                        <v-tabs-window-item :key="2" :value="2">
-                                            <v-container fluid>
-                                                <v-row>
-                                                    <v-col>
-                                                        <!-- Fluid -->
-                                                        <v-checkbox hide-details label="Volle Breite"
-                                                            :color="header.structure.rows.row_2.tablet.fluid ? 'success' : ''"
-                                                            v-model="header.structure.rows.row_2.tablet.fluid" />
-                                                        <div class="text-caption font-weight-medium">oder</div>
-
-                                                        <!-- max-width -->
-                                                        <v-number-input label="Maximale Breite  (600-1920px)" clearable
-                                                            v-model="header.structure.rows.row_2.tablet.max_width"
-                                                            :min="600" :max="1920" />
-
-                                                        <!-- columns.count -->
-                                                        <v-number-input label="Anzahl Spalten  (1-3)"
-                                                            v-model="header.structure.rows.row_2.tablet.columns.count"
-                                                            :min="1" :max="3" />
-
-
-                                                    </v-col>
-                                                </v-row>
-                                            </v-container>
-                                        </v-tabs-window-item>
-
-                                        <!-- HANDY -->
-                                        <v-tabs-window-item :key="3" :value="3">
-                                            <v-container fluid>
-                                                <v-row>
-                                                    <v-col>
-                                                        <!-- Fluid -->
-                                                        <v-checkbox hide-details label="Volle Breite"
-                                                            :color="header.structure.rows.row_2.handy.fluid ? 'success' : ''"
-                                                            v-model="header.structure.rows.row_2.handy.fluid" />
-                                                        <div class="text-caption font-weight-medium">oder</div>
-
-                                                        <!-- max-width -->
-                                                        <v-number-input label="Maximale Breite  (600-1920px)" clearable
-                                                            v-model="header.structure.rows.row_2.handy.max_width"
-                                                            :min="600" :max="1920" />
-
-                                                        <!-- columns.count -->
-                                                        <v-number-input label="Anzahl Spalten  (1-3)"
-                                                            v-model="header.structure.rows.row_2.handy.columns.count"
-                                                            :min="1" :max="3" />
-
-
-                                                    </v-col>
-                                                </v-row>
-                                            </v-container>
-                                        </v-tabs-window-item>
-                                    </v-tabs-window>
-                                </v-card>
-
-
-                                <div class="d-flex flex-row justify-end mt-6">
-                                    <v-btn flat color="success" variant="tonal" prepend-icon="mdi-check"
-                                        @click="confirm('header')">
-                                        Bestätigen
-                                    </v-btn>
-                                </div>
-
-                            </v-card-text>
-                        </v-card>
                     </v-col>
 
                     <!-- SPALTEN -->
                     <!-- Spalten Zeile 1 -->
                     <v-col cols="12" md="6" lg="4" xl="3">
-                        <v-card>
-                            <v-card-title class="d-flex flex-column">
-                                <div class="d-flex flex-row align-center justify-space-between">
-                                    <div>Zeile 1</div>
-                                    <v-btn flat size="small" color="warning" variant="tonal" @click="action = ''">
-                                        <v-icon icon="mdi-close" />
-                                    </v-btn>
-                                </div>
-                            </v-card-title>
-                            <v-card-subtitle>
-                                <div>Festlegen der Spalten</div>
-                            </v-card-subtitle>
-                            <v-card-text>
-                                <v-tabs v-model="line_1_col_options" align-tabs="center">
-                                    <v-tab :value="1">Desktop</v-tab>
-                                    <v-tab :value="2">Tablet</v-tab>
-                                    <v-tab :value="3">Handy</v-tab>
-                                </v-tabs>
-                                <v-tabs-window v-model="line_1_col_options">
-                                    <!-- DESKTOP -->
-                                    <v-tabs-window-item :key="1" :value="1">
-                                        <v-container fluid>
-                                            <v-row>
-                                                <v-col>
-                                                    <v-expansion-panels>
-                                                        <v-expansion-panel :key="1" title="Spalte 1">
-                                                            <v-expansion-panel-text>
-                                                                <!-- Ausrichtung / Justify -->
-                                                                <v-select label="Ausrichtung"
-                                                                    v-model="header.structure.rows.row_1.desktop.columns.col_1.justify"
-                                                                    :items="justifyItems" item-title="label"
-                                                                    item-value="value" />
+                        <Row_1 :header="header" :justifyItems="justifyItems" :textVariantItems="textVariantItems"
+                            @clickAction="action = $event" @confirmAction="(header) => confirmHeader(header)" />
 
-                                                                <!-- has_menu -->
-                                                                <v-checkbox hide-details label="Menü"
-                                                                    :color="header.structure.rows.row_1.desktop.columns.col_1.has_menu ? 'success' : ''"
-                                                                    v-model="header.structure.rows.row_1.desktop.columns.col_1.has_menu" />
-                                                                <v-expand-transition>
-                                                                    <div
-                                                                        v-if="header.structure.rows.row_1.desktop.columns.col_1.has_menu">
-                                                                        <div class="bg-secondary pa-1">Menü:</div>
-                                                                        <div
-                                                                            v-if="header.structure.rows.row_1.desktop.columns.col_1.menu_name">
-                                                                            {{
-                                                                                header.structure.rows.row_1.desktop.columns.col_1.menu_name
-                                                                            }}</div>
-                                                                        <div class="text-warning" v-else>Kein Menü
-                                                                            ausgewählt</div>
-
-                                                                        <div class="d-flex flex-row justify-end">
-                                                                            <v-btn flat color="primary" variant="tonal"
-                                                                                prepend-icon="mdi-form-select"
-                                                                                @click="">
-                                                                                Menü auswählen
-                                                                            </v-btn>
-                                                                        </div>
-                                                                    </div>
-                                                                </v-expand-transition>
-
-
-
-                                                                <!-- has_image -->
-                                                                <v-divider color="primary" opacity=0.5 class="mt-4" />
-                                                                <v-checkbox hide-details label="Bild/Logo"
-                                                                    :color="header.structure.rows.row_1.desktop.columns.col_1.has_image ? 'success' : ''"
-                                                                    v-model="header.structure.rows.row_1.desktop.columns.col_1.has_image" />
-                                                                <v-expand-transition>
-                                                                    <div
-                                                                        v-if="header.structure.rows.row_1.desktop.columns.col_1.has_image">
-                                                                        <div class="bg-secondary pa-1">Bild: {{
-                                                                            header.structure.rows.row_1.desktop.columns.col_1.image
-                                                                            }}</div>
-
-                                                                        <v-img contain
-                                                                            :height="header.structure.rows.row_1.desktop.columns.col_1.image_height"
-                                                                            :width="header.structure.rows.row_1.desktop.columns.col_1.image_width"
-                                                                            :src="header.structure.rows.row_1.desktop.columns.col_1.image" />
-
-
-
-                                                                        <!-- Height -->
-
-                                                                        <div class="text-warning"
-                                                                            v-if="!header.structure.rows.row_1.desktop.columns.col_1.has_image">
-                                                                            Kein Bild
-                                                                            ausgewählt</div>
-
-
-                                                                        <v-number-input clearable
-                                                                            label="Bildhöhe (24-128px)"
-                                                                            v-model="header.structure.rows.row_1.desktop.columns.col_1.image_height"
-                                                                            :min="24" :max="128" />
-
-                                                                        <v-number-input clearable
-                                                                            label="Bildbreite (24-128px)"
-                                                                            v-model="header.structure.rows.row_1.desktop.columns.col_1.image_width"
-                                                                            :min="24" :max="128" />
-
-                                                                        <div class="d-flex flex-row justify-end">
-                                                                            <v-btn flat color="primary" variant="tonal"
-                                                                                prepend-icon="mdi-form-select"
-                                                                                @click="is_select = 'line_1_col_1_desktop'">
-                                                                                Bild auswählen
-                                                                            </v-btn>
-                                                                        </div>
-                                                                    </div>
-                                                                </v-expand-transition>
-
-                                                                <!-- has_text -->
-                                                                <v-divider color=" primary" opacity=0.5 class="mt-4" />
-                                                                <v-checkbox hide-details label="Text"
-                                                                    :color="header.structure.rows.row_1.desktop.columns.col_1.has_text ? 'success' : ''"
-                                                                    v-model="header.structure.rows.row_1.desktop.columns.col_1.has_text" />
-                                                                <v-expand-transition>
-                                                                    <div
-                                                                        v-if="header.structure.rows.row_1.desktop.columns.col_1.has_text">
-                                                                        <div class="bg-secondary pa-1">Text:
-                                                                        </div>
-                                                                        <v-text-field flat :rules="[maxLength(128)]"
-                                                                            :counter="128"
-                                                                            v-model="header.structure.rows.row_1.desktop.columns.col_1.text" />
-                                                                        <!-- Textvariante -->
-                                                                        <v-select label="Textvariante"
-                                                                            v-model="header.structure.rows.row_1.desktop.columns.col_1.text_variant"
-                                                                            :items="textVariantItems" item-title="label"
-                                                                            item-value="value" />
-                                                                    </div>
-                                                                </v-expand-transition>
-                                                            </v-expansion-panel-text>
-                                                        </v-expansion-panel>
-                                                    </v-expansion-panels>
-
-                                                </v-col>
-                                            </v-row>
-                                        </v-container>
-                                    </v-tabs-window-item>
-                                </v-tabs-window>
-                                <div class="d-flex flex-row justify-end">
-                                    <v-btn flat color="success" variant="tonal" prepend-icon="mdi-check"
-                                        @click="confirm('header')">
-                                        Bestätigen
-                                    </v-btn>
-                                </div>
-                            </v-card-text>
-                        </v-card>
                     </v-col>
 
                 </v-row>
 
             </v-expand-transition>
 
-            <Select v-if="is_select != ''" @abort="is_select = false" @takeIt="selectTakeIt" />
+
 
             <v-row>
                 {{ header.structure.rows.row_1.desktop }}
             </v-row>
-            <v-row>{{ is_select }}</v-row>
+            <v-row class="mt-12">
+                {{ header.structure.rows.row_1.tablet }}
+            </v-row>
+            <v-row class="mt-12">
+                {{ header.structure.rows.row_1.handy }}
+            </v-row>
+
 
             <!-- VORSCHAU -->
             <v-row>
@@ -516,16 +88,20 @@ import { deepMergeDefaults } from "@/helpers/merge";
 import { useAdminStore } from "@/stores/admin/AdminStore";
 import { useHomepageStore } from "@/stores/admin/HomepageStore";
 import ItsMenuButton from "@/pages/components/ItsMenuButton.vue";
-import Select from "@mediamanager/js/pages/admin/select/Select.vue";
+import HeaderAndFooter from "./LandingPage/HeaderAndFooter.vue";
+import Header from "./LandingPage/Header.vue";
+import RowsAndColumns from "./LandingPage/RowsAndColumns.vue";
+import Row_1 from "./LandingPage/Row_1.vue";
 
 // <-- NEU: generierte Defaults/Schemas verwenden
 import { cloneStructure, HPM_SCHEMAS } from "@/constants/structures.generated";
+
 
 export default {
     setup() { return useValidationRulesSetup(); },
 
     props: ["homepage"],
-    components: { ItsMenuButton, Select },
+    components: { ItsMenuButton, HeaderAndFooter, Header, RowsAndColumns, Row_1 },
 
     async beforeMount() {
         this.adminStore = useAdminStore();
@@ -564,9 +140,7 @@ export default {
         // Preview
         this.preview_src =
             "/homepage/example/header_and_footer?homepage_id=" +
-            this.index.homepage_id +
-            "&record_id=" +
-            this.index.id;
+            this.index.homepage_id + "&record_id=" + this.index.id;
 
         this.is_ready = true;
     },
@@ -620,11 +194,12 @@ export default {
                 { label: "Anmerkung", value: "subcontent" },
 
             ],
+
+            is_valid: false,
+            is_select: '',
             line_1_options: 1,
             line_2_options: 1,
             line_1_col_options: 1,
-            is_valid: false,
-            is_select: '',
         };
     },
 
@@ -633,6 +208,10 @@ export default {
     },
 
     methods: {
+        async confirmHeader(header) {
+            this.header = header;
+            await this.confirm('header');
+        },
         async abort() {
             await this.homepageStore.saveRecord(this.index_90);
             await this.homepageStore.saveRecord(this.header_90);
@@ -670,31 +249,7 @@ export default {
             }
             this.reloadKey++;
         },
-        selectTakeIt(data) {
-            console.log(data); // shows path and filename
 
-
-            switch (this.is_select) {
-                case 'line_1_col_1_desktop':
-                    this.header.structure.rows.row_1.desktop.columns.col_1.image = data.current_folder + '/' + data.file;;
-                    break;
-                // weitere Fälle hier hinzufügen
-            }
-
-            this.is_select = '';
-
-            return;
-
-
-        },
     }
 };
 </script>
-
-<style scoped>
-.color-box {
-    width: 100px;
-    height: 24px;
-    border: 1px solid #666666;
-}
-</style>

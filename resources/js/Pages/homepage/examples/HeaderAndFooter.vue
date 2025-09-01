@@ -10,12 +10,13 @@
             <!-- Zeile 1 -->
             <div class="w-100 d-block" :style="header.structure.rows.count == 2 ? 'height:50%;' : 'height:100%;'">
 
-                <!-- Desktop - Zeile 1-->
+                <!-- Desktop - Zeile 1 -->
                 <div class="h-100 " v-if="display.mdAndUp">
                     <v-container class="h-100 py-0 my-0" :fluid="header.structure.rows.row_1.desktop.fluid"
                         :max-width="header.structure.rows.row_1.desktop.max_width">
                         <div class="h-100 d-flex flex-row align-center">
-                            <div class="h-100 flex-grow-1 d-flex flex-row align-center"
+                            <!-- Spalte 1 - Desktop - Zeile 1-->
+                            <div class="h-100 equal-col d-flex flex-row align-center"
                                 :class="header.structure.rows.row_1.desktop.columns.col_1.justify">
                                 <!-- MENÜ -->
                                 <v-btn icon="mdi-menu" flat
@@ -33,14 +34,47 @@
                                     :class="header.structure.rows.row_1.desktop.columns.col_1.text_variant">{{
                                         header.structure.rows.row_1.desktop.columns.col_1.text }}</div>
                             </div>
-                            <div class="h-100 flex-grow-1 d-flex align-center"
-                                v-if="header.structure.rows.row_1.desktop.columns.count >= 2">
-                                <div>SPALTE2</div>
+
+                            <!-- Spalte 2 - Desktop - Zeile 1-->
+                            <div class="h-100 equal-col d-flex flex-row align-center"
+                                :class="header.structure.rows.row_1.desktop.columns.col_2.justify">
+                                <!-- MENÜ -->
+                                <v-btn icon="mdi-menu" flat
+                                    v-if="header.structure.rows.row_1.desktop.columns.col_2.has_menu" />
+                                <!-- BILD -->
+                                <div v-if="header.structure.rows.row_1.desktop.columns.col_2.has_image">
+
+                                    <img :height="header.structure.rows.row_1.desktop.columns.col_2.image_height"
+                                        :width="header.structure.rows.row_1.desktop.columns.col_2.image_width"
+                                        :src="header.structure.rows.row_1.desktop.columns.col_2.image" />
+
+                                </div>
+                                <!-- TEXT -->
+                                <div v-if="header.structure.rows.row_1.desktop.columns.col_2.has_text" class="ml-2"
+                                    :class="header.structure.rows.row_1.desktop.columns.col_2.text_variant">{{
+                                        header.structure.rows.row_1.desktop.columns.col_2.text }}</div>
                             </div>
-                            <div class="h-100 flex-grow-1 d-flex align-center "
-                                v-if="header.structure.rows.row_1.desktop.columns.count >= 3">
-                                <div>SPALTE3</div>
+
+                            <!-- Spalte 3 - Desktop - Zeile 1-->
+                            <div class="h-100 equal-col d-flex flex-row align-center"
+                                :class="header.structure.rows.row_1.desktop.columns.col_3.justify">
+                                <!-- MENÜ -->
+                                <v-btn icon="mdi-menu" flat
+                                    v-if="header.structure.rows.row_1.desktop.columns.col_3.has_menu" />
+                                <!-- BILD -->
+                                <div v-if="header.structure.rows.row_1.desktop.columns.col_3.has_image">
+
+                                    <img :height="header.structure.rows.row_1.desktop.columns.col_3.image_height"
+                                        :width="header.structure.rows.row_1.desktop.columns.col_3.image_width"
+                                        :src="header.structure.rows.row_1.desktop.columns.col_3.image" />
+
+                                </div>
+                                <!-- TEXT -->
+                                <div v-if="header.structure.rows.row_1.desktop.columns.col_3.has_text" class="ml-2"
+                                    :class="header.structure.rows.row_1.desktop.columns.col_3.text_variant">{{
+                                        header.structure.rows.row_1.desktop.columns.col_3.text }}</div>
                             </div>
+
                         </div>
                     </v-container>
                 </div>
@@ -235,3 +269,11 @@ export default {
     },
 };
 </script>
+<style scoped>
+.equal-col {
+    flex: 1 1 0;
+    /* equal widths */
+    min-width: 0;
+    /* allow shrinking next to large content */
+}
+</style>
