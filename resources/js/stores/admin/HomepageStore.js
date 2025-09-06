@@ -30,6 +30,7 @@ export const useHomepageStore = defineStore("AdminHomepageStore", {
 
     state: () => ({
         homepages: [],
+        headers: [],
         homepage: null,
         record: null,
         homepage_copy: null,
@@ -46,6 +47,27 @@ export const useHomepageStore = defineStore("AdminHomepageStore", {
             try {
                 const response = await axios.get('/api/admin/homepage/index', {});
                 this.homepages = response.data;
+                return true;
+            } catch (error) {
+                notification.notify({
+                    status: error.response.status,
+                    message: error.response.data.message || 'Fehler passiert.',
+                    type: 'error',
+                    timeout: adminStore.timeout,
+                });
+                return false;
+            } finally {
+                adminStore.is_loading--;
+            }
+        },
+
+        async loadHeaders(id) {
+            const notification = useNotificationStore();
+            const adminStore = useAdminStore();
+            adminStore.is_loading++;
+            try {
+                const response = await axios.get('/api/admin/homepage/load_headers', { params: { id } });
+                this.headers = response.data;
                 return true;
             } catch (error) {
                 notification.notify({
@@ -132,6 +154,48 @@ export const useHomepageStore = defineStore("AdminHomepageStore", {
             }
         },
 
+        async deleteRecord(id) {
+            const notification = useNotificationStore();
+            const adminStore = useAdminStore();
+            adminStore.is_loading++;
+            try {
+                const response = await axios.post('/api/admin/homepage/delete_record', { id });
+                // this.homepage = response.data;
+                return true;
+            } catch (error) {
+                notification.notify({
+                    status: error.response.status,
+                    message: error.response.data.message || 'Fehler passiert.',
+                    type: 'error',
+                    timeout: adminStore.timeout,
+                });
+                return false;
+            } finally {
+                adminStore.is_loading--;
+            }
+        },
+
+        async copyRecord(id) {
+            const notification = useNotificationStore();
+            const adminStore = useAdminStore();
+            adminStore.is_loading++;
+            try {
+                const response = await axios.post('/api/admin/homepage/copy_record', { id });
+                // this.homepage = response.data;
+                return true;
+            } catch (error) {
+                notification.notify({
+                    status: error.response.status,
+                    message: error.response.data.message || 'Fehler passiert.',
+                    type: 'error',
+                    timeout: adminStore.timeout,
+                });
+                return false;
+            } finally {
+                adminStore.is_loading--;
+            }
+        },
+
         async saveHomepage(homepage) {
 
             const notification = useNotificationStore();
@@ -175,6 +239,7 @@ export const useHomepageStore = defineStore("AdminHomepageStore", {
                 adminStore.is_loading--;
             }
         },
+
 
 
         async createHomepage() {

@@ -16,6 +16,7 @@ import Users_UsersWithRoles from '@/pages/admin/users/UsersWithRoles/Items.vue'
 
 import Homepage from '@/pages/admin/homepage/Index.vue'
 import Homepage_Edit from '@/pages/admin/homepage/Edit.vue'
+import Homepage_LandingPagePreview from '@/pages/admin/homepage/forms/LandingPagePreview.vue'
 
 import Preview from '@/pages/admin/preview/Index.vue'
 
@@ -38,6 +39,7 @@ const routes = [
 
     { path: '/admin/homepage', component: Homepage },
     { path: '/admin/homepage/edit', component: Homepage_Edit },
+    { path: '/admin/homepage/landing_page_preview', component: Homepage_LandingPagePreview },
 
     { path: '/admin/preview', component: Preview },
 

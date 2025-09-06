@@ -33,6 +33,15 @@
                         <v-container fluid>
                             <v-row>
                                 <v-col>
+                                    <!-- Farbe -->
+                                    <div class="d-flex flex-row flex-wrap ga-2">
+                                        <div class="color-box first d-flex align-center justify-center">A</div>
+                                        <div class="color-box second d-flex align-center justify-center">B</div>
+                                        <div class="color-box third d-flex align-center justify-center">C</div>
+                                    </div>
+                                    <v-select label="Farbe" v-model="header.structure.rows.row_1.desktop.color"
+                                        :items="colorItems" item-title="label" item-value="value" />
+
                                     <!-- Fluid -->
                                     <v-checkbox hide-details label="Volle Breite"
                                         :color="header.structure.rows.row_1.desktop.fluid ? 'success' : ''"
@@ -43,6 +52,7 @@
                                     <v-number-input label="Maximale Breite  (600-1920px)" clearable
                                         v-model="header.structure.rows.row_1.desktop.max_width" :min="600"
                                         :max="1920" />
+
 
                                     <!-- columns.count -->
                                     <v-number-input label="Anzahl Spalten  (1-3)"
@@ -59,6 +69,14 @@
                         <v-container fluid>
                             <v-row>
                                 <v-col>
+                                    <!-- Farbe -->
+                                    <div class="d-flex flex-row flex-wrap ga-2">
+                                        <div class="color-box first d-flex align-center justify-center">A</div>
+                                        <div class="color-box second d-flex align-center justify-center">B</div>
+                                        <div class="color-box third d-flex align-center justify-center">C</div>
+                                    </div>
+                                    <v-select label="Farbe" v-model="header.structure.rows.row_1.tablet.color"
+                                        :items="colorItems" item-title="label" item-value="value" />
                                     <!-- Fluid -->
                                     <v-checkbox hide-details label="Volle Breite"
                                         :color="header.structure.rows.row_1.tablet.fluid ? 'success' : ''"
@@ -84,6 +102,14 @@
                         <v-container fluid>
                             <v-row>
                                 <v-col>
+                                    <!-- Farbe -->
+                                    <div class="d-flex flex-row flex-wrap ga-2">
+                                        <div class="color-box first d-flex align-center justify-center">A</div>
+                                        <div class="color-box second d-flex align-center justify-center">B</div>
+                                        <div class="color-box third d-flex align-center justify-center">C</div>
+                                    </div>
+                                    <v-select label="Farbe" v-model="header.structure.rows.row_1.handy.color"
+                                        :items="colorItems" item-title="label" item-value="value" />
                                     <!-- Fluid -->
                                     <v-checkbox hide-details label="Volle Breite"
                                         :color="header.structure.rows.row_1.handy.fluid ? 'success' : ''"
@@ -125,6 +151,14 @@
                         <v-container fluid>
                             <v-row>
                                 <v-col>
+                                    <!-- Farbe -->
+                                    <div class="d-flex flex-row flex-wrap ga-2">
+                                        <div class="color-box first d-flex align-center justify-center">A</div>
+                                        <div class="color-box second d-flex align-center justify-center">B</div>
+                                        <div class="color-box third d-flex align-center justify-center">C</div>
+                                    </div>
+                                    <v-select label="Farbe" v-model="header.structure.rows.row_2.desktop.color"
+                                        :items="colorItems" item-title="label" item-value="value" />
                                     <!-- Fluid -->
                                     <v-checkbox hide-details label="Volle Breite"
                                         :color="header.structure.rows.row_2.desktop.fluid ? 'success' : ''"
@@ -151,6 +185,14 @@
                         <v-container fluid>
                             <v-row>
                                 <v-col>
+                                    <!-- Farbe -->
+                                    <div class="d-flex flex-row flex-wrap ga-2">
+                                        <div class="color-box first d-flex align-center justify-center">A</div>
+                                        <div class="color-box second d-flex align-center justify-center">B</div>
+                                        <div class="color-box third d-flex align-center justify-center">C</div>
+                                    </div>
+                                    <v-select label="Farbe" v-model="header.structure.rows.row_2.tablet.color"
+                                        :items="colorItems" item-title="label" item-value="value" />
                                     <!-- Fluid -->
                                     <v-checkbox hide-details label="Volle Breite"
                                         :color="header.structure.rows.row_2.tablet.fluid ? 'success' : ''"
@@ -176,6 +218,14 @@
                         <v-container fluid>
                             <v-row>
                                 <v-col>
+                                    <!-- Farbe -->
+                                    <div class="d-flex flex-row flex-wrap ga-2">
+                                        <div class="color-box first d-flex align-center justify-center">A</div>
+                                        <div class="color-box second d-flex align-center justify-center">B</div>
+                                        <div class="color-box third d-flex align-center justify-center">C</div>
+                                    </div>
+                                    <v-select label="Farbe" v-model="header.structure.rows.row_2.handy.color"
+                                        :items="colorItems" item-title="label" item-value="value" />
                                     <!-- Fluid -->
                                     <v-checkbox hide-details label="Volle Breite"
                                         :color="header.structure.rows.row_2.handy.fluid ? 'success' : ''"
@@ -212,7 +262,7 @@
 
 <script>
 export default {
-    props: ['header'],
+    props: ['header', 'colorItems'],
     emits: ['clickAction', 'confirmAction'],
 
     data() {
@@ -226,3 +276,11 @@ export default {
 
 }
 </script>
+
+<style scoped>
+.color-box {
+    width: 100px;
+    height: 24px;
+    border: 1px solid #666666;
+}
+</style>

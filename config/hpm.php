@@ -19,13 +19,23 @@ return [
             'footer'  => ['id' => null, 'is_visible' => true],
         ],
         'header' => [
-            'props'  => ['border' => false, 'color' => 'first', 'density' => 'default', 'elevation' => 0, 'flat' => true, 'height' => 0, 'scroll_behavior' => 'hide'],
+            'props'  => [
+                'border' => false,
+                'color' => 'first',
+                'density' => 'default',
+                'elevation' => 0,
+                'flat' => true,
+                'height' => null,
+                'height_row_1' => null,
+                'scroll_behavior' => 'hide'
+            ],
             'rows' => [
                 'count' => 1,
                 'row_1' => [
                     'desktop' => [
                         'fluid' => false,
                         'max_width' => null,
+                        'color' => 'transparent',
                         'columns' => [
                             'count' => 3,
                             'col_1' => [
@@ -75,6 +85,7 @@ return [
                     'tablet' => [
                         'fluid' => false,
                         'max_width' => null,
+                        'color' => 'transparent',
                         'columns' => [
                             'count' => 3,
                             'col_1' => [
@@ -124,6 +135,7 @@ return [
                     'handy' => [
                         'fluid' => false,
                         'max_width' => null,
+                        'color' => 'transparent',
                         'columns' => [
                             'count' => 3,
                             'col_1' => [
@@ -171,52 +183,155 @@ return [
                         ]
                     ],
                 ],
+
                 'row_2' => [
                     'desktop' => [
                         'fluid' => false,
                         'max_width' => null,
+                        'color' => 'transparent',
                         'columns' => [
                             'count' => 3,
                             'col_1' => [
                                 'justify' => 'justify-start',
+                                'has_menu' => false,
+                                'menu_id'   => null,
+                                'menu_name' => null,
+                                'has_image' => false,
+                                'invert_image' => false,
+                                'image' => null,
+                                'image_height' => 32,
+                                'image_width' => null,
+                                'has_text' => true,
+                                'text' => 'Homepagemaker',
+                                'text_variant' => 'subcontent',
                             ],
                             'col_2' => [
                                 'justify' => 'justify-start',
+                                'has_menu' => false,
+                                'menu_id'   => null,
+                                'menu_name' => null,
+                                'has_image' => false,
+                                'invert_image' => false,
+                                'image' => null,
+                                'image_height' => 32,
+                                'image_width' => null,
+                                'has_text' => true,
+                                'text' => 'Homepagemaker',
+                                'text_variant' => 'subcontent',
                             ],
                             'col_3' => [
                                 'justify' => 'justify-start',
+                                'has_menu' => false,
+                                'menu_id'   => null,
+                                'menu_name' => null,
+                                'has_image' => false,
+                                'invert_image' => false,
+                                'image' => null,
+                                'image_height' => 32,
+                                'image_width' => null,
+                                'has_text' => true,
+                                'text' => 'Homepagemaker',
+                                'text_variant' => 'subcontent',
                             ],
                         ]
                     ],
                     'tablet' => [
                         'fluid' => false,
                         'max_width' => null,
+                        'color' => 'transparent',
                         'columns' => [
-                            'count' => 2,
+                            'count' => 3,
                             'col_1' => [
                                 'justify' => 'justify-start',
+                                'has_menu' => false,
+                                'menu_id'   => null,
+                                'menu_name' => null,
+                                'has_image' => false,
+                                'invert_image' => false,
+                                'image' => null,
+                                'image_height' => 32,
+                                'image_width' => null,
+                                'has_text' => true,
+                                'text' => 'Homepagemaker',
+                                'text_variant' => 'subcontent',
                             ],
                             'col_2' => [
                                 'justify' => 'justify-start',
+                                'has_menu' => false,
+                                'menu_id'   => null,
+                                'menu_name' => null,
+                                'has_image' => false,
+                                'invert_image' => false,
+                                'image' => null,
+                                'image_height' => 32,
+                                'image_width' => null,
+                                'has_text' => true,
+                                'text' => 'Homepagemaker',
+                                'text_variant' => 'subcontent',
                             ],
                             'col_3' => [
                                 'justify' => 'justify-start',
+                                'has_menu' => false,
+                                'menu_id'   => null,
+                                'menu_name' => null,
+                                'has_image' => false,
+                                'invert_image' => false,
+                                'image' => null,
+                                'image_height' => 32,
+                                'image_width' => null,
+                                'has_text' => true,
+                                'text' => 'Homepagemaker',
+                                'text_variant' => 'subcontent',
                             ],
                         ]
                     ],
                     'handy' => [
                         'fluid' => false,
                         'max_width' => null,
+                        'color' => 'transparent',
                         'columns' => [
-                            'count' => 1,
+                            'count' => 3,
                             'col_1' => [
                                 'justify' => 'justify-start',
+                                'has_menu' => false,
+                                'menu_id'   => null,
+                                'menu_name' => null,
+                                'has_image' => false,
+                                'invert_image' => false,
+                                'image' => null,
+                                'image_height' => 32,
+                                'image_width' => null,
+                                'has_text' => true,
+                                'text' => 'Homepagemaker',
+                                'text_variant' => 'subcontent',
                             ],
                             'col_2' => [
                                 'justify' => 'justify-start',
+                                'has_menu' => false,
+                                'menu_id'   => null,
+                                'menu_name' => null,
+                                'has_image' => false,
+                                'invert_image' => false,
+                                'image' => null,
+                                'image_height' => 32,
+                                'image_width' => null,
+                                'has_text' => true,
+                                'text' => 'Homepagemaker',
+                                'text_variant' => 'subcontent',
                             ],
                             'col_3' => [
                                 'justify' => 'justify-start',
+                                'has_menu' => false,
+                                'menu_id'   => null,
+                                'menu_name' => null,
+                                'has_image' => false,
+                                'invert_image' => false,
+                                'image' => null,
+                                'image_height' => 32,
+                                'image_width' => null,
+                                'has_text' => true,
+                                'text' => 'Homepagemaker',
+                                'text_variant' => 'subcontent',
                             ],
                         ]
                     ],

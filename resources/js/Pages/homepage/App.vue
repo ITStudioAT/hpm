@@ -3,9 +3,7 @@
     <v-app>
         <main style="min-height: 100vh;" class="background" v-if="appReady">
             <router-view />
-            <!--
-            <VueQueryDevtools v-if="isDev" :initialIsOpen="false" />
-            -->
+
             <its-notification />
         </main>
 
@@ -19,7 +17,6 @@
 </template>
 
 <script setup>
-import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 import ItsNotification from '@/pages/components/ItsNotification.vue'
 
 const isDev = import.meta.env.DEV
@@ -28,7 +25,8 @@ const isDev = import.meta.env.DEV
 <script>
 // ===== Module-scope singletons (persist across re-renders of this component)
 const sheetKeyCache = new Map() // id -> key (slug/version) to avoid needless reloads
-let applyingTheme = false
+let applyingTheme = false;
+let applyingKey = '';
 
 import { mapWritableState } from 'pinia'
 import { useHomepageStore } from '@/stores/homepage/HomepageStore'
@@ -45,6 +43,10 @@ export default {
 
         this.is_loading++
         await this.homepageStore.loadHomepage(preview)
+
+        this._lastAppliedKey = ''
+        this.applyTheme(this.colorsetSlug, this.fontsetSlug)
+
         this.appReady = true
         this.is_loading--
     },
@@ -53,6 +55,11 @@ export default {
         return {
             appReady: false,
             homepageStore: null,
+
+            _lastAppliedKey: '',     // dedupe key (colors|font)
+            _scheduled: false,       // collapse rapid changes
+            _pendingColors: null,
+            _pendingFont: null,
         }
     },
 
@@ -67,24 +74,39 @@ export default {
         },
     },
 
-    watch: {
-        // Watch only the slugs that matter (fast + minimal work)
-        colorsetSlug: {
 
-            immediate: true,
-            handler(val, oldVal) {
-                if (val && val !== oldVal) this.applyTheme(val, this.fontsetSlug)
-            },
-        },
-        fontsetSlug: {
-            immediate: true,
-            handler(val, oldVal) {
-                if (val && val !== oldVal) this.applyTheme(this.colorsetSlug, val)
-            },
-        },
+    watch: {
+
+        ['colorsetSlug']() { this._requestApply() },
+        ['fontsetSlug']() { this._requestApply() },
     },
 
+
     methods: {
+        _requestApply() {
+            const colors = this.colorsetSlug
+            const font = this.fontsetSlug
+            if (!colors || !font) return
+
+            // dedupe identical keys
+            const key = `${colors}|${font}`
+            if (key === this._lastAppliedKey) return
+
+            // coalesce rapid changes into one microtask
+            this._pendingColors = colors
+            this._pendingFont = font
+            if (this._scheduled) return
+            this._scheduled = true
+            queueMicrotask(() => {
+                this._scheduled = false
+                const c = this._pendingColors
+                const f = this._pendingFont
+                const k = `${c}|${f}`
+                if (!c || !f || k === this._lastAppliedKey) return
+                this._lastAppliedKey = k
+                this.applyTheme(c, f)
+            })
+        },
 
         hexToRgbTriple(hexOrRgb) {
             if (!hexOrRgb) return '0,0,0'
@@ -212,14 +234,16 @@ export default {
             if (style.textContent !== css) style.textContent = css
         },
 
-        /**
-         * Apply theme by loading static + slugged styles in PARALLEL.
-         * No cache-busting; only re-run when slugs change.
-         */
+
+
         async applyTheme(colorset, fontset) {
 
-            if (!colorset || !fontset || applyingTheme) return
-            applyingTheme = true
+            if (!colorset || !fontset) return
+            const key = `${colorset}|${fontset}`
+            if (applyingTheme && key === applyingKey) return
+
+            applyingTheme = true;
+            applyingKey = key;
             try {
                 await Promise.all([
                     this.ensureStylesheet('fonts-core', '/fonts/fonts.css', 'static'),
@@ -228,19 +252,23 @@ export default {
                     this.ensureStylesheet('fontset-css', `/api/css/fontset/${encodeURIComponent(fontset)}.css`, `font:${fontset}`),
                 ])
 
-                try { await document.fonts.ready } catch { }
+                // ⚡ Optional: don't block on full font readiness (can be slow)
+                // await document.fonts.ready
+                // Instead, bound wait:
+                await Promise.race([
+                    (async () => { try { await document.fonts.ready } catch { } })(),
+                    new Promise(res => setTimeout(res, 250)) // cap at 250ms
+                ])
 
                 const fam = this.getContentFontFamily()
                 this.setBaseFontFamily(fam)
                 this.setVuetifyFontVariable(fam)
-
-                // 🔗 NEW: make HPM vars usable via Vuetify's `color` prop
                 this.bridgeVuetifyThemeFromHpm()
             } finally {
                 applyingTheme = false
             }
         },
-    },
+    }
 }
 </script>
 

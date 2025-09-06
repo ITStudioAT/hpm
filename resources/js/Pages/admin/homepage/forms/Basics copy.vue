@@ -56,8 +56,7 @@
                                 item-title="label" item-value="value" :return-object="false" label="Colorset auswählen"
                                 density="comfortable" variant="outlined" hide-details="auto" clearable
                                 :disabled="colorsetOptions.length === 0" :loading="colorsetOptions.length === 0"
-                                @update:modelValue="onColorsetChanged" :menu-props="{ eager: true }"
-                                :virtual-scroll="true">
+                                @update:modelValue="onColorsetChanged">
                                 <template #selection="{ item }">
                                     <div class="sel-wrap">
                                         <div class="preview">
@@ -182,51 +181,12 @@ import { cloneStructure, HPM_SCHEMAS } from '@/constants/structures.generated'
 
 /** Farben-Swatches (unverändert) */
 const _colorsetCssCache = new Map();
-const COLOR_VAR_NAMES = {
-    first: ["firstBackground", "firstBG", "first", "firstColor"],
-    second: ["secondBackground", "secondBG", "second", "secondColor"],
-    third: ["thirdBackground", "thirdBG", "third", "thirdColor"],
-    // buttonBg: ["buttonBackground","button","btnBg"],
-    // buttonFg: ["buttonText","btnText"],
-    // text:     ["mainText","text"],
-    // stroke:   ["strokeColor","stroke"],
-}
-
-function parseColorVarsForCache(cssText) {
-    const pick = (names) => {
-        for (const n of names) {
-            const m = cssText.match(new RegExp(`--${n}\\s*:\\s*([^;]+);`, "i"))
-            if (m) return m[1].trim()
-        }
-        return null
-    }
-    return {
-        first: pick(COLOR_VAR_NAMES.first) || "#ccc",
-        second: pick(COLOR_VAR_NAMES.second) || "#ddd",
-        third: pick(COLOR_VAR_NAMES.third) || "#eee",
-        // buttonBg: pick(COLOR_VAR_NAMES.buttonBg) || "#ccc",
-        // buttonFg: pick(COLOR_VAR_NAMES.buttonFg) || "#000",
-        // text:     pick(COLOR_VAR_NAMES.text)     || "#333",
-        // stroke:   pick(COLOR_VAR_NAMES.stroke)   || "rgba(0,0,0,.12)",
-    }
-}
-
-async function fetchColorsetCss(slug) {
-    const url = `/api/css/colors/${encodeURIComponent(slug)}.css`
-    const res = await fetch(url, { headers: { Accept: "text/css,*/*;q=0.1" } })
-    const cssText = res.ok ? await res.text() : ""
-    return parseColorVarsForCache(cssText)
-}
-
-
 const ColorsetSwatches = {
     name: "ColorsetSwatches",
     props: { slug: { type: String, required: true }, size: { type: Number, default: 18 }, gap: { type: Number, default: 6 }, rounded: { type: Number, default: 4 } },
     data() { return { first: null, second: null, third: null, loading: false }; },
     watch: { slug: { immediate: true, handler() { this.load(); } } },
     methods: {
-
-
         parseColorVars(cssText) {
             const pick = (names) => { for (const n of names) { const m = cssText.match(new RegExp(`--${n}\\s*:\\s*([^;]+);`, "i")); if (m) return m[1].trim(); } return null; };
             const first = pick(["firstBackground", "firstBG", "first", "firstColor"]);
@@ -239,7 +199,7 @@ const ColorsetSwatches = {
             if (_colorsetCssCache.has(this.slug)) { Object.assign(this, _colorsetCssCache.get(this.slug)); return; }
             this.loading = true;
             try {
-                const url = `/api/css/colors/${encodeURIComponent(this.slug)}.css`;
+                const url = `/api/css/colors/${encodeURIComponent(this.slug)}.css?v=${Date.now()}`;
                 const res = await fetch(url, { headers: { Accept: "text/css,*/*;q=0.1" } });
                 const cssText = res.ok ? await res.text() : "";
                 const parsed = this.parseColorVars(cssText);
@@ -282,7 +242,6 @@ export default {
             this.fontsetStore.loadFontsets(),
             this.colorsetStore.loadColorsets(),
             this.fetchChoices(),
-            await this.prewarmSwatchesAll(24)
         ]);
 
         const base = cloneStructure('homepage');
@@ -413,31 +372,6 @@ export default {
     },
 
     methods: {
-        async prewarmSwatchesAll(concurrency = 8) {
-            // build full slug list from your computed options / stores
-            const slugs = (this.colorsetOptions || [])
-                .map(o => o?.value)
-                .filter(s => typeof s === "string" && s.trim())
-
-            // nothing to do
-            if (!slugs.length) return
-
-            // skip already cached
-            const todo = slugs.filter(s => !_colorsetCssCache.has(s))
-
-            // fetch all with a small concurrency pool
-            for (let i = 0; i < todo.length; i += concurrency) {
-                const batch = todo.slice(i, i + concurrency)
-                await Promise.allSettled(batch.map(async s => {
-                    try {
-                        const parsed = await fetchColorsetCss(s)
-                        _colorsetCssCache.set(s, parsed)
-                    } catch {
-                        _colorsetCssCache.set(s, { first: "#ccc", second: "#ddd", third: "#eee" })
-                    }
-                }))
-            }
-        },
         async onColorsetChanged(v) {
             this.data.structure.colors.colorset = v || "default";
             HPM_SCHEMAS.homepage.shape.colors.parse(this.data.structure.colors);

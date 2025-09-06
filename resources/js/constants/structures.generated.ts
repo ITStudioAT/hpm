@@ -37,7 +37,8 @@ export const HPM_STRUCTURES = {
             "density": "default",
             "elevation": 0,
             "flat": true,
-            "height": 0,
+            "height": null,
+            "height_row_1": null,
             "scroll_behavior": "hide"
         },
         "rows": {
@@ -46,6 +47,7 @@ export const HPM_STRUCTURES = {
                 "desktop": {
                     "fluid": false,
                     "max_width": null,
+                    "color": "transparent",
                     "columns": {
                         "count": 3,
                         "col_1": {
@@ -95,6 +97,7 @@ export const HPM_STRUCTURES = {
                 "tablet": {
                     "fluid": false,
                     "max_width": null,
+                    "color": "transparent",
                     "columns": {
                         "count": 3,
                         "col_1": {
@@ -144,6 +147,7 @@ export const HPM_STRUCTURES = {
                 "handy": {
                     "fluid": false,
                     "max_width": null,
+                    "color": "transparent",
                     "columns": {
                         "count": 3,
                         "col_1": {
@@ -195,48 +199,150 @@ export const HPM_STRUCTURES = {
                 "desktop": {
                     "fluid": false,
                     "max_width": null,
+                    "color": "transparent",
                     "columns": {
                         "count": 3,
                         "col_1": {
-                            "justify": "justify-start"
+                            "justify": "justify-start",
+                            "has_menu": false,
+                            "menu_id": null,
+                            "menu_name": null,
+                            "has_image": false,
+                            "invert_image": false,
+                            "image": null,
+                            "image_height": 32,
+                            "image_width": null,
+                            "has_text": true,
+                            "text": "Homepagemaker",
+                            "text_variant": "subcontent"
                         },
                         "col_2": {
-                            "justify": "justify-start"
+                            "justify": "justify-start",
+                            "has_menu": false,
+                            "menu_id": null,
+                            "menu_name": null,
+                            "has_image": false,
+                            "invert_image": false,
+                            "image": null,
+                            "image_height": 32,
+                            "image_width": null,
+                            "has_text": true,
+                            "text": "Homepagemaker",
+                            "text_variant": "subcontent"
                         },
                         "col_3": {
-                            "justify": "justify-start"
+                            "justify": "justify-start",
+                            "has_menu": false,
+                            "menu_id": null,
+                            "menu_name": null,
+                            "has_image": false,
+                            "invert_image": false,
+                            "image": null,
+                            "image_height": 32,
+                            "image_width": null,
+                            "has_text": true,
+                            "text": "Homepagemaker",
+                            "text_variant": "subcontent"
                         }
                     }
                 },
                 "tablet": {
                     "fluid": false,
                     "max_width": null,
+                    "color": "transparent",
                     "columns": {
-                        "count": 2,
+                        "count": 3,
                         "col_1": {
-                            "justify": "justify-start"
+                            "justify": "justify-start",
+                            "has_menu": false,
+                            "menu_id": null,
+                            "menu_name": null,
+                            "has_image": false,
+                            "invert_image": false,
+                            "image": null,
+                            "image_height": 32,
+                            "image_width": null,
+                            "has_text": true,
+                            "text": "Homepagemaker",
+                            "text_variant": "subcontent"
                         },
                         "col_2": {
-                            "justify": "justify-start"
+                            "justify": "justify-start",
+                            "has_menu": false,
+                            "menu_id": null,
+                            "menu_name": null,
+                            "has_image": false,
+                            "invert_image": false,
+                            "image": null,
+                            "image_height": 32,
+                            "image_width": null,
+                            "has_text": true,
+                            "text": "Homepagemaker",
+                            "text_variant": "subcontent"
                         },
                         "col_3": {
-                            "justify": "justify-start"
+                            "justify": "justify-start",
+                            "has_menu": false,
+                            "menu_id": null,
+                            "menu_name": null,
+                            "has_image": false,
+                            "invert_image": false,
+                            "image": null,
+                            "image_height": 32,
+                            "image_width": null,
+                            "has_text": true,
+                            "text": "Homepagemaker",
+                            "text_variant": "subcontent"
                         }
                     }
                 },
                 "handy": {
                     "fluid": false,
                     "max_width": null,
+                    "color": "transparent",
                     "columns": {
-                        "count": 1,
+                        "count": 3,
                         "col_1": {
-                            "justify": "justify-start"
+                            "justify": "justify-start",
+                            "has_menu": false,
+                            "menu_id": null,
+                            "menu_name": null,
+                            "has_image": false,
+                            "invert_image": false,
+                            "image": null,
+                            "image_height": 32,
+                            "image_width": null,
+                            "has_text": true,
+                            "text": "Homepagemaker",
+                            "text_variant": "subcontent"
                         },
                         "col_2": {
-                            "justify": "justify-start"
+                            "justify": "justify-start",
+                            "has_menu": false,
+                            "menu_id": null,
+                            "menu_name": null,
+                            "has_image": false,
+                            "invert_image": false,
+                            "image": null,
+                            "image_height": 32,
+                            "image_width": null,
+                            "has_text": true,
+                            "text": "Homepagemaker",
+                            "text_variant": "subcontent"
                         },
                         "col_3": {
-                            "justify": "justify-start"
+                            "justify": "justify-start",
+                            "has_menu": false,
+                            "menu_id": null,
+                            "menu_name": null,
+                            "has_image": false,
+                            "invert_image": false,
+                            "image": null,
+                            "image_height": 32,
+                            "image_width": null,
+                            "has_text": true,
+                            "text": "Homepagemaker",
+                            "text_variant": "subcontent"
                         }
                     }
                 }
@@ -259,25 +365,25 @@ export const HPM_SCHEMAS = {
   homepage: z.object({
   index: z.object({
   id: z.any().nullable()
-}).strict(),
+}).strip(),
   fonts: z.object({
   fontset: z.string()
-}).strict(),
+}).strip(),
   colors: z.object({
   colorset: z.string()
-}).strict()
-}).strict(),
+}).strip()
+}).strip(),
   index: z.object({
   header: z.object({
   id: z.any().nullable(),
   is_visible: z.boolean()
-}).strict(),
+}).strip(),
   content: z.array(z.any()),
   footer: z.object({
   id: z.any().nullable(),
   is_visible: z.boolean()
-}).strict()
-}).strict(),
+}).strip()
+}).strip(),
   header: z.object({
   props: z.object({
   border: z.boolean(),
@@ -286,14 +392,16 @@ export const HPM_SCHEMAS = {
   elevation: z.number().min(0).max(24).nullable(),
   flat: z.boolean(),
   height: z.number().min(0).max(128).nullable(),
+  height_row_1: z.number().min(0).max(128).nullable(),
   scroll_behavior: z.enum(['hide','elevate','default'])
-}).strict(),
+}).strip(),
   rows: z.object({
   count: z.number(),
   row_1: z.object({
   desktop: z.object({
   fluid: z.boolean(),
   max_width: z.any().nullable(),
+  color: z.string(),
   columns: z.object({
   count: z.number(),
   col_1: z.object({
@@ -309,7 +417,7 @@ export const HPM_SCHEMAS = {
   has_text: z.boolean(),
   text: z.string(),
   text_variant: z.string()
-}).strict(),
+}).strip(),
   col_2: z.object({
   justify: z.string(),
   has_menu: z.boolean(),
@@ -323,7 +431,7 @@ export const HPM_SCHEMAS = {
   has_text: z.boolean(),
   text: z.string(),
   text_variant: z.string()
-}).strict(),
+}).strip(),
   col_3: z.object({
   justify: z.string(),
   has_menu: z.boolean(),
@@ -337,12 +445,13 @@ export const HPM_SCHEMAS = {
   has_text: z.boolean(),
   text: z.string(),
   text_variant: z.string()
-}).strict()
-}).strict()
-}).strict(),
+}).strip()
+}).strip()
+}).strip(),
   tablet: z.object({
   fluid: z.boolean(),
   max_width: z.any().nullable(),
+  color: z.string(),
   columns: z.object({
   count: z.number(),
   col_1: z.object({
@@ -358,7 +467,7 @@ export const HPM_SCHEMAS = {
   has_text: z.boolean(),
   text: z.string(),
   text_variant: z.string()
-}).strict(),
+}).strip(),
   col_2: z.object({
   justify: z.string(),
   has_menu: z.boolean(),
@@ -372,7 +481,7 @@ export const HPM_SCHEMAS = {
   has_text: z.boolean(),
   text: z.string(),
   text_variant: z.string()
-}).strict(),
+}).strip(),
   col_3: z.object({
   justify: z.string(),
   has_menu: z.boolean(),
@@ -386,12 +495,13 @@ export const HPM_SCHEMAS = {
   has_text: z.boolean(),
   text: z.string(),
   text_variant: z.string()
-}).strict()
-}).strict()
-}).strict(),
+}).strip()
+}).strip()
+}).strip(),
   handy: z.object({
   fluid: z.boolean(),
   max_width: z.any().nullable(),
+  color: z.string(),
   columns: z.object({
   count: z.number(),
   col_1: z.object({
@@ -407,7 +517,7 @@ export const HPM_SCHEMAS = {
   has_text: z.boolean(),
   text: z.string(),
   text_variant: z.string()
-}).strict(),
+}).strip(),
   col_2: z.object({
   justify: z.string(),
   has_menu: z.boolean(),
@@ -421,7 +531,7 @@ export const HPM_SCHEMAS = {
   has_text: z.boolean(),
   text: z.string(),
   text_variant: z.string()
-}).strict(),
+}).strip(),
   col_3: z.object({
   justify: z.string(),
   has_menu: z.boolean(),
@@ -435,62 +545,164 @@ export const HPM_SCHEMAS = {
   has_text: z.boolean(),
   text: z.string(),
   text_variant: z.string()
-}).strict()
-}).strict()
-}).strict()
-}).strict(),
+}).strip()
+}).strip()
+}).strip()
+}).strip(),
   row_2: z.object({
   desktop: z.object({
   fluid: z.boolean(),
   max_width: z.any().nullable(),
+  color: z.string(),
   columns: z.object({
   count: z.number(),
   col_1: z.object({
-  justify: z.string()
-}).strict(),
+  justify: z.string(),
+  has_menu: z.boolean(),
+  menu_id: z.any().nullable(),
+  menu_name: z.any().nullable(),
+  has_image: z.boolean(),
+  invert_image: z.boolean(),
+  image: z.any().nullable(),
+  image_height: z.number(),
+  image_width: z.any().nullable(),
+  has_text: z.boolean(),
+  text: z.string(),
+  text_variant: z.string()
+}).strip(),
   col_2: z.object({
-  justify: z.string()
-}).strict(),
+  justify: z.string(),
+  has_menu: z.boolean(),
+  menu_id: z.any().nullable(),
+  menu_name: z.any().nullable(),
+  has_image: z.boolean(),
+  invert_image: z.boolean(),
+  image: z.any().nullable(),
+  image_height: z.number(),
+  image_width: z.any().nullable(),
+  has_text: z.boolean(),
+  text: z.string(),
+  text_variant: z.string()
+}).strip(),
   col_3: z.object({
-  justify: z.string()
-}).strict()
-}).strict()
-}).strict(),
+  justify: z.string(),
+  has_menu: z.boolean(),
+  menu_id: z.any().nullable(),
+  menu_name: z.any().nullable(),
+  has_image: z.boolean(),
+  invert_image: z.boolean(),
+  image: z.any().nullable(),
+  image_height: z.number(),
+  image_width: z.any().nullable(),
+  has_text: z.boolean(),
+  text: z.string(),
+  text_variant: z.string()
+}).strip()
+}).strip()
+}).strip(),
   tablet: z.object({
   fluid: z.boolean(),
   max_width: z.any().nullable(),
+  color: z.string(),
   columns: z.object({
   count: z.number(),
   col_1: z.object({
-  justify: z.string()
-}).strict(),
+  justify: z.string(),
+  has_menu: z.boolean(),
+  menu_id: z.any().nullable(),
+  menu_name: z.any().nullable(),
+  has_image: z.boolean(),
+  invert_image: z.boolean(),
+  image: z.any().nullable(),
+  image_height: z.number(),
+  image_width: z.any().nullable(),
+  has_text: z.boolean(),
+  text: z.string(),
+  text_variant: z.string()
+}).strip(),
   col_2: z.object({
-  justify: z.string()
-}).strict(),
+  justify: z.string(),
+  has_menu: z.boolean(),
+  menu_id: z.any().nullable(),
+  menu_name: z.any().nullable(),
+  has_image: z.boolean(),
+  invert_image: z.boolean(),
+  image: z.any().nullable(),
+  image_height: z.number(),
+  image_width: z.any().nullable(),
+  has_text: z.boolean(),
+  text: z.string(),
+  text_variant: z.string()
+}).strip(),
   col_3: z.object({
-  justify: z.string()
-}).strict()
-}).strict()
-}).strict(),
+  justify: z.string(),
+  has_menu: z.boolean(),
+  menu_id: z.any().nullable(),
+  menu_name: z.any().nullable(),
+  has_image: z.boolean(),
+  invert_image: z.boolean(),
+  image: z.any().nullable(),
+  image_height: z.number(),
+  image_width: z.any().nullable(),
+  has_text: z.boolean(),
+  text: z.string(),
+  text_variant: z.string()
+}).strip()
+}).strip()
+}).strip(),
   handy: z.object({
   fluid: z.boolean(),
   max_width: z.any().nullable(),
+  color: z.string(),
   columns: z.object({
   count: z.number(),
   col_1: z.object({
-  justify: z.string()
-}).strict(),
+  justify: z.string(),
+  has_menu: z.boolean(),
+  menu_id: z.any().nullable(),
+  menu_name: z.any().nullable(),
+  has_image: z.boolean(),
+  invert_image: z.boolean(),
+  image: z.any().nullable(),
+  image_height: z.number(),
+  image_width: z.any().nullable(),
+  has_text: z.boolean(),
+  text: z.string(),
+  text_variant: z.string()
+}).strip(),
   col_2: z.object({
-  justify: z.string()
-}).strict(),
+  justify: z.string(),
+  has_menu: z.boolean(),
+  menu_id: z.any().nullable(),
+  menu_name: z.any().nullable(),
+  has_image: z.boolean(),
+  invert_image: z.boolean(),
+  image: z.any().nullable(),
+  image_height: z.number(),
+  image_width: z.any().nullable(),
+  has_text: z.boolean(),
+  text: z.string(),
+  text_variant: z.string()
+}).strip(),
   col_3: z.object({
-  justify: z.string()
-}).strict()
-}).strict()
-}).strict()
-}).strict()
-}).strict()
-}).strict(),
+  justify: z.string(),
+  has_menu: z.boolean(),
+  menu_id: z.any().nullable(),
+  menu_name: z.any().nullable(),
+  has_image: z.boolean(),
+  invert_image: z.boolean(),
+  image: z.any().nullable(),
+  image_height: z.number(),
+  image_width: z.any().nullable(),
+  has_text: z.boolean(),
+  text: z.string(),
+  text_variant: z.string()
+}).strip()
+}).strip()
+}).strip()
+}).strip()
+}).strip()
+}).strip(),
   footer: z.object({
   props: z.object({
   border: z.boolean(),
@@ -498,8 +710,8 @@ export const HPM_SCHEMAS = {
   elevation: z.number().min(0).max(24).nullable(),
   flat: z.boolean(),
   height: z.number().min(0).max(128).nullable()
-}).strict()
-}).strict()
+}).strip()
+}).strip()
 } as const;
 
 // Inferred types:

@@ -25,7 +25,6 @@ class ExportHpmStructures extends Command
         'header.props.scroll_behavior' => "z.enum(['hide','elevate','default'])",
         'header.props.color'           => "z.enum(['first','second','third','transparent'])",
         'header.props.height'    => 'z.number().min(0).max(128).nullable()',
-        'header.props.height_row_1'    => 'z.number().min(0).max(128).nullable()',
         'header.props.elevation' => 'z.number().min(0).max(24).nullable()',
         'footer.props.height'    => 'z.number().min(0).max(128).nullable()',
         'footer.props.elevation' => 'z.number().min(0).max(24).nullable()',
@@ -155,7 +154,7 @@ TS;
                     $inner = "{}";
                 }
 
-                return "z.object({$inner}).strip()";
+                return "z.object({$inner}).strict()";
             } else {
                 // ---- Liste ----
                 if (count($value) > 0) {

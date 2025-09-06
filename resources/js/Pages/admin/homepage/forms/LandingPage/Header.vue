@@ -34,6 +34,10 @@
             <v-number-input clearable label="Individuelle Höhe (24-128px)" v-model="header.structure.props.height"
                 :min="24" :max="128" />
 
+            <!-- Height Row_1 -->
+            <v-number-input label="Höhe" clearable v-model="header.structure.props.height_row_1" :min="24" :max="104"
+                v-if="header.structure.props.height && header.structure.props.height > 24" />
+
             <!-- Elevation -->
             <v-number-input label="Schatten (0-24px)" v-model="header.structure.props.elevation" :min="0" :max="24" />
 

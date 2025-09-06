@@ -69,4 +69,55 @@ class HomepageService
         $homepage->delete();
         Homepage::where('homepage_id', $id)->delete();
     }
+
+    public function deleteRecord($id)
+    {
+        $record = Homepage::findOrFail($id);
+
+
+        // Derive these from the record to avoid mismatches
+        $homepageId = (int) $record->homepage_id;
+        $type       = (string) $record->type;   // e.g. "header"
+        $targetId   = (int) $record->id;        // e.g. 14
+
+
+        if ($this->isReferencedInStructure($homepageId, $type, $targetId, $targetId)) {
+            abort(422, "Dieses Element kann nicht gelöscht werden, da es noch wo anders verwendet wird.");
+        }
+
+        $record->delete();
+
+        return response()->json(['status' => 'ok']);
+    }
+
+    protected function isReferencedInStructure(int $homepageId, string $type, int $targetId, int $selfId): bool
+    {
+        $path = '$."' . $type . '".id';
+
+        $direct = Homepage::where('homepage_id', $homepageId)
+            ->where('id', '!=', $selfId)
+            ->whereNotNull('structure')
+            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(structure, ?)) = ?", [$path, (string) $targetId])
+            ->exists();
+
+        if ($direct) return true;
+
+        // Deep check inside content array: [{"type": "...","id": ...}]
+        return Homepage::where('homepage_id', $homepageId)
+            ->where('id', '!=', $selfId)
+            ->whereNotNull('structure')
+            ->whereRaw("
+            EXISTS (
+              SELECT 1
+              FROM JSON_TABLE(structure->'$.content', '$[*]'
+                COLUMNS (
+                  ctype VARCHAR(64) PATH '$.type',
+                  cid   INT         PATH '$.id'
+                )
+              ) AS jt
+              WHERE jt.ctype = ? AND jt.cid = ?
+            )
+        ", [$type, $targetId])
+            ->exists();
+    }
 }

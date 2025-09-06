@@ -33,6 +33,7 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
     Route::get('/homepage/load_homepage',  [\App\Http\Controllers\Homepage\HomepageController::class, 'loadHomepage']);
     Route::get('/homepage/load_record',  [\App\Http\Controllers\Homepage\HomepageController::class, 'loadRecord']);
 
+
     /***** ADMIN ROUTES *****/
 
     Route::get('/admin/config',  [AdminController::class, 'config']);
@@ -69,16 +70,15 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
     Route::middleware(['auth:sanctum', 'api-allowed:admin'])->group(function () {
         Route::get('/admin/homepage/index',  [\App\Http\Controllers\Admin\HomepageController::class, 'loadHomepages']);
         Route::get('/admin/homepage/load_homepage',  [\App\Http\Controllers\Admin\HomepageController::class, 'loadHomepage']);
+        Route::get('/admin/homepage/load_headers',  [\App\Http\Controllers\Admin\HomepageController::class, 'loadHeaders']);
         Route::get('/admin/homepage/load_record',  [\App\Http\Controllers\Admin\HomepageController::class, 'loadRecord']);
         Route::post('/admin/homepage/create',  [\App\Http\Controllers\Admin\HomepageController::class, 'createHomepage']);
         Route::post('/admin/homepage/delete',  [\App\Http\Controllers\Admin\HomepageController::class, 'deleteHomepage']);
         Route::post('/admin/homepage/save',  [\App\Http\Controllers\Admin\HomepageController::class, 'saveHomepage']);
         Route::post('/admin/homepage/save_record',  [\App\Http\Controllers\Admin\HomepageController::class, 'saveRecord']);
-
-
-
-
-
+        Route::post('/admin/homepage/copy_record',  [\App\Http\Controllers\Admin\HomepageController::class, 'copyRecord']);
+        Route::post('/admin/homepage/delete_record',  [\App\Http\Controllers\Admin\HomepageController::class, 'deleteRecord']);
+        Route::post('/admin/homepage/rename_record',  [\App\Http\Controllers\Admin\HomepageController::class, 'renameRecord']);
 
 
         // navigation, menus

@@ -31,7 +31,7 @@
 
                     <!-- Zeilen/Spalten - Aufbau der Kopfzeile -->
                     <v-col cols="12" md="6" lg="4" xl="3">
-                        <RowsAndColumns :header="header" @clickAction="action = $event"
+                        <RowsAndColumns :header="header" :colorItems="colorItems" @clickAction="action = $event"
                             @confirmAction="(header) => confirmHeader(header)" />
 
                     </v-col>
@@ -42,6 +42,9 @@
                         <Row_1 :header="header" :justifyItems="justifyItems" :textVariantItems="textVariantItems"
                             @clickAction="action = $event" @confirmAction="(header) => confirmHeader(header)" />
 
+                        <Row_2 :header="header" :justifyItems="justifyItems" :textVariantItems="textVariantItems"
+                            @clickAction="action = $event" @confirmAction="(header) => confirmHeader(header)"
+                            v-if="header.structure.rows.count > 1" />
                     </v-col>
 
                 </v-row>
@@ -49,20 +52,35 @@
             </v-expand-transition>
 
 
-
             <v-row>
-                {{ header.structure.rows.row_1.desktop }}
-            </v-row>
-            <v-row class="mt-12">
-                {{ header.structure.rows.row_1.tablet }}
-            </v-row>
-            <v-row class="mt-12">
-                {{ header.structure.rows.row_1.handy }}
+                <v-col>
+                    <its-menu-button title="Vorschau" subtitle="Neues Fenster" icon="mdi-eye" color="primary"
+                        @click="openPreview" v-if="is_preview_intern" />
+
+                    <its-menu-button title="Vorchau" subtitle="schließen" icon="mdi-close" color="warning"
+                        @click="closePreview" v-if="!is_preview_intern" />
+
+                </v-col>
+
             </v-row>
 
+
+            <!--
+            <v-row>
+                <v-col cols="12" md="8">
+                    <div class="d-flex align-center mb-2 font-weight-medium">
+                        <span class="flex-grow-1">Desktop</span>
+                        <v-btn small color="primary" icon="mdi-open-in-new" @click="openPreview('desktop')" />
+                    </div>
+                    <iframe :key="reloadKey + '-desktop'" :src="preview_src" title="Example website" loading="lazy"
+                        style="width:1200px; height:600px; border:1;" referrerpolicy="no-referrer-when-downgrade"
+                        allow="fullscreen; clipboard-read; clipboard-write" />
+                </v-col>
+            </v-row>
+            -->
 
             <!-- VORSCHAU -->
-            <v-row>
+            <v-row v-if="is_preview_intern">
                 <v-col cols="12" md="8">
                     <div class="mb-2 font-weight-medium">Desktop</div>
                     <iframe :key="reloadKey" :src="preview_src" title="Example website" loading="lazy"
@@ -77,11 +95,20 @@
                         allow="fullscreen; clipboard-read; clipboard-write" />
                 </v-col>
             </v-row>
+            <v-row v-if="is_preview_intern">
+                <v-col cols="12" md="8">
+                    <div class="mb-2 font-weight-medium">Tablet</div>
+                    <iframe :key="reloadKey" :src="preview_src" title="Example website" loading="lazy"
+                        style="width:960px; height:500px; border:1;" referrerpolicy="no-referrer-when-downgrade"
+                        allow="fullscreen; clipboard-read; clipboard-write" />
+                </v-col>
+            </v-row>
         </v-form>
     </v-container>
 </template>
 
 <script>
+import { z } from "zod";
 import { useValidationRulesSetup } from "@/helpers/rules";
 import { mapWritableState } from "pinia";
 import { deepMergeDefaults } from "@/helpers/merge";
@@ -92,6 +119,7 @@ import HeaderAndFooter from "./LandingPage/HeaderAndFooter.vue";
 import Header from "./LandingPage/Header.vue";
 import RowsAndColumns from "./LandingPage/RowsAndColumns.vue";
 import Row_1 from "./LandingPage/Row_1.vue";
+import Row_2 from "./LandingPage/Row_2.vue";
 
 // <-- NEU: generierte Defaults/Schemas verwenden
 import { cloneStructure, HPM_SCHEMAS } from "@/constants/structures.generated";
@@ -101,48 +129,82 @@ export default {
     setup() { return useValidationRulesSetup(); },
 
     props: ["homepage"],
-    components: { ItsMenuButton, HeaderAndFooter, Header, RowsAndColumns, Row_1 },
+    components: { ItsMenuButton, HeaderAndFooter, Header, RowsAndColumns, Row_1, Row_2 },
 
     async beforeMount() {
-        this.adminStore = useAdminStore();
-        this.adminStore.initialize(this.$router);
-        this.homepageStore = useHomepageStore();
+        this.adminStore = useAdminStore()
+        this.adminStore.initialize(this.$router)
+        this.homepageStore = useHomepageStore()
 
-        // 1) Index-Record laden
-        await this.homepageStore.loadRecord(this.homepage.id, this.homepage.structure.index.id);
+        // ---------- 1) INDEX ----------
+        await this.homepageStore.loadRecord(this.homepage.id, this.homepage.structure.index.id)
+        const indexRecord = { ...this.record } // Snapshot
 
-        // Defaults mergen (Index)
-        const indexDef = cloneStructure("index");
-        const indexMerged = deepMergeDefaults(this.record.structure ?? {}, indexDef);
-        // Optional validieren (ganzer Index-Baum)
-        try { HPM_SCHEMAS.index.parse(indexMerged); } catch (e) { console.warn("Invalid index structure:", e); }
+        const indexDef = cloneStructure("index")
+        const indexMerged = deepMergeDefaults(indexRecord.structure ?? {}, indexDef)
 
-        this.index = { ...this.record, structure: indexMerged };
-        this.index_90 = { ...this.record, structure: deepMergeDefaults(this.record.structure ?? {}, indexDef) };
+        // Strip entfernt unbekannte Keys
+        const indexSchemaStripping =
+    /** @type {import('zod').ZodTypeAny} */ (HPM_SCHEMAS.index).strip()
 
-        // 2) Header-Record laden
-        await this.homepageStore.loadRecord(this.homepage.id, this.index.structure.header.id);
-        const headerDef = cloneStructure("header");
-        const headerMerged = deepMergeDefaults(this.record.structure ?? {}, headerDef);
-        try { HPM_SCHEMAS.header.parse(headerMerged); } catch (e) { console.warn("Invalid header structure:", e); }
-        this.header = { ...this.record, structure: headerMerged };
-        this.header_90 = { ...this.record, structure: deepMergeDefaults(this.record.structure ?? {}, headerDef) };
+        let indexClean
+        try {
+            indexClean = indexSchemaStripping.parse(indexMerged)
+        } catch (e) {
+            console.warn("Invalid index structure (after strip):", e)
+            indexClean = indexDef
+        }
 
-        // 3) Footer-Record laden
-        await this.homepageStore.loadRecord(this.homepage.id, this.index.structure.footer.id);
-        const footerDef = cloneStructure("footer");
-        const footerMerged = deepMergeDefaults(this.record.structure ?? {}, footerDef);
-        try { HPM_SCHEMAS.footer.parse(footerMerged); } catch (e) { console.warn("Invalid footer structure:", e); }
-        this.footer = { ...this.record, structure: footerMerged };
-        this.footer_90 = { ...this.record, structure: deepMergeDefaults(this.record.structure ?? {}, footerDef) };
+        this.index = { ...indexRecord, structure: indexClean }
+        this.index_90 = { ...indexRecord, structure: indexClean }
 
+        // ---------- 2) HEADER ----------
+        await this.homepageStore.loadRecord(this.homepage.id, this.index.structure.header.id)
+        const headerRecord = { ...this.record } // Snapshot
 
-        // Preview
+        const headerDef = cloneStructure("header")
+        const headerMerged = deepMergeDefaults(headerRecord.structure ?? {}, headerDef)
+
+        const headerSchemaStripping =
+    /** @type {import('zod').ZodTypeAny} */ (HPM_SCHEMAS.header).strip()
+
+        let headerClean
+        try {
+            headerClean = headerSchemaStripping.parse(headerMerged)
+        } catch (e) {
+            console.warn("Invalid header structure (after strip):", e)
+            headerClean = headerDef
+        }
+
+        this.header = { ...headerRecord, structure: headerClean }
+        this.header_90 = { ...headerRecord, structure: headerClean }
+
+        // ---------- 3) FOOTER ----------
+        await this.homepageStore.loadRecord(this.homepage.id, this.index.structure.footer.id)
+        const footerRecord = { ...this.record } // Snapshot
+
+        const footerDef = cloneStructure("footer")
+        const footerMerged = deepMergeDefaults(footerRecord.structure ?? {}, footerDef)
+
+        const footerSchemaStripping =
+    /** @type {import('zod').ZodTypeAny} */ (HPM_SCHEMAS.footer).strip()
+
+        let footerClean
+        try {
+            footerClean = footerSchemaStripping.parse(footerMerged)
+        } catch (e) {
+            console.warn("Invalid footer structure (after strip):", e)
+            footerClean = footerDef
+        }
+
+        this.footer = { ...footerRecord, structure: footerClean }
+        this.footer_90 = { ...footerRecord, structure: footerClean }
+
+        // ---------- Preview ----------
         this.preview_src =
-            "/homepage/example/header_and_footer?homepage_id=" +
-            this.index.homepage_id + "&record_id=" + this.index.id;
+            `/homepage/example/header_and_footer?homepage_id=${this.index.homepage_id}&record_id=${this.index.id}`
 
-        this.is_ready = true;
+        this.is_ready = true
     },
 
     data() {
@@ -200,6 +262,9 @@ export default {
             line_1_options: 1,
             line_2_options: 1,
             line_1_col_options: 1,
+            blank_window: null,
+            is_preview_intern: true,
+
         };
     },
 
@@ -208,9 +273,37 @@ export default {
     },
 
     methods: {
+        openPreview() {
+
+            if (this.blank_window && !this.blank_window.closed) {
+                this.blank_window.close();
+            }
+
+            const src =
+                "/admin/homepage/landing_page_preview?id=" +
+                this.index.homepage_id;
+
+            this.blank_window = window.open(src, "_blank");
+            this.is_preview_intern = false;
+
+        },
+
+        closePreview() {
+
+            if (this.blank_window && !this.blank_window.closed) {
+                this.blank_window.close();
+            }
+
+            this.is_preview_intern = true;
+
+        },
+
         async confirmHeader(header) {
             this.header = header;
             await this.confirm('header');
+            if (this.blank_window && !this.blank_window.closed) {
+                this.blank_window.location.reload();
+            }
         },
         async abort() {
             await this.homepageStore.saveRecord(this.index_90);

@@ -3,16 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\CopyRecordRequest;
 use App\Http\Requests\Admin\DeleteHomepageRequest;
+use App\Http\Requests\Admin\DeleteRecordRequest;
+use App\Http\Requests\Admin\LoadHeadersRequest;
 use App\Http\Requests\Admin\LoadRecordRequest;
 use App\Http\Requests\Admin\SaveHomepageRequest;
 use App\Http\Requests\Admin\SaveRecordRequest;
 use App\Http\Requests\Admin\ShowHomepageRequest;
+use App\Http\Resources\Admin\HeaderResource;
 use App\Http\Resources\Admin\HomepageResource;
 use App\Http\Resources\Admin\RecordResource;
 use App\Models\Homepage;
 use App\Services\HomepageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class HomepageController extends Controller
 {
@@ -28,6 +33,21 @@ class HomepageController extends Controller
             ->get();
 
         return response()->json(HomepageResource::collection($homepages), 200);
+    }
+
+    public function loadHeaders(LoadHeadersRequest $request)
+    {
+        if (! $auth_user = $this->userHasRole(['admin'])) {
+            abort(403, 'Sie haben keine Berechtigung');
+        }
+
+        if (!$id = $request->id) abort(406, "Es existiert keine passende Homepage");
+
+        $headers = Homepage::where('homepage_id', $id)->where('type', 'header')
+            ->orderBy('name', 'desc')
+            ->get();
+
+        return response()->json(HeaderResource::collection($headers), 200);
     }
 
 
@@ -106,8 +126,39 @@ class HomepageController extends Controller
 
         $recordData = $request->record;
 
+
         $record = Homepage::findOrFail($recordData['id']);
-        $record->update($recordData);
+
+        // Fill everything except 'structure' first
+        $record->fill(Arr::except($recordData, ['structure']));
+
+        // Only update structure if key is present in payload (even if null or [])
+        if (Arr::exists($recordData, 'structure')) {
+            $record->structure = $recordData['structure']; // could be array, null, etc.
+        }
+        // If 'structure' key is NOT present, we do nothing -> keeps existing structure
+        $record->save();
+
+
+        return response()->json(new RecordResource($record), 200);
+    }
+
+
+
+    public function copyRecord(CopyRecordRequest $request)
+    {
+
+        if (! $auth_user = $this->userHasRole(['admin'])) {
+            abort(403, 'Sie haben keine Berechtigung');
+        }
+
+        $id = $request->id;
+
+        $record = Homepage::findOrFail($id);
+        $newRecord = $record->replicate();
+        $newRecord->name = $newRecord->name . ' (Kopie)';
+        $newRecord->save();
+
 
         return response()->json(new RecordResource($record), 200);
     }
@@ -131,6 +182,18 @@ class HomepageController extends Controller
         }
         $homepageService = new HomepageService();
         $homepage = $homepageService->delete($request->id);
+
+        return response()->noContent();
+    }
+
+    public function deleteRecord(DeleteRecordRequest $request)
+    {
+        if (! $auth_user = $this->userHasRole(['admin'])) {
+            abort(403, 'Sie haben keine Berechtigung');
+        }
+
+        $homepageService = new HomepageService();
+        $homepage = $homepageService->deleteRecord($request->id);
 
         return response()->noContent();
     }

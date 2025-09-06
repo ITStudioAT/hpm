@@ -35,8 +35,10 @@
                     </v-card-text>
 
                     <!-- Anzeige Homepage, falls eine gewählt ist -->
-                    <v-card-text v-if="homepage" class="bg-primary h-100 d-flex align-center justify-center">
-                        <div class="text-body-1 font-weight-medium">{{ homepage.name }}</div>
+                    <v-card-text v-if="homepage" class=" h-100 d-flex flex-column align-center justify-center">
+                        <div class="text-caption ">Gewählte Homepage:</div>
+                        <div class="text-body-1 font-weight-medium bg-primary pa-2">{{ homepage.name }}</div>
+
 
                     </v-card-text>
                     <v-card-actions v-if="homepage">
@@ -44,24 +46,31 @@
                             <!-- overview: action_2 == '': Standardauswahl -->
                             <v-col cols="6">
                                 <v-btn block prepend-icon="mdi-select-remove" @click="homepage = null"
-                                    variant="tonal">Alle</v-btn>
+                                    variant="tonal">Alle zeigen</v-btn>
+                            </v-col>
+                            <v-col cols="6">
+                                <v-btn block prepend-icon="mdi-web" @click="" variant="tonal" color="success">Go
+                                    Online</v-btn>
                             </v-col>
                             <v-col cols="6">
                                 <v-btn block prepend-icon="mdi-rename" @click="action_2 = 'rename'"
                                     variant="tonal">Umbenennen</v-btn>
                             </v-col>
                             <v-col cols="6">
-                                <v-btn block prepend-icon="mdi-delete" @click="action_2 = 'delete'" variant="tonal"
-                                    color="warning">Löschen</v-btn>
-                            </v-col>
-                            <v-col cols="6">
-                                <v-btn block prepend-icon="mdi-web" @click="" variant="tonal">Go Online</v-btn>
+
                             </v-col>
 
                             <v-col cols="6">
                                 <v-btn block prepend-icon="mdi-file-edit" :to="'/admin/homepage/edit?id=' + homepage.id"
-                                    variant="tonal">Anpassen</v-btn>
+                                    variant="tonal" color="primary">Anpassen</v-btn>
                             </v-col>
+
+                            <v-col cols="6">
+                                <v-btn block prepend-icon="mdi-delete" @click="action_2 = 'delete'" variant="tonal"
+                                    color="warning">Löschen</v-btn>
+                            </v-col>
+
+
                         </v-row>
 
                         <!-- overview: action_2 == 'delete': Löschen -->
@@ -111,6 +120,7 @@
         </v-row>
 
 
+
     </v-container>
 </template>
 <script>
@@ -132,6 +142,8 @@ export default {
         this.adminStore.initialize(this.$router);
         this.homepageStore = useHomepageStore();
         await this.loadHomepages();
+        this.homepage_copy = JSON.parse(JSON.stringify(this.homepage));
+
 
 
 
