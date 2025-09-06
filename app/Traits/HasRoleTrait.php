@@ -2,53 +2,23 @@
 
 namespace App\Traits;
 
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 trait HasRoleTrait
 {
-    public function userHasRole($par_roles)
+    public function userHasRole(array|string $roles): bool
     {
-        if (! is_array($par_roles)) {
-            $roles[] = $par_roles;
-        } else {
-            $roles = $par_roles;
-        }
-
-        if (! auth()->check()) {
-            return false;
-        }
-        if (! $user = auth()->user()) {
+        $user = Auth::user();
+        if (! $user) {
             return false;
         }
 
-        // Wenn super_admin in der Konfiguration gesetzt ist, füge ihn zu den erforderlichen Rollen hinzu
-        $roles[] = 'super_admin';
-
-        if (! $user->hasAnyRole($roles)) {
-            return false;
-        }
-
-
-        $user = User::find($user->id);
-        return $user;
+        return $user->hasAnyRole(array_merge((array) $roles, ['super_admin']));
     }
 
-    public function userHasAtLeastOneRole()
+    public function userHasAtLeastOneRole(): bool
     {
-
-        if (! auth()->check()) {
-            return false;
-        }
-        if (! $user = auth()->user()) {
-            return false;
-        }
-
-        if (! $user->roles()->exists()) {
-            return false;
-        }
-
-        $user = User::find($user->id);
-
-        return $user;
+        $user = Auth::user();
+        return $user?->roles()->exists() ?? false;
     }
 }

@@ -35,8 +35,8 @@ class AdminController extends Controller
             'version' => InstalledVersions::getPrettyVersion('itstudioat/spa'),
             'register_admin_allowed' => config('spa.register_admin_allowed', false),
             'timeout' => config('spa.timeout', 3000),
-            'is_auth' => auth()->check(),
-            'user' => auth()->check() ? new UserResource(auth()->user()) : null,
+            'is_auth' => Auth::check(),
+            'user' => Auth::check() ? new UserResource(Auth::user()) : null,
             'menu' => $navigationService->dashboardMenu(),
         ];
 
@@ -207,7 +207,7 @@ class AdminController extends Controller
         $adminService = new AdminService();
         $validated = $request->validated();
         $user = $adminService->checkUserLogin($validated['data']);
-        auth()->login($user);
+        Auth::login($user);
 
         session()->regenerate();
 
@@ -224,7 +224,7 @@ class AdminController extends Controller
     public function executeLogout(Request $request)
     {
 
-        if (! auth()->check()) {
+        if (! Auth::check()) {
             abort(400, 'Sie sind gar nicht eingeloggt.');
         }
 

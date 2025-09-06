@@ -1,18 +1,21 @@
-
 <?php
+
+declare(strict_types=1);
 
 use App\Models\Homepage;
 use App\Services\HomepageService;
 
-it('assert 200 homepageService->delete', function () {
+it('deletes a homepage and all its child records', function () {
+    $svc = new HomepageService();
+    $homepage = $svc->create();
 
-    $homepageService = new HomepageService();
-    $homepage =  $homepageService->create();
-    $response = $homepageService->delete($homepage->id);
+    $rootId = $homepage->id;
+    $childIds = Homepage::where('homepage_id', $rootId)->pluck('id')->all();
 
-    expect($response)->toBeNull();
+    expect(Homepage::where('homepage_id', $rootId)->count())->toBe(3); // index, header, footer
 
-    $this->assertDatabaseMissing('homepages', [
-        'id' => $homepage->id,
-    ]);
-});
+    $svc->delete($rootId);
+
+    expect(Homepage::find($rootId))->toBeNull();
+    expect(Homepage::whereIn('id', $childIds)->count())->toBe(0);
+})->group('homepageservice', 'delete');
