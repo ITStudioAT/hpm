@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
+use App\Services\InstallUpdateService;
 
 class AppUpdate extends Command
 {
@@ -24,14 +25,12 @@ class AppUpdate extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(InstallUpdateService $installUpdateService)
     {
         if (! app()->environment('local')) {
             $this->error('❌ Abbruch: Dieser Befehl läuft nur im lokalen Modus.');
             return 1;
         }
-
-        $installUpdateService = new \App\Services\InstallUpdateService();
 
         // Rollen checken und erstellen
         $installUpdateService->createRoles([
