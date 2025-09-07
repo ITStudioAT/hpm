@@ -9,10 +9,15 @@ use App\Services\InstallUpdateService;
 
 class InstallUpdateController extends Controller
 {
+    private InstallUpdateService $installUpdateService;
+
+    public function __construct(InstallUpdateService $installUpdateService)
+    {
+        $this->installUpdateService = $installUpdateService;
+    }
+
     public function index(Request $request)
     {
-        $installUpdateService = new InstallUpdateService();
-
         /* 1. User der Users-Tabelle laden */
         if (! $user = User::query()->first()) {
             abort(404, '1. Benutzer wurde nicht gefunden. Bitte mit php artsian user:create anlegen');
@@ -20,9 +25,11 @@ class InstallUpdateController extends Controller
 
         /* Rollen erzeugen */
         $roles = ['super_admin', 'admin', 'user'];
-        $installUpdateService->createRoles($roles);
+        $this->installUpdateService->createRoles($roles);
 
         /* 1. User super_admin zuweisen */
         $user->assignRole('super_admin');
+
+        return response()->noContent();
     }
 }
