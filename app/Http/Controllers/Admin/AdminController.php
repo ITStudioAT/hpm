@@ -41,10 +41,6 @@ class AdminController extends Controller
         ];
 
 
-
-
-
-
         return response()->json($data, 200);
     }
 
@@ -189,7 +185,7 @@ class AdminController extends Controller
             return response()->json($data, 200);
         } else {
             // Keine 2-Faktoren-Authentifizierung ==> Login fertig
-            auth('web')->login($user);
+            Auth::guard('web')->login($user);
             session()->regenerate();
             $data = [
                 'step' => 'LOGIN_SUCCESS',
@@ -228,7 +224,7 @@ class AdminController extends Controller
             abort(400, 'Sie sind gar nicht eingeloggt.');
         }
 
-        auth('web')->logout();
+        Auth::guard('web')->logout();
         session()->invalidate();
         session()->regenerateToken();
 
