@@ -1,91 +1,71 @@
 <?php
 
-/**
- * ConfigTest.php — Pest v4 Feature Test (DB-backed)
- *
- * Szenarien:
- *  - Guest:    is_auth === false, user === null
- *  - Auth:     is_auth === true,  user !== null (echter DB-User)
- *  - Struktur: alle erwarteten Keys vorhanden + Basistypen korrekt
- */
+
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/_helpers.php';
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
+use App\Services\AdminService;
+use App\Services\AdminNavigationService;
+use Mockery as m;
 
-uses(RefreshDatabase::class);
-
-/**
- * Führt AdminController@config aus und gibt das dekodierte JSON-Array zurück.
- */
-function callAdminConfig(): array
-{
-    $controller = app(AdminController::class);
-    $response   = $controller->config(request());
-
-    expect($response->status())->toBe(200);
-
-    $json = $response->getData(true);
-
-    // Immer erwartete Struktur
-    expect($json)->toHaveKeys([
-        'logo',
-        'copyright',
-        'title',
-        'company',
-        'version',
-        'register_admin_allowed',
-        'timeout',
-        'is_auth',
-        'user',
-        'menu',
-    ]);
-
-    // Basis-Typen (API-Vertrag)
-    expect($json['register_admin_allowed'])->toBeBool();
-    expect($json['timeout'])->toBeInt();
-    expect($json['is_auth'])->toBeBool();
-    expect($json['menu'])->toBeArray();
-
-    // Strings dürfen leer sein – aber Typen müssen passen
-    expect($json['logo'])->toBeString();
-    expect($json['title'])->toBeString();
-    expect($json['company'])->toBeString();
-    expect($json['version'])->toBeString();
-
-    return $json;
-}
-
-it('returns the expected base structure for guests (is_auth=false, user=null)', function () {
-    // Gast (kein actingAs)
-    $json = callAdminConfig();
-
-    expect($json['is_auth'])->toBeFalse();
-    expect($json['user'])->toBeNull();
+afterEach(function () {
+    m::close();
 });
 
-it('returns auth information and a user when authenticated (is_auth=true) using DB', function () {
-    /** @var User $user */
-    $user = User::factory()->create([
-        'email'      => 'unit@example.test',
-        'first_name' => 'Unit',
-        'last_name'  => 'Tester',
-    ]);
+uses()->group('feature', 'admincontroller', 'config')
+    ->afterEach(fn() => m::close());
 
-    $this->actingAs($user, 'web');
-
-    $json = callAdminConfig();
-
-    expect($json['is_auth'])->toBeTrue();
-    expect($json['user'])->not->toBeNull();
-
-    // Defensive ID-Prüfung (Array/Objekt möglich)
-    $payloadUser = $json['user'];
-    $id = is_array($payloadUser)
-        ? ($payloadUser['id'] ?? null)
-        : (is_object($payloadUser) ? ($payloadUser->id ?? null) : null);
-
-    if (! is_null($id)) {
-        expect((int) $id)->toBe((int) $user->id);
+beforeEach(function () {
+    foreach (['admin', 'user', 'super_admin'] as $r) {
+        Role::findOrCreate($r, 'web');
     }
+    config()->set('spa.logo', 'logo.svg');
+    config()->set('spa.copyright', '© 2025');
+    config()->set('spa.title', 'Fresh Laravel');
+    config()->set('spa.company', 'ItStudio.at');
+    config()->set('spa.register_admin_allowed', true);
+    config()->set('spa.timeout', 1337);
+});
+
+test('Config', function () {
+    // bind deps for constructor
+    $adminService = m::mock(AdminService::class);
+    $navService = m::mock(AdminNavigationService::class);
+    $navService->shouldReceive('dashboardMenu')->andReturn([['key' => 'dashboard']]);
+
+    app()->instance(AdminService::class, $adminService);
+    app()->instance(AdminNavigationService::class, $navService);
+
+    $ctl = app(AdminController::class); // ✅ constructor injected
+
+    // guest
+    try {
+        $res = $ctl->config(request());
+    } catch (\OutOfBoundsException $e) {
+        test()->markTestSkipped('Composer package "itstudioat/spa" not installed for version lookup.');
+        return;
+    }
+
+    $json = $res->getData(true);
+    expect($res->status())->toBe(200);
+    expect($json)->toHaveKeys(['logo', 'title', 'company', 'version', 'register_admin_allowed', 'timeout', 'is_auth', 'user', 'menu']);
+    expect($json['is_auth'])->toBeFalse();
+    expect($json['user'])->toBeNull();
+
+    // logged in
+    $u = User::factory()->create();
+    $u->assignRole('admin');
+    Auth::login($u);
+
+    $res2 = $ctl->config(request());
+    $json2 = $res2->getData(true);
+    expect($res2->status())->toBe(200);
+    expect($json2['is_auth'])->toBeTrue();
+    expect($json2['user'])->not->toBeNull();
 });

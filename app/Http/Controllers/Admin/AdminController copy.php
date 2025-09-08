@@ -22,13 +22,11 @@ use App\Services\AdminService;
 
 class AdminController extends Controller
 {
-    public function __construct(
-        private AdminService $adminService,
-        private AdminNavigationService $navigationService
-    ) {}
-
     public function config(Request $request)
     {
+        $navigationService = new AdminNavigationService();
+
+
         $data = [
             'logo' => config('spa.logo', ''),
             'copyright' => config('spa.copyright', ''),
@@ -39,157 +37,189 @@ class AdminController extends Controller
             'timeout' => config('spa.timeout', 3000),
             'is_auth' => Auth::check(),
             'user' => Auth::check() ? new UserResource(Auth::user()) : null,
-            'menu' => $this->navigationService->dashboardMenu(),
+            'menu' => $navigationService->dashboardMenu(),
         ];
+
 
         return response()->json($data, 200);
     }
 
     public function registerStep1(RegisterStep1Request $request)
     {
+        $adminService = new AdminService();
         $validated = $request->validated();
 
-        $user = $this->adminService->checkRegister($validated['data']);
+        $user = $adminService->checkRegister($validated['data']);
         if (! $user) {
-            $user = $this->adminService->createRegisterUser($validated['data']);
+            $user = $adminService->createRegisterUser($validated['data']);
         }
 
-        $this->adminService->sendRegisterToken(1, $user, $validated['data']['email']);
+        // Token zusenden
+        $adminService->sendRegisterToken(1, $user, $validated['data']['email']);
+        $data = ['step' => 'REGISTER_ENTER_TOKEN'];
 
-        return response()->json(['step' => 'REGISTER_ENTER_TOKEN'], 200);
+        return response()->json($data, 200);
     }
 
     public function registerStep2(RegisterStep2Request $request)
     {
+        $adminService = new AdminService();
         $validated = $request->validated();
 
-        $user = $this->adminService->checkRegister($validated['data']);
+        $user = $adminService->checkRegister($validated['data']);
 
-        if (! $user) {
-            abort(401, 'Registrieren funktioniert mit dieser E-Mail-Adresse nicht.');
-        }
+        if (!$user) abort(401, 'Registrieren funktioniert mit dieser E-Mail-Adresse nicht.');
 
-        // E-Mail verifiziert
+        // E-Mail ist somit verifiziert!
         $user->email_verified_at = now();
         $user->save();
 
-        return response()->json(['step' => 'REGISTER_ENTER_FIELDS'], 200);
+        $data = ['step' => 'REGISTER_ENTER_FIELDS'];
+
+        return response()->json($data, 200);
     }
 
     public function registerStep3(RegisterStep3Request $request)
     {
+        $adminService = new AdminService();
+
         $validated = $request->validated();
 
-        $user = $this->adminService->checkRegister($validated['data']);
-        $user = $this->adminService->updateRegisterUser($user, $validated['data']);
+        $user = $adminService->checkRegister($validated['data']);
+        $user = $adminService->updateRegisterUser($user, $validated['data']);
 
-        return response()->json([
-            'step' => $user->confirmed_at ? 'REGISTER_FINISHED' : 'REGISTER_MUST_BE_CONFIRMED',
-        ], 200);
+        $data = ['step' => $user->confirmed_at ? 'REGISTER_FINISHED' : 'REGISTER_MUST_BE_CONFIRMED'];
+
+        return response()->json($data, 200);
     }
 
     public function passwordUnknownStep1(PasswordUnknownStep1Request $request)
     {
+        $adminService = new AdminService();
         $validated = $request->validated();
 
-        $user = $this->adminService->checkPasswordUnknown($validated['data']);
-        $this->adminService->sendPasswordResetToken(1, $user, $user->email);
+        $user = $adminService->checkPasswordUnknown($validated['data']);
+        // Token zusenden
+        $adminService->sendPasswordResetToken(1, $user, $user->email);
+        $data = ['step' => 'PASSWORD_UNKNOWN_ENTER_TOKEN'];
 
-        return response()->json(['step' => 'PASSWORD_UNKNOWN_ENTER_TOKEN'], 200);
+        return response()->json($data, 200);
     }
 
     public function passwordUnknownStep2(PasswordUnknownStep2Request $request)
     {
+        $adminService = new AdminService();
         $validated = $request->validated();
 
-        $user = $this->adminService->checkPasswordUnknown($validated['data']);
+        $user = $adminService->checkPasswordUnknown($validated['data']);
         if (! $user->is_2fa) {
-            return response()->json(['step' => 'PASSWORD_UNKNOWN_SUCCESS'], 200);
+            $data = ['step' => 'PASSWORD_UNKNOWN_SUCCESS'];
+
+            return response()->json($data, 200);
         }
 
+        // User hat 2-Faktoren-Authentifizierung, es existiert jedoch keine 2. E-Mail
         if (! $user->email_2fa) {
             abort(401, 'Kennwort zurücksetzen funktioniert nicht. Sie haben keine weitere E-Mail-Adresse.');
         }
 
-        $this->adminService->sendPasswordResetToken(2, $user, $user->email_2fa);
+        // Token 2 zusenden
+        $adminService->sendPasswordResetToken(2, $user, $user->email_2fa);
 
-        return response()->json(['step' => 'PASSWORD_UNKNOWN_ENTER_TOKEN_2'], 200);
+        $data = ['step' => 'PASSWORD_UNKNOWN_ENTER_TOKEN_2'];
+
+        return response()->json($data, 200);
     }
 
     public function passwordUnknownStep3(PasswordUnknownStep3Request $request)
     {
+        $adminService = new AdminService();
         $validated = $request->validated();
 
-        $user = $this->adminService->checkPasswordUnknown($validated['data']);
+        $user = $adminService->checkPasswordUnknown($validated['data']);
         if (! $user->is_2fa) {
             abort(401, 'Kennwort zurücksetzen funktioniert nicht. 2-Faktoren-Authentifizierung ist nicht aktiviert.');
         }
 
-        return response()->json(['step' => 'PASSWORD_UNKNOWN_ENTER_PASSWORD'], 200);
+        $data = ['step' => 'PASSWORD_UNKNOWN_ENTER_PASSWORD'];
+
+        return response()->json($data, 200);
     }
 
     public function passwordUnknownStep4(PasswordUnknownStep4Request $request)
     {
+        $adminService = new AdminService();
         $validated = $request->validated();
 
-        $user = $this->adminService->checkPasswordUnknown($validated['data']);
+        $user = $adminService->checkPasswordUnknown($validated['data']);
         $user->setPassword($validated['data']['password']);
 
-        return response()->json(['step' => 'PASSWORD_UNKNOWN_FINISHED'], 200);
+        $data = ['step' => 'PASSWORD_UNKNOWN_FINISHED'];
+
+        return response()->json($data, 200);
     }
 
     public function loginStep1(LoginStep1Request $request)
     {
+        $adminService = new AdminService();
         $validated = $request->validated();
 
-        $this->adminService->checkUserLogin($validated['data']);
+        $user = $adminService->checkUserLogin($validated['data']);
+        $data = ['step' => 'LOGIN_ENTER_PASSWORD'];
 
-        return response()->json(['step' => 'LOGIN_ENTER_PASSWORD'], 200);
+        return response()->json($data, 200);
     }
 
     public function loginStep2(LoginStep2Request $request)
     {
+        $adminService = new AdminService();
         $validated = $request->validated();
 
-        $user = $this->adminService->checkUserLogin($validated['data']);
+        $user = $adminService->checkUserLogin($validated['data']);
 
         if ($user->is_2fa) {
-            $this->adminService->continueLoginFor2FaUser($user);
-            return response()->json(['step' => 'LOGIN_ENTER_TOKEN'], 200);
+            // Bei Benutzer ist 2-Faktoren-Authentifizierung aktiviert => wir brauchen einen Code
+            $adminService->continueLoginFor2FaUser($user);
+            $data = ['step' => 'LOGIN_ENTER_TOKEN'];
+
+            return response()->json($data, 200);
+        } else {
+            // Keine 2-Faktoren-Authentifizierung ==> Login fertig
+            Auth::guard('web')->login($user);
+            session()->regenerate();
+            $data = [
+                'step' => 'LOGIN_SUCCESS',
+                'auth' => true,
+                'user' => $user,
+            ];
+            $user->rememberLogin();
+
+            return response()->json($data, 200);
         }
-
-        Auth::guard('web')->login($user);
-        session()->regenerate();
-
-        $user->rememberLogin();
-
-        return response()->json([
-            'step' => 'LOGIN_SUCCESS',
-            'auth' => true,
-            'user' => $user,
-        ], 200);
     }
 
     public function loginStep3(LoginStep3Request $request)
     {
+        $adminService = new AdminService();
         $validated = $request->validated();
-
-        $user = $this->adminService->checkUserLogin($validated['data']);
-
+        $user = $adminService->checkUserLogin($validated['data']);
         Auth::login($user);
+
         session()->regenerate();
 
-        $user->rememberLogin();
-
-        return response()->json([
+        $data = [
             'step' => 'LOGIN_SUCCESS',
             'auth' => true,
             'user' => $user,
-        ], 200);
+        ];
+        $user->rememberLogin();
+
+        return response()->json($data, 200);
     }
 
     public function executeLogout(Request $request)
     {
+
         if (! Auth::check()) {
             abort(400, 'Sie sind gar nicht eingeloggt.');
         }

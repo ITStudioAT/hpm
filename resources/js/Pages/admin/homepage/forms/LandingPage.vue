@@ -57,7 +57,7 @@
                     <its-menu-button title="Vorschau" subtitle="Neues Fenster" icon="mdi-eye" color="primary"
                         @click="openPreview" v-if="is_preview_intern" />
 
-                    <its-menu-button title="Vorchau" subtitle="schließen" icon="mdi-close" color="warning"
+                    <its-menu-button title="Vorschau" subtitle="schließen" icon="mdi-close" color="warning"
                         @click="closePreview" v-if="!is_preview_intern" />
 
                 </v-col>
@@ -123,6 +123,7 @@ import Row_2 from "./LandingPage/Row_2.vue";
 
 // <-- NEU: generierte Defaults/Schemas verwenden
 import { cloneStructure, HPM_SCHEMAS } from "@/constants/structures.generated";
+import { COLOR_ITEMS, DENSITY_ITEMS, SCROLL_BEHAVIOR_ITEMS, JUSTIFY_ITEMS, TEXT_VARIANT_ITEMS } from "@/constants/uiOptions";
 
 
 export default {
@@ -224,38 +225,19 @@ export default {
 
             // ACHTUNG: 'transparent' ist NICHT in deinem Schema-Enum.
             // Wenn du transparent brauchst, erweitere das Generator-Override (color-Enum) um 'transparent'.
+            /*
             colorItems: [
                 { label: 'Farbe A', value: 'first' },
                 { label: 'Farbe B', value: 'second' },
                 { label: 'Farbe C', value: 'third' },
                 { label: 'Transparent', value: 'transparent' },
             ],
-            densityItems: [
-                { label: "Standard", value: "default" },
-                { label: "Prominent (hoch)", value: "prominent" },
-                { label: "Komfortabel", value: "comfortable" },
-                { label: "Kompakt (niedrig)", value: "compact" }
-            ],
-
-            scrollBehaviorItems: [
-                { label: "Verschwindet", value: "hide" },
-                { label: "Standard", value: "default" },
-                { label: "Erhöhen beim Scrollen", value: "elevate" }
-            ],
-            justifyItems: [
-                { label: "linksbündig", value: "justify-start" },
-                { label: "mittig", value: "justify-center" },
-                { label: "rechtsbündig", value: "justify-end" },
-
-            ],
-            textVariantItems: [
-                { label: "Hero", value: "heroLead" },
-                { label: "Titel", value: "title" },
-                { label: "Untertitel", value: "subtitle" },
-                { label: "Inhalt", value: "content" },
-                { label: "Anmerkung", value: "subcontent" },
-
-            ],
+            */
+            colorItems: COLOR_ITEMS,
+            densityItems: DENSITY_ITEMS,
+            scrollBehaviorItems: SCROLL_BEHAVIOR_ITEMS,
+            justifyItems: JUSTIFY_ITEMS,
+            textVariantItems: TEXT_VARIANT_ITEMS,
 
             is_valid: false,
             is_select: '',

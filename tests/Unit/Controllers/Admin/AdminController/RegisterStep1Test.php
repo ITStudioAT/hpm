@@ -1,67 +1,74 @@
 <?php
 
-/**
- * Unit — AdminController@registerStep1
- * Covers:
- *  - existing user → sendRegisterToken
- *  - new user     → createRegisterUser + sendRegisterToken
+declare(strict_types=1);
 
- 
-
-
-use App\Http\Controllers\Admin\AdminController;
+use App\Models\User;
 use Mockery as m;
 
-it('registerStep1 sends token for existing user', function () {
-    $controller = app(AdminController::class);
+require_once __DIR__ . '/_helpers.php';
 
-    $existingUser = (object)['id' => 42, 'email' => 'r@example.test'];
+uses()->group('unit', 'admincontroller', 'register');
 
+afterEach(fn() => m::close());
 
-    $adminServiceMock = m::mock('overload:App\Services\AdminService');
+test('registerStep1 sends token for existing user', function () {
+    $existing = new User();                 // real instance, not persisted
+    $existing->id    = 42;
+    $existing->email = 'r@example.test';
 
-    $adminServiceMock->shouldReceive('checkRegister')
-        ->once()->with(['email' => 'r@example.test'])->andReturn($existingUser);
+    [$ctl, $adminService] = makeAdminControllerForUnit(
+        menu: [['key' => 'dashboard']],
+        adminServiceSetup: function ($svc) use ($existing) {
+            $svc->shouldReceive('checkRegister')
+                ->once()
+                ->with(['email' => 'r@example.test'])
+                ->andReturn($existing);
 
-    $adminServiceMock->shouldReceive('sendRegisterToken')
-        ->once()->with(1, $existingUser, 'r@example.test');
+            $svc->shouldReceive('sendRegisterToken')
+                ->once()
+                ->with(1, $existing, 'r@example.test');
+        }
+    );
 
     $request = m::mock(\App\Http\Requests\Admin\RegisterStep1Request::class);
     $request->shouldReceive('validated')->andReturn(['data' => ['email' => 'r@example.test']]);
 
-    $response = $controller->registerStep1($request);
+    $response = $ctl->registerStep1($request);
     $json = $response->getData(true);
 
     expect($response->status())->toBe(200);
     expect($json['step'])->toBe('REGISTER_ENTER_TOKEN');
 });
 
+test('registerStep1 creates user and sends token when not existing', function () {
+    $created = new User();
+    $created->id    = 77;
+    $created->email = 'new@example.test';
 
-it('registerStep1 creates user and sends token when not existing', function () {
-    $controller = app(AdminController::class);
+    [$ctl, $adminService] = makeAdminControllerForUnit(
+        adminServiceSetup: function ($svc) use ($created) {
+            $svc->shouldReceive('checkRegister')
+                ->once()
+                ->with(['email' => 'new@example.test'])
+                ->andReturnNull();
 
-    $createdUser = (object)['id' => 77, 'email' => 'new@example.test'];
+            $svc->shouldReceive('createRegisterUser')
+                ->once()
+                ->with(['email' => 'new@example.test'])
+                ->andReturn($created);
 
-
-    $adminServiceMock = m::mock('overload:App\Services\AdminService');
-
-    $adminServiceMock->shouldReceive('checkRegister')
-        ->once()->with(['email' => 'new@example.test'])->andReturnNull(); // or andReturnFalse()
-
-    $adminServiceMock->shouldReceive('createRegisterUser')
-        ->once()->with(['email' => 'new@example.test'])->andReturn($createdUser);
-
-    $adminServiceMock->shouldReceive('sendRegisterToken')
-        ->once()->with(1, $createdUser, 'new@example.test');
+            $svc->shouldReceive('sendRegisterToken')
+                ->once()
+                ->with(1, $created, 'new@example.test');
+        }
+    );
 
     $request = m::mock(\App\Http\Requests\Admin\RegisterStep1Request::class);
     $request->shouldReceive('validated')->andReturn(['data' => ['email' => 'new@example.test']]);
 
-    $response = $controller->registerStep1($request);
+    $response = $ctl->registerStep1($request);
     $json = $response->getData(true);
 
     expect($response->status())->toBe(200);
     expect($json['step'])->toBe('REGISTER_ENTER_TOKEN');
 });
-
- */
