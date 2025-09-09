@@ -25,6 +25,9 @@
 
                             <v-btn flat variant="tonal" color="warning" @click="action_2 = 'delete'"><v-icon
                                     icon="mdi-delete" />Löschen</v-btn>
+
+                            <v-btn flat variant="tonal" color="primary" @click="editHeader"><v-icon
+                                    icon="mdi-content-duplicate" />Ändern</v-btn>
                         </v-card-text>
                         <v-card-title>Kopfzeilen</v-card-title>
                         <v-card-text :class="action_2 != '' ? 'd-none' : ''">
@@ -79,11 +82,6 @@
                         </v-card-text>
                     </v-card>
 
-
-
-
-
-
                 </v-col>
 
                 <!-- Fußzeilen -->
@@ -108,6 +106,44 @@
 
             </v-row>
 
+            <!-- HEADER-->
+            <v-expand-transition>
+
+                <v-row class="w-100 mb-2" v-if="header && action === 'header'">
+                    <!-- Spalte KOPFZEILE -->
+                    <v-col cols="12" md="6" lg="4" xl="3">
+                        <Header :header="header" :colorItems="colorItems" :densityItems="densityItems"
+                            :scrollBehaviorItems="scrollBehaviorItems" @clickAction="action = $event"
+                            @confirmAction="(header) => confirmHeader(header)" />
+                    </v-col>
+
+                    <!-- Zeilen/Spalten - Aufbau der Kopfzeile -->
+                    <v-col cols="12" md="6" lg="4" xl="3">
+                        <RowsAndColumns :header="header" :colorItems="colorItems" @clickAction="action = $event"
+                            @confirmAction="(header) => confirmHeader(header)" />
+
+                    </v-col>
+
+                    <!-- SPALTEN -->
+                    <!-- Spalten Zeile 1 -->
+                    <v-col cols="12" md="6" lg="4" xl="3">
+                        <Row_1 :header="header" :justifyItems="justifyItems" :textVariantItems="textVariantItems"
+                            @clickAction="action = $event" @confirmAction="(header) => confirmHeader(header)" />
+
+                        <Row_2 :header="header" :justifyItems="justifyItems" :textVariantItems="textVariantItems"
+                            @clickAction="action = $event" @confirmAction="(header) => confirmHeader(header)"
+                            v-if="header.structure.rows.count > 1" />
+                    </v-col>
+
+                </v-row>
+
+            </v-expand-transition>
+
+            <v-row>
+                ACTION:
+                {{ action }}
+            </v-row>
+
 
         </v-form>
     </v-container>
@@ -118,15 +154,23 @@
 <script>
 import { useValidationRulesSetup } from "@/helpers/rules";
 import { mapWritableState } from "pinia";
+import { deepMergeDefaults } from "@/helpers/merge";
 import { useAdminStore } from "@/stores/admin/AdminStore";
 import { useHomepageStore } from "@/stores/admin/HomepageStore";
 import ItsMenuButton from "@/pages/components/ItsMenuButton.vue";
+
+import Header from "./LandingPage/Header.vue";
+import RowsAndColumns from "./LandingPage/RowsAndColumns.vue";
+import Row_1 from "./LandingPage/Row_1.vue";
+import Row_2 from "./LandingPage/Row_2.vue";
+import { cloneStructure, HPM_SCHEMAS } from "@/constants/structures.generated";
+import { COLOR_ITEMS, DENSITY_ITEMS, SCROLL_BEHAVIOR_ITEMS, JUSTIFY_ITEMS, TEXT_VARIANT_ITEMS } from "@/constants/uiOptions";
 
 export default {
     setup() { return useValidationRulesSetup(); },
 
     props: ["homepage"],
-    components: { ItsMenuButton },
+    components: { ItsMenuButton, Header, RowsAndColumns, Row_1, Row_2 },
 
     async beforeMount() {
         this.adminStore = useAdminStore();
@@ -149,11 +193,21 @@ export default {
         return {
             adminStore: null,
             homepageStore: null,
-            selected_header: null,
+
             selectedHeader: null,
+            action: '',
             action_2: '',
             data: null,
             is_valid: false,
+
+            colorItems: COLOR_ITEMS,
+            densityItems: DENSITY_ITEMS,
+            scrollBehaviorItems: SCROLL_BEHAVIOR_ITEMS,
+            justifyItems: JUSTIFY_ITEMS,
+            textVariantItems: TEXT_VARIANT_ITEMS,
+
+            header: null,
+            header_90: null,
         };
     },
 
@@ -166,6 +220,32 @@ export default {
     },
 
     methods: {
+
+        async editHeader() {
+            // ---------- 2) HEADER ----------
+            await this.homepageStore.loadRecord(this.homepage.id, this.selectedHeader.id)
+            const headerRecord = { ...this.record } // Snapshot
+
+            const headerDef = cloneStructure("header")
+            const headerMerged = deepMergeDefaults(headerRecord.structure ?? {}, headerDef)
+
+            const headerSchemaStripping = (HPM_SCHEMAS.header).strip()
+
+            let headerClean
+            try {
+                headerClean = headerSchemaStripping.parse(headerMerged)
+            } catch (e) {
+                console.warn("Invalid header structure (after strip):", e)
+                headerClean = headerDef
+            }
+
+            this.header = { ...headerRecord, structure: headerClean }
+            this.header_90 = { ...headerRecord, structure: headerClean }
+
+            this.action = 'header';
+
+        },
+
         abort() { this.data = null; this.$emit("abort"); },
 
         async copyHeader() {

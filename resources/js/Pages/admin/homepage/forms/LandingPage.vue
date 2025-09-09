@@ -65,20 +65,6 @@
             </v-row>
 
 
-            <!--
-            <v-row>
-                <v-col cols="12" md="8">
-                    <div class="d-flex align-center mb-2 font-weight-medium">
-                        <span class="flex-grow-1">Desktop</span>
-                        <v-btn small color="primary" icon="mdi-open-in-new" @click="openPreview('desktop')" />
-                    </div>
-                    <iframe :key="reloadKey + '-desktop'" :src="preview_src" title="Example website" loading="lazy"
-                        style="width:1200px; height:600px; border:1;" referrerpolicy="no-referrer-when-downgrade"
-                        allow="fullscreen; clipboard-read; clipboard-write" />
-                </v-col>
-            </v-row>
-            -->
-
             <!-- VORSCHAU -->
             <v-row v-if="is_preview_intern">
                 <v-col cols="12" md="8">
@@ -166,8 +152,7 @@ export default {
         const headerDef = cloneStructure("header")
         const headerMerged = deepMergeDefaults(headerRecord.structure ?? {}, headerDef)
 
-        const headerSchemaStripping =
-    /** @type {import('zod').ZodTypeAny} */ (HPM_SCHEMAS.header).strip()
+        const headerSchemaStripping = (HPM_SCHEMAS.header).strip()
 
         let headerClean
         try {
@@ -223,16 +208,6 @@ export default {
             footer: null,
             footer_90: null,
 
-            // ACHTUNG: 'transparent' ist NICHT in deinem Schema-Enum.
-            // Wenn du transparent brauchst, erweitere das Generator-Override (color-Enum) um 'transparent'.
-            /*
-            colorItems: [
-                { label: 'Farbe A', value: 'first' },
-                { label: 'Farbe B', value: 'second' },
-                { label: 'Farbe C', value: 'third' },
-                { label: 'Transparent', value: 'transparent' },
-            ],
-            */
             colorItems: COLOR_ITEMS,
             densityItems: DENSITY_ITEMS,
             scrollBehaviorItems: SCROLL_BEHAVIOR_ITEMS,
