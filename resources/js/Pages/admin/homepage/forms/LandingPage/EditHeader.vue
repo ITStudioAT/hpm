@@ -1,10 +1,12 @@
 <template>
 
 
+    <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
+        <its-menu-button title="Abbruch" icon="mdi-close" color="warning" @click="$emit('abort')" />
+        <its-menu-button title="Speichern" type="submit" icon="mdi-content-save" color="success" @click="" />
+    </v-row>
 
     <!-- HEADER-->
-
-
     <v-row class="w-100 mb-2">
         <!-- Spalte KOPFZEILE -->
         <v-col cols="12" md="6" lg="4" xl="3">
