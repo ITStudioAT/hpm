@@ -14,18 +14,27 @@
             </v-row>
 
             <!-- Header and Footer-->
-            <HeaderAndFooter :index="index" @update="update" @clickAction="action = $event"
+            <HeaderAndFooter :index="index" :header="header" @update="update" @clickAction="action = $event"
                 v-if="index && action === ''" />
 
-            <EditHeader :index="index" :header="header" :reloadKey="reloadKey" @confirmHeader="confirmHeader"
-                v-if="index && action === 'header'" />
+            <!-- Edit Header -->
+            <v-expand-transition>
+                <EditHeader :index="index" :header="header" :reloadKey="reloadKey" @confirmHeader="confirmHeader"
+                    @abort="action = ''" v-if="index && action === 'header'" />
+            </v-expand-transition>
+
+            <!-- Preview -->
+            <Preview :index="index" :reloadKey="reloadKey" />
+
+            HEADER:
+            {{ header }}
+
 
         </v-form>
     </v-container>
 </template>
 
 <script>
-import { z } from "zod";
 import { useValidationRulesSetup } from "@/helpers/rules";
 import { mapWritableState } from "pinia";
 import { deepMergeDefaults } from "@/helpers/merge";
@@ -35,6 +44,7 @@ import ItsMenuButton from "@/pages/components/ItsMenuButton.vue";
 import HeaderAndFooter from "./LandingPage/HeaderAndFooter.vue";
 
 import EditHeader from "./LandingPage/EditHeader.vue";
+import Preview from "./LandingPage/Preview.vue";
 
 // <-- NEU: generierte Defaults/Schemas verwenden
 import { cloneStructure, HPM_SCHEMAS } from "@/constants/structures.generated";
@@ -45,7 +55,7 @@ export default {
     setup() { return useValidationRulesSetup(); },
 
     props: ["homepage"],
-    components: { ItsMenuButton, HeaderAndFooter, EditHeader },
+    components: { ItsMenuButton, HeaderAndFooter, EditHeader, Preview },
 
     async beforeMount() {
         this.adminStore = useAdminStore()
@@ -153,8 +163,6 @@ export default {
 
     methods: {
 
-
-
         async abort() {
             await this.homepageStore.saveRecord(this.index_90);
             await this.homepageStore.saveRecord(this.header_90);
@@ -181,7 +189,6 @@ export default {
 
 
         async confirmHeader(header) {
-            console.log(header);
             this.header = header;
             await this.confirm('header');
             if (this.blank_window && !this.blank_window.closed) {

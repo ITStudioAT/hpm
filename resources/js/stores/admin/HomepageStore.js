@@ -113,6 +113,7 @@ export const useHomepageStore = defineStore("AdminHomepageStore", {
         },
 
         async loadRecord(homepage_id, record_id) {
+            console.log("loadRecord", homepage_id, record_id)
             const notification = useNotificationStore();
             const adminStore = useAdminStore();
             adminStore.is_loading++;

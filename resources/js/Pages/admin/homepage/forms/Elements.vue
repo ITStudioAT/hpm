@@ -5,6 +5,10 @@
                 <div class="bg-primary pa-2 text-h5">Elemente</div>
             </v-col>
         </v-row>
+        <v-row>
+            selectedHeader:
+            {{ selectedHeader }}
+        </v-row>
 
         <v-form ref="form">
 
@@ -15,8 +19,10 @@
 
                     <v-card>
                         <!-- ÜBERSICHT -->
+                        <!-- selectedHeader && action_2 == ''-->
                         <v-card-text class="d-flex flex-row flex-wrap align-center ga-4"
                             v-if="selectedHeader && action_2 == ''">
+
                             <v-btn flat variant="tonal" color="primary" @click="copyHeader"><v-icon
                                     icon="mdi-content-duplicate" />Kopieren</v-btn>
 
@@ -27,7 +33,8 @@
                                     icon="mdi-delete" />Löschen</v-btn>
 
                             <v-btn flat variant="tonal" color="primary" @click="editHeader"><v-icon
-                                    icon="mdi-content-duplicate" />Ändern</v-btn>
+                                    icon="mdi-content-duplicate" />Bearbeiten</v-btn>
+
                         </v-card-text>
                         <v-card-title>Kopfzeilen</v-card-title>
                         <v-card-text :class="action_2 != '' ? 'd-none' : ''">
@@ -108,41 +115,17 @@
 
             <!-- HEADER-->
             <v-expand-transition>
-
-                <v-row class="w-100 mb-2" v-if="header && action === 'header'">
-                    <!-- Spalte KOPFZEILE -->
-                    <v-col cols="12" md="6" lg="4" xl="3">
-                        <Header :header="header" :colorItems="colorItems" :densityItems="densityItems"
-                            :scrollBehaviorItems="scrollBehaviorItems" @clickAction="action = $event"
-                            @confirmAction="(header) => confirmHeader(header)" />
-                    </v-col>
-
-                    <!-- Zeilen/Spalten - Aufbau der Kopfzeile -->
-                    <v-col cols="12" md="6" lg="4" xl="3">
-                        <RowsAndColumns :header="header" :colorItems="colorItems" @clickAction="action = $event"
-                            @confirmAction="(header) => confirmHeader(header)" />
-
-                    </v-col>
-
-                    <!-- SPALTEN -->
-                    <!-- Spalten Zeile 1 -->
-                    <v-col cols="12" md="6" lg="4" xl="3">
-                        <Row_1 :header="header" :justifyItems="justifyItems" :textVariantItems="textVariantItems"
-                            @clickAction="action = $event" @confirmAction="(header) => confirmHeader(header)" />
-
-                        <Row_2 :header="header" :justifyItems="justifyItems" :textVariantItems="textVariantItems"
-                            @clickAction="action = $event" @confirmAction="(header) => confirmHeader(header)"
-                            v-if="header.structure.rows.count > 1" />
-                    </v-col>
-
-                </v-row>
+                <EditHeader :index="index" :header="header" :reloadKey="reloadKey" @confirmHeader="confirmHeader"
+                    @abort="action = ''" v-if="index && action === 'header'" />
 
             </v-expand-transition>
 
-            <v-row>
-                ACTION:
-                {{ action }}
-            </v-row>
+            <!-- Preview -->
+            <Preview :index="index" :reloadKey="reloadKey" v-if="index && action === 'header'" />
+
+
+
+
 
 
         </v-form>
@@ -152,6 +135,8 @@
 
 
 <script>
+
+
 import { useValidationRulesSetup } from "@/helpers/rules";
 import { mapWritableState } from "pinia";
 import { deepMergeDefaults } from "@/helpers/merge";
@@ -166,23 +151,48 @@ import Row_2 from "./LandingPage/Row_2.vue";
 import { cloneStructure, HPM_SCHEMAS } from "@/constants/structures.generated";
 import { COLOR_ITEMS, DENSITY_ITEMS, SCROLL_BEHAVIOR_ITEMS, JUSTIFY_ITEMS, TEXT_VARIANT_ITEMS } from "@/constants/uiOptions";
 
+import EditHeader from "./LandingPage/EditHeader.vue";
+import Preview from "./LandingPage/Preview.vue";
+
 export default {
     setup() { return useValidationRulesSetup(); },
 
     props: ["homepage"],
-    components: { ItsMenuButton, Header, RowsAndColumns, Row_1, Row_2 },
+    components: { ItsMenuButton, Header, RowsAndColumns, Row_1, Row_2, EditHeader, Preview },
 
     async beforeMount() {
+
+
         this.adminStore = useAdminStore();
         this.adminStore.initialize(this.$router);
         this.homepageStore = useHomepageStore();
 
         await this.homepageStore.loadHeaders(this.homepage.id);
 
+        // ---------- 1) INDEX ----------
+        await this.homepageStore.loadRecord(this.homepage.id, this.homepage.structure.index.id)
+        const indexRecord = { ...this.record } // Snapshot
+
+        const indexDef = cloneStructure("index")
+        const indexMerged = deepMergeDefaults(indexRecord.structure ?? {}, indexDef)
+
+        // Strip entfernt unbekannte Keys
+        const indexSchemaStripping =
+    /** @type {import('zod').ZodTypeAny} */ (HPM_SCHEMAS.index).strip()
+
+        let indexClean
+        try {
+            indexClean = indexSchemaStripping.parse(indexMerged)
+        } catch (e) {
+            console.warn("Invalid index structure (after strip):", e)
+            indexClean = indexDef
+        }
+
+        this.index = { ...indexRecord, structure: indexClean }
+        this.index_90 = { ...indexRecord, structure: indexClean }
 
 
-
-
+        this.is_ready = true
     },
 
     mounted() {
@@ -191,6 +201,7 @@ export default {
 
     data() {
         return {
+            is_show: false,
             adminStore: null,
             homepageStore: null,
 
@@ -206,14 +217,20 @@ export default {
             justifyItems: JUSTIFY_ITEMS,
             textVariantItems: TEXT_VARIANT_ITEMS,
 
+            index: null,
+            index_90: null,
             header: null,
             header_90: null,
+            footer: null,
+            footer_90: null,
+
+            reloadKey: 0,
+            is_ready: false,
         };
     },
 
     computed: {
-        ...mapWritableState(useHomepageStore, ["headers"]),
-
+        ...mapWritableState(useHomepageStore, ["headers", "record"]),
     },
 
     watch: {
@@ -252,6 +269,7 @@ export default {
             if (!this.selectedHeader) return;
             await this.homepageStore.copyRecord(this.selectedHeader.id);
             await this.homepageStore.loadHeaders(this.homepage.id);
+            this.selectedHeader = null;
         },
 
         rename() {
@@ -264,13 +282,19 @@ export default {
             await this.homepageStore.deleteRecord(id);
             await this.homepageStore.loadHeaders(this.homepage.id);
             this.action_2 = "";
+            this.selectedHeader = null;
         },
 
         async saveRecord() {
             await this.homepageStore.saveRecord(this.data);
             await this.homepageStore.loadHeaders(this.homepage.id);
             this.action_2 = "";
+            this.selectedHeader = null;
         },
+
+        async confirmHeader() {
+
+        }
 
 
     },

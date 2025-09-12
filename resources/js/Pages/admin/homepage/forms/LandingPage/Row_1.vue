@@ -3,7 +3,7 @@
         <v-card-title class="d-flex flex-column">
             <div class="d-flex flex-row align-center justify-space-between">
                 <div>Zeile 1</div>
-                <v-btn flat size="small" color="warning" variant="tonal" @click="$emit('clickAction', '')">
+                <v-btn flat size="small" color="warning" variant="tonal" @click="$emit('abort')">
                     <v-icon icon="mdi-close" />
                 </v-btn>
             </div>
@@ -995,7 +995,7 @@ export default {
 
     components: { Select },
     props: ['header', 'justifyItems', 'textVariantItems'],
-    emits: ['clickAction', 'confirmAction'],
+    emits: ['abort', 'confirmAction'],
 
     data() {
         return {
