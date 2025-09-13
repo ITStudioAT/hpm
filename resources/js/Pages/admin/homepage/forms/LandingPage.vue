@@ -15,7 +15,7 @@
 
             <!-- Header and Footer-->
             <HeaderAndFooter :index="index" :header="header" @update="update" @clickAction="action = $event"
-                v-if="index && action === ''" />
+                @reloadRecords="reloadRecords" v-if="index && action === ''" />
 
             <!-- Edit Header -->
             <EditHeader :index="index" :header="header" :reloadKey="reloadKey" @confirmHeader="confirmHeader"
@@ -56,68 +56,7 @@ export default {
         this.adminStore.initialize(this.$router)
         this.homepageStore = useHomepageStore()
 
-        // ---------- 1) INDEX ----------
-        await this.homepageStore.loadRecord(this.homepage.id, this.homepage.structure.index.id)
-        const indexRecord = { ...this.record } // Snapshot
-
-        const indexDef = cloneStructure("index")
-        const indexMerged = deepMergeDefaults(indexRecord.structure ?? {}, indexDef)
-
-        // Strip entfernt unbekannte Keys
-        const indexSchemaStripping =
-    /** @type {import('zod').ZodTypeAny} */ (HPM_SCHEMAS.index).strip()
-
-        let indexClean
-        try {
-            indexClean = indexSchemaStripping.parse(indexMerged)
-        } catch (e) {
-            console.warn("Invalid index structure (after strip):", e)
-            indexClean = indexDef
-        }
-
-        this.index = { ...indexRecord, structure: indexClean }
-        this.index_90 = JSON.parse(JSON.stringify(this.index));
-
-        // ---------- 2) HEADER ----------
-        await this.homepageStore.loadRecord(this.homepage.id, this.index.structure.header.id)
-        const headerRecord = { ...this.record } // Snapshot
-
-        const headerDef = cloneStructure("header")
-        const headerMerged = deepMergeDefaults(headerRecord.structure ?? {}, headerDef)
-
-        const headerSchemaStripping = (HPM_SCHEMAS.header).strip()
-
-        let headerClean
-        try {
-            headerClean = headerSchemaStripping.parse(headerMerged)
-        } catch (e) {
-            console.warn("Invalid header structure (after strip):", e)
-            headerClean = headerDef
-        }
-
-        this.header = { ...headerRecord, structure: headerClean }
-        this.header_90 = JSON.parse(JSON.stringify(this.header));
-
-        // ---------- 3) FOOTER ----------
-        await this.homepageStore.loadRecord(this.homepage.id, this.index.structure.footer.id)
-        const footerRecord = { ...this.record } // Snapshot
-
-        const footerDef = cloneStructure("footer")
-        const footerMerged = deepMergeDefaults(footerRecord.structure ?? {}, footerDef)
-
-        const footerSchemaStripping =
-    /** @type {import('zod').ZodTypeAny} */ (HPM_SCHEMAS.footer).strip()
-
-        let footerClean
-        try {
-            footerClean = footerSchemaStripping.parse(footerMerged)
-        } catch (e) {
-            console.warn("Invalid footer structure (after strip):", e)
-            footerClean = footerDef
-        }
-
-        this.footer = { ...footerRecord, structure: footerClean }
-        this.footer_90 = { ...footerRecord, structure: footerClean }
+        await this.loadRecords();
 
 
 
@@ -138,7 +77,6 @@ export default {
             footer: null,
             footer_90: null,
 
-
             is_valid: false,
             is_select: '',
             line_1_options: 1,
@@ -156,6 +94,77 @@ export default {
     },
 
     methods: {
+
+        async reloadRecords() {
+            await this.loadRecords();
+            this.reloadKey++;
+
+        },
+
+        async loadRecords() {
+            // ---------- 1) INDEX ----------
+            await this.homepageStore.loadRecord(this.homepage.id, this.homepage.structure.index.id)
+            const indexRecord = { ...this.record } // Snapshot
+
+            const indexDef = cloneStructure("index")
+            const indexMerged = deepMergeDefaults(indexRecord.structure ?? {}, indexDef)
+
+            // Strip entfernt unbekannte Keys
+            const indexSchemaStripping =
+    /** @type {import('zod').ZodTypeAny} */ (HPM_SCHEMAS.index).strip()
+
+            let indexClean
+            try {
+                indexClean = indexSchemaStripping.parse(indexMerged)
+            } catch (e) {
+                console.warn("Invalid index structure (after strip):", e)
+                indexClean = indexDef
+            }
+
+            this.index = { ...indexRecord, structure: indexClean }
+            this.index_90 = JSON.parse(JSON.stringify(this.index));
+
+            // ---------- 2) HEADER ----------
+            await this.homepageStore.loadRecord(this.homepage.id, this.index.structure.header.id)
+            const headerRecord = { ...this.record } // Snapshot
+
+            const headerDef = cloneStructure("header")
+            const headerMerged = deepMergeDefaults(headerRecord.structure ?? {}, headerDef)
+
+            const headerSchemaStripping = (HPM_SCHEMAS.header).strip()
+
+            let headerClean
+            try {
+                headerClean = headerSchemaStripping.parse(headerMerged)
+            } catch (e) {
+                console.warn("Invalid header structure (after strip):", e)
+                headerClean = headerDef
+            }
+
+            this.header = { ...headerRecord, structure: headerClean }
+            this.header_90 = JSON.parse(JSON.stringify(this.header));
+
+            // ---------- 3) FOOTER ----------
+            await this.homepageStore.loadRecord(this.homepage.id, this.index.structure.footer.id)
+            const footerRecord = { ...this.record } // Snapshot
+
+            const footerDef = cloneStructure("footer")
+            const footerMerged = deepMergeDefaults(footerRecord.structure ?? {}, footerDef)
+
+            const footerSchemaStripping =
+    /** @type {import('zod').ZodTypeAny} */ (HPM_SCHEMAS.footer).strip()
+
+            let footerClean
+            try {
+                footerClean = footerSchemaStripping.parse(footerMerged)
+            } catch (e) {
+                console.warn("Invalid footer structure (after strip):", e)
+                footerClean = footerDef
+            }
+
+            this.footer = { ...footerRecord, structure: footerClean }
+            this.footer_90 = { ...footerRecord, structure: footerClean }
+        },
 
         async abort() {
             await this.homepageStore.saveRecord(this.index_90);

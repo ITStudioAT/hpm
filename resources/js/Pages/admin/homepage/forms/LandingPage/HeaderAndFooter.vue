@@ -12,9 +12,9 @@
                             <v-btn @click="selectHeader" v-if="!change_header" color="primary" flat><v-icon
                                     icon="mdi-pencil" /></v-btn>
 
-                            <v-btn v-if="change_header" color="success" flat @click="abortHeader"><v-icon
+                            <v-btn v-if="change_header" color="success" flat @click="confirmHeader"><v-icon
                                     icon="mdi-check" /></v-btn>
-                            <v-btn v-if="change_header" color="warning" flat @click="confirmHeader"><v-icon
+                            <v-btn v-if="change_header" color="warning" flat @click="abortHeader"><v-icon
                                     icon="mdi-close" /></v-btn>
                         </div>
                         <div class="d-flex flex-row align-center justify-space-between">
@@ -51,12 +51,7 @@
             </v-card>
         </v-col>
     </v-row>
-    <v-row>
-        {{ header }}
-    </v-row>
-    <v-row>
-        {{ actual_header }}
-    </v-row>
+
 </template>
 <script>
 import { mapWritableState } from "pinia";
@@ -64,7 +59,7 @@ import { useHomepageStore } from "@/stores/admin/HomepageStore";
 export default {
 
     props: ['index', 'header'],
-    emits: ['clickAction', 'update'],
+    emits: ['clickAction', 'update', 'reloadRecords'],
 
     async beforeMount() {
         this.homepageStore = useHomepageStore();
@@ -75,8 +70,9 @@ export default {
     data() {
         return {
             homepageStore: null,
-            actual_header: this.header,
+            actual_header: this.header.id,
             change_header: false,
+            actual_header_90: null,
         };
     },
 
@@ -87,16 +83,19 @@ export default {
     methods: {
 
         selectHeader() {
+            this.actual_header_90 = this.actual_header;
             this.change_header = true;
         },
 
         async abortHeader() {
-            console.log(this.header === this.actual_header)
+            this.actual_header = this.actual_header_90;
             this.change_header = false;
 
         },
         async confirmHeader() {
-            console.log(this.header === this.actual_header)
+            this.index.structure.header.id = this.actual_header;
+            await this.homepageStore.saveRecord(this.index);
+            this.$emit('reloadRecords');
             this.change_header = false;
         }
     }

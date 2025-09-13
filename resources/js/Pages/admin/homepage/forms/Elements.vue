@@ -108,12 +108,7 @@
                 </v-col>
 
             </v-row>
-            <v-row>
-                {{ header?.structure?.props?.color }}
-            </v-row>
-            <v-row>
-                {{ header_90?.structure?.props?.color }}
-            </v-row>
+
 
             <!-- HEADER-->
             <EditHeader :index="index" :header="header" :reloadKey="reloadKey" @confirmHeader="confirmHeader"
@@ -121,10 +116,6 @@
 
             <!-- Preview -->
             <Preview :index="index" :reloadKey="reloadKey" v-if="index && action === 'header'" />
-
-
-
-
 
 
         </v-form>
