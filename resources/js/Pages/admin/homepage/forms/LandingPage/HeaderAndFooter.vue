@@ -6,9 +6,16 @@
                 <v-card-text>
                     <!-- HEADER -->
                     <div>
-                        <div>
+                        <div class="d-flex flex-row align-center ga-2">
                             <v-autocomplete v-model="actual_header" :items="headers" item-title="name" item-value="id"
-                                label="Wähle einen Header" />
+                                label="Wähle einen Header" :disabled="!change_header" />
+                            <v-btn @click="selectHeader" v-if="!change_header" color="primary" flat><v-icon
+                                    icon="mdi-pencil" /></v-btn>
+
+                            <v-btn v-if="change_header" color="success" flat @click="abortHeader"><v-icon
+                                    icon="mdi-check" /></v-btn>
+                            <v-btn v-if="change_header" color="warning" flat @click="confirmHeader"><v-icon
+                                    icon="mdi-close" /></v-btn>
                         </div>
                         <div class="d-flex flex-row align-center justify-space-between">
                             <v-checkbox label="Kopzeile anzeigen" v-model="index.structure.header.is_visible"
@@ -45,7 +52,10 @@
         </v-col>
     </v-row>
     <v-row>
-        {{ headers }}
+        {{ header }}
+    </v-row>
+    <v-row>
+        {{ actual_header }}
     </v-row>
 </template>
 <script>
@@ -65,13 +75,31 @@ export default {
     data() {
         return {
             homepageStore: null,
-            actual_header: this.header
+            actual_header: this.header,
+            change_header: false,
         };
     },
 
     computed: {
         ...mapWritableState(useHomepageStore, ["headers"]),
     },
+
+    methods: {
+
+        selectHeader() {
+            this.change_header = true;
+        },
+
+        async abortHeader() {
+            console.log(this.header === this.actual_header)
+            this.change_header = false;
+
+        },
+        async confirmHeader() {
+            console.log(this.header === this.actual_header)
+            this.change_header = false;
+        }
+    }
 
 
 }

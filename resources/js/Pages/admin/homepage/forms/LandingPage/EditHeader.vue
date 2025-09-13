@@ -3,7 +3,8 @@
 
     <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
         <its-menu-button title="Abbruch" icon="mdi-close" color="warning" @click="$emit('abort')" />
-        <its-menu-button title="Speichern" type="submit" icon="mdi-content-save" color="success" @click="" />
+        <its-menu-button title="Speichern" type="submit" icon="mdi-content-save" color="success"
+            @click="$emit('save')" />
     </v-row>
 
     <!-- HEADER-->
@@ -47,7 +48,7 @@ import Row_1 from "./Row_1.vue";
 import Row_2 from "./Row_2.vue";
 import { COLOR_ITEMS, DENSITY_ITEMS, SCROLL_BEHAVIOR_ITEMS, JUSTIFY_ITEMS, TEXT_VARIANT_ITEMS } from "@/constants/uiOptions";
 export default {
-    emits: ['confirmHeader', 'abort'],
+    emits: ['confirmHeader', 'abort', 'save'],
     props: ['index', 'header', 'reloadKey'],
     components: { ItsMenuButton, Header, RowsAndColumns, Row_1, Row_2 },
 

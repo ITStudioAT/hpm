@@ -7,7 +7,7 @@
         </v-row>
 
         <v-form ref="form" @submit.prevent="$emit('save')">
-            <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
+            <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters v-if="index && action === ''">
                 <its-menu-button title="Abbruch" icon="mdi-close" color="warning" @click="abort" />
                 <its-menu-button title="Speichern" type="submit" icon="mdi-content-save" color="success"
                     @click="save" />
@@ -18,17 +18,11 @@
                 v-if="index && action === ''" />
 
             <!-- Edit Header -->
-            <v-expand-transition>
-                <EditHeader :index="index" :header="header" :reloadKey="reloadKey" @confirmHeader="confirmHeader"
-                    @abort="action = ''" v-if="index && action === 'header'" />
-            </v-expand-transition>
+            <EditHeader :index="index" :header="header" :reloadKey="reloadKey" @confirmHeader="confirmHeader"
+                @abort="abort" @save="save" v-if="index && action === 'header'" />
 
             <!-- Preview -->
             <Preview :index="index" :reloadKey="reloadKey" />
-
-            HEADER:
-            {{ header }}
-
 
         </v-form>
     </v-container>
@@ -82,7 +76,7 @@ export default {
         }
 
         this.index = { ...indexRecord, structure: indexClean }
-        this.index_90 = { ...indexRecord, structure: indexClean }
+        this.index_90 = JSON.parse(JSON.stringify(this.index));
 
         // ---------- 2) HEADER ----------
         await this.homepageStore.loadRecord(this.homepage.id, this.index.structure.header.id)
@@ -102,7 +96,7 @@ export default {
         }
 
         this.header = { ...headerRecord, structure: headerClean }
-        this.header_90 = { ...headerRecord, structure: headerClean }
+        this.header_90 = JSON.parse(JSON.stringify(this.header));
 
         // ---------- 3) FOOTER ----------
         await this.homepageStore.loadRecord(this.homepage.id, this.index.structure.footer.id)
