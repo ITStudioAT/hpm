@@ -1,0 +1,3 @@
+<template>
+    HOMEPAGE INDEX
+</template>
