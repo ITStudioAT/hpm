@@ -479,11 +479,10 @@ export default {
     components: {},
 
     async beforeMount() {
-        const colorset = 'autumn';
+        const colorset = this.$route.query.colorset;
         this.homepageStore = useHomepageStore();
-        const response = await axios.get(`/homepage/colorset?colorset=${colorset}`);
-        this.colorDefs = response.data.colorDefs;
-        this.applyCssVars(this.normalized.value);
+        await this.homepageStore.colorset(colorset);
+        this.applyCssVars(this.normalized);
         this.is_ready = true;
     },
 
@@ -495,7 +494,7 @@ export default {
         return {
             homepageStore: null,
             colorset: null,
-            colorDefs: null,
+
             target: 'root',
             is_ready: false,
 
@@ -503,7 +502,7 @@ export default {
     },
 
     computed: {
-        ...mapWritableState(useHomepageStore, ['config', 'is_loading', 'error']),
+        ...mapWritableState(useHomepageStore, ['config', 'is_loading', 'error', 'colorDefs']),
         normalized() {
             if (Array.isArray(this.colorDefs)) return Object.fromEntries(this.colorDefs)
             return this.colorDefs || {}
@@ -536,31 +535,14 @@ export default {
                 const name = key.startsWith('--') ? key : `--${key}`
                 el.style.setProperty(name, String(val))
             }
+
         }
 
     }
 
 }
 </script>
-<style>
-:root {
-    --bg-all: #3ba3ad;
-    --text-all: #FFFFFF;
 
-    --color-0: #FFFFFF;
-    --color-1: #DDDDDD;
-    --color-2: #f582ae;
-    --color-3: #8bd3dd;
-
-    --text-0: #0b333d;
-    --text-hl: #000000;
-
-    --appbar-bg-4: #000000;
-    --appbar-text-4: #DDDDDD;
-    --appbar-bg-5: #0b333d;
-    --appbar-text-5: #FFFFFF;
-}
-</style>
 <style scoped>
 /*
 .hpm-c-all

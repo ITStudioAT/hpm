@@ -20,6 +20,7 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
     /***** HOMEPAGE ROUTES *****/
 
     Route::get('/homepage/config',  [HomepageController::class, 'config']);
+    Route::get('/homepage/colorset',  [\App\Http\Controllers\Homepage\HomepageController::class, 'colorSet']);
 
     /***** ADMIN ROUTES *****/
 

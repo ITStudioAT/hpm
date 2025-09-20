@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useNotificationStore } from "@/stores/spa/NotificationStore";
 
 export const useHomepageStore = defineStore("HomepageStore", {
 
@@ -12,7 +13,24 @@ export const useHomepageStore = defineStore("HomepageStore", {
                 status: null,
                 message: null,
                 timeout: 3000,
-            }
+            },
+            colorDefs: {
+                "--bg-all": "#3ba3ad",
+                "--text-all": "#FFFFFF",
+
+                "--color-0": "#FFFFFF",
+                "--color-1": "#DDDDDD",
+                "--color-2": "#f582ae",
+                "--color-3": "#8bd3dd",
+
+                "--text-0": "#0b333d",
+                "--text-hl": "#000000",
+
+                "--appbar-bg-4": "#000000",
+                "--appbar-text-4": "#DDDDDD",
+                "--appbar-bg-5": "#0b333d",
+                "--appbar-text-5": "#FFFFFF",
+            },
 
         }
     },
@@ -29,6 +47,27 @@ export const useHomepageStore = defineStore("HomepageStore", {
                 this.config = response.data;
             } catch (error) {
                 this.redirect(error.response.status, error.response.data.message, 'error');
+            } finally {
+                this.is_loading--;
+            }
+        },
+
+
+        async colorset(colorset = 'default') {
+            const notification = useNotificationStore();
+            this.is_loading++;
+            try {
+                const response = await axios.get("/api/homepage/colorset", { params: { colorset: colorset } });
+                this.colorDefs = response.data.colorDefs;
+
+
+            } catch (error) {
+                notification.notify({
+                    status: error.response.status,
+                    message: error.response.data.message || 'Fehler passiert.',
+                    type: 'error',
+                    timeout: 3000,
+                });
             } finally {
                 this.is_loading--;
             }

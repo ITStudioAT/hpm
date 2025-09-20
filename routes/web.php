@@ -42,7 +42,11 @@ Route::middleware(['throttle:global', 'throttle:web', 'web-allowed'])->group(fun
     });
     */
 
-    Route::get('/homepage/colorset',  [\App\Http\Controllers\Homepage\HomepageController::class, 'colorSet']);
+
+
+    Route::get('/special/{any?}', function () {
+        return view('spa::homepage');
+    })->where('any', '.*');
 
     /* WRONG ROUTES */
     Route::get('/{any?}', function () {

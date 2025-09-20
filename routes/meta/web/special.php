@@ -2,9 +2,7 @@
 
 return [
     'roles' => [
-        '/*' => [],
-
         // new entries detected
-        '/homepage/colorset' => [],
+        '/special/*' => [],
     ]
 ];
