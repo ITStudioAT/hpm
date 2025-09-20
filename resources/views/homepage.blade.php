@@ -8,9 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="/storage/images/favicon.ico">
 
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=roboto:100,300,400,500,700,900" rel="stylesheet" />
-
     <title>Spa Homepage</title>
     @if (!app()->runningUnitTests())
     @vite('resources/js/apps/homepage.js')

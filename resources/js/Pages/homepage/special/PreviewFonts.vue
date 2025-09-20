@@ -38,42 +38,23 @@
 <script>
 import { mapWritableState } from "pinia";
 import { useHomepageStore } from "@/stores/homepage/HomepageStore";
+
+const declsToCss = (obj) => {
+    return Object.entries(obj)
+        .map(([prop, val]) => `${toKebab(prop)}:${val};`)
+        .join('');
+};
+
+const toKebab = (s) => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 export default {
 
     components: {},
 
     async beforeMount() {
+        const fontset = this.$route.query.fontset;
 
-        const declsToCss = (obj) => {
-            return Object.entries(obj)
-                .map(([prop, val]) => `${toKebab(prop)}:${val};`)
-                .join('');
-        };
-
-        const toKebab = (s) => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-
-
-        const fontset = 'education';
-        this.homepageStore = useHomepageStore();
         await this.homepageStore.fontset(fontset);
-
-        this.fontset.fonts.forEach(font => {
-            const style = document.createElement("style");
-            style.innerHTML = this.fontset[font];
-            document.head.appendChild(style);
-        });
-
-        let css = '';
-        for (const [tokenName, rules] of Object.entries(this.fontset.styles)) {
-            const className = `.${tokenName}`;
-            css += `${className}{${declsToCss(rules)}}\n`;
-        }
-
-        const style = document.createElement("style");
-        style.innerHTML = css;
-        document.head.appendChild(style);
-
-
+        this.applyFonts(fontset);
 
         this.is_ready = true;
     },
@@ -84,7 +65,7 @@ export default {
 
     data() {
         return {
-            homepageStore: null,
+            homepageStore: useHomepageStore(),
             colorset: null,
             colorDefs: null,
             target: 'root',
@@ -103,6 +84,25 @@ export default {
     },
 
     methods: {
+        applyFonts(fontset) {
+
+            this.fontset.fonts.forEach(font => {
+                const style = document.createElement("style");
+                style.innerHTML = this.fontset[font];
+                document.head.appendChild(style);
+            });
+
+            let css = '';
+            for (const [tokenName, rules] of Object.entries(this.fontset.styles)) {
+                const className = `.${tokenName}`;
+                css += `${className}{${declsToCss(rules)}}\n`;
+            }
+
+
+            const style = document.createElement("style");
+            style.innerHTML = css;
+            document.head.appendChild(style);
+        }
 
 
     }

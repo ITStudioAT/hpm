@@ -43,7 +43,7 @@ function writeColorset(string $name, array $payload): string
 
 it('returns 422 (validation) if colorset query param is missing', function () {
     // JSON-Request → FormRequest liefert 422 + Validation-Fehler
-    $response = $this->getJson('/homepage/colorset');
+    $response = $this->getJson('/api/homepage/colorset');
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['colorset']);
@@ -79,7 +79,7 @@ it('returns JSON payload when colorset file exists', function () {
 
     writeColorset($colorsetName, $payload);
 
-    $response = $this->get("/homepage/colorset?colorset={$colorsetName}");
+    $response = $this->get("/api/homepage/colorset?colorset={$colorsetName}");
 
     $response->assertOk();
     $response->assertHeader('Content-Type', 'application/json');
