@@ -23,6 +23,7 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
     Route::get('/homepage/colorset',  [\App\Http\Controllers\Homepage\HomepageController::class, 'colorSet']);
     Route::get('/homepage/font',  [\App\Http\Controllers\Homepage\HomepageController::class, 'font']);
     Route::get('/homepage/fontset',  [\App\Http\Controllers\Homepage\HomepageController::class, 'fontset']);
+    Route::get('/homepage/load_sets',  [\App\Http\Controllers\Homepage\HomepageController::class, 'loadSets']);
 
     /***** ADMIN ROUTES *****/
 

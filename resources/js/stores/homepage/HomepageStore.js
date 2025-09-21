@@ -32,6 +32,7 @@ export const useHomepageStore = defineStore("HomepageStore", {
                 "--appbar-text-5": "#FFFFFF",
             },
             fontset: null,
+            cf_sets: [],
 
         }
     },
@@ -80,6 +81,26 @@ export const useHomepageStore = defineStore("HomepageStore", {
             try {
                 const response = await axios.get("/api/homepage/fontset", { params: { fontset: fontset } });
                 this.fontset = response.data;
+
+
+            } catch (error) {
+                notification.notify({
+                    status: error.response.status,
+                    message: error.response.data.message || 'Fehler passiert.',
+                    type: 'error',
+                    timeout: 3000,
+                });
+            } finally {
+                this.is_loading--;
+            }
+        },
+
+        async loadSets() {
+            const notification = useNotificationStore();
+            this.is_loading++;
+            try {
+                const response = await axios.get("/api/homepage/load_sets", {});
+                this.cf_sets = response.data;
 
 
             } catch (error) {

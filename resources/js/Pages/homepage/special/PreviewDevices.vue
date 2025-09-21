@@ -9,7 +9,7 @@
                     </v-col>
                     <v-col cols="auto">
                         <v-btn variant="outlined" @click="rotate" size="small">
-                            <v-icon start>mdi-rotate-90</v-icon>
+                            <v-icon start>mdi-phone-rotate-landscape</v-icon>
                             Rotate
                         </v-btn>
                     </v-col>
@@ -19,14 +19,19 @@
             <v-col cols="12" md="6">
                 <v-row align="center" dense>
                     <v-col cols="6">
-                        <v-text-field v-model="localFontset" label="Fontset" density="compact" @keyup.enter="reload" />
+                        <v-select v-model="localFontset" :items="fontsetOptions" item-title="label" item-value="value"
+                            label="Fontset" density="compact" :loading="setsLoading"
+                            :disabled="setsLoading || fontsetOptions.length === 0" @update:modelValue="reload" />
                     </v-col>
+
                     <v-col cols="6">
-                        <v-text-field v-model="localColorset" label="Colorset" density="compact"
-                            @keyup.enter="reload" />
+                        <v-select v-model="localColorset" :items="colorsetOptions" item-title="label" item-value="value"
+                            label="Colorset" density="compact" :loading="setsLoading"
+                            :disabled="setsLoading || colorsetOptions.length === 0" @update:modelValue="reload" />
                     </v-col>
                     <v-col cols="auto">
-                        <v-btn color="primary" @click="reload" size="small">Reload</v-btn>
+                        <v-btn color="primary" @click="reload" size="small"><v-icon start>mdi-reload</v-icon>
+                            Reload</v-btn>
                     </v-col>
                 </v-row>
             </v-col>
@@ -68,8 +73,10 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
+import { useHomepageStore } from '@/stores/homepage/HomepageStore'
 
+// ----- Props -----
 const props = defineProps({
     fontset: { type: String, default: 'default' },
     colorset: { type: String, default: 'autumn' },
@@ -77,6 +84,32 @@ const props = defineProps({
     initialPreset: { type: String, default: 'desktop' },
 })
 
+// ----- Read query parameters -----
+const urlParams = new URLSearchParams(window.location.search)
+const queryFontset = urlParams.get('fontset')
+const queryColorset = urlParams.get('colorset')
+
+// ----- Store -----
+const store = useHomepageStore()
+const setsLoading = ref(true)
+
+onMounted(async () => {
+    try {
+        await store.loadSets()
+    } finally {
+        setsLoading.value = false
+    }
+})
+
+// ----- Select options -----
+const fontsetOptions = computed(() =>
+    (store.cf_sets?.fontsets ?? []).map(v => ({ label: v, value: v }))
+)
+const colorsetOptions = computed(() =>
+    (store.cf_sets?.colorsets ?? []).map(v => ({ label: v, value: v }))
+)
+
+// ----- Device presets -----
 const presets = [
     { id: 'desktop', name: 'Desktop', width: 1440, height: 900 },
     { id: 'laptop', name: 'Laptop', width: 1280, height: 800 },
@@ -87,14 +120,20 @@ const presets = [
 const presetOptions = presets.map(p => ({ label: `${p.name} (${p.width}×${p.height})`, value: p.id }))
 presetOptions.push({ label: 'Custom…', value: 'custom' })
 
+// ----- State -----
 const selectedPreset = ref(props.initialPreset)
 const width = ref(presets.find(p => p.id === selectedPreset.value)?.width || 1440)
 const height = ref(presets.find(p => p.id === selectedPreset.value)?.height || 900)
 const zoom = ref(100)
 
-const localFontset = ref(props.fontset)
-const localColorset = ref(props.colorset)
+// use query param if available, else prop defaults
+const localFontset = ref(queryFontset || props.fontset)
+const localColorset = ref(queryColorset || props.colorset)
 
+const iframeUrl = ref('')
+const copied = ref(false)
+
+// ----- Reactions -----
 watch(selectedPreset, id => {
     if (id === 'custom') return
     const p = presets.find(p => p.id === id)
@@ -117,18 +156,18 @@ const computedUrl = computed(() => {
     return q ? `${base}?${q}` : base
 })
 
-const iframeUrl = ref(computedUrl.value)
+watch(
+    () => computedUrl.value,
+    (val) => { iframeUrl.value = val },
+    { immediate: true }
+)
 
-const frameWrap = ref(null)
-const iframeRef = ref(null)
-
+// ----- Styles -----
 const outerStyle = computed(() => {
-    const w = width.value
-    const h = height.value
     const scale = Math.max(0.1, zoom.value / 100)
     return {
-        width: w + 'px',
-        height: h + 'px',
+        width: width.value + 'px',
+        height: height.value + 'px',
         transform: `scale(${scale})`,
         transformOrigin: 'top center',
         margin: '0 auto',
@@ -137,6 +176,7 @@ const outerStyle = computed(() => {
 
 const frameStyle = computed(() => ({ width: '100%', height: '100%' }))
 
+// ----- Actions -----
 function rotate() {
     const w = width.value
     width.value = height.value
@@ -144,10 +184,12 @@ function rotate() {
 }
 
 function reload() {
-    iframeUrl.value = computedUrl.value
+    iframeUrl.value = ''
+    requestAnimationFrame(() => {
+        iframeUrl.value = computedUrl.value
+    })
 }
 
-const copied = ref(false)
 async function copyUrl() {
     try {
         await navigator.clipboard.writeText(computedUrl.value)
@@ -158,6 +200,8 @@ async function copyUrl() {
     }
 }
 </script>
+
+
 
 <style scoped>
 .frame-wrap {
