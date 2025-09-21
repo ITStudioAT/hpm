@@ -79,7 +79,7 @@ import { useHomepageStore } from '@/stores/homepage/HomepageStore'
 // ----- Props -----
 const props = defineProps({
     fontset: { type: String, default: 'default' },
-    colorset: { type: String, default: 'autumn' },
+    colorset: { type: String, default: 'default' },
     path: { type: String, default: '/special/preview_colors_and_fonts' },
     initialPreset: { type: String, default: 'desktop' },
 })
