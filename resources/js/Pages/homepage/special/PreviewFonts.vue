@@ -52,7 +52,6 @@ export default {
 
     async beforeMount() {
         const fontset = this.$route.query.fontset;
-
         await this.homepageStore.fontset(fontset);
         this.applyFonts(fontset);
 
@@ -66,8 +65,7 @@ export default {
     data() {
         return {
             homepageStore: useHomepageStore(),
-            colorset: null,
-            colorDefs: null,
+
             target: 'root',
             is_ready: false,
 
