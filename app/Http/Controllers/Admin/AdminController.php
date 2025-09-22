@@ -32,7 +32,7 @@ class AdminController extends Controller
             'copyright' => config('spa.copyright', ''),
             'title' => config('spa.title', 'Fresh Laravel'),
             'company' => config('spa.company', 'ItStudio.at'),
-            'version' => InstalledVersions::getPrettyVersion('itstudioat/spa'),
+            'version' => config('hpm.version'),
             'register_admin_allowed' => config('spa.register_admin_allowed', false),
             'timeout' => config('spa.timeout', 3000),
             'is_auth' => auth()->check(),

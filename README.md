@@ -7,7 +7,14 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## Testen von Colorset und Fontset
+
+```bash
+/special/preview_devices?colorset=default&fontset=default
+```
+
+Die Parameter sind optional.
+
 
 
 ## License
