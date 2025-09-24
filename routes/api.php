@@ -61,6 +61,10 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
     Route::middleware(['auth:sanctum', 'api-allowed:admin'])->group(function () {
 
 
+        // admin/homepage
+        Route::apiResource('/admin/homepages', \App\Http\Controllers\Admin\HomepageController::class);
+
+
         // navigation, menus
         Route::get('/admin/navigation/profile_menu',  [NavigationController::class, 'profileMenu']);
         Route::get('/admin/navigation/user_menu',  [NavigationController::class, 'userMenu']);

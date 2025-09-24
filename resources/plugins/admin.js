@@ -13,7 +13,7 @@ const lightTheme = {
         // Used for secondary buttons, cards, less emphasis
         secondary: '#B0BEC5',       // blue-grey.lighten3
         // Optional highlight or accent tone
-        accent: '#18FFFF',          // cyan.accent3
+        accent: '#FF7043',          // cyan.accent3
         // App background
         background: '#FAFAFA',      // grey.lighten5
         // Card and surface background

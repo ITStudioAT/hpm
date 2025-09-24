@@ -34,7 +34,7 @@ class AdminNavigationService
 
         // MEDIAMANAGER
         if ($this->userHasRole(['admin'])) {
-            $menu[] = ['title' => 'Mediamanager', 'icon' => 'mdi-domain', 'to' => '/admin/mm'];
+            $menu[] = ['title' => 'Mediamanager', 'icon' => 'mdi-multimedia', 'to' => '/admin/mm'];
         }
 
         // BENUTZER ALS admin

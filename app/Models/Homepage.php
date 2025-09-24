@@ -6,5 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Homepage extends Model
 {
+    protected $guarded = [];
     protected $casts = ['structure' => 'array'];
 }
