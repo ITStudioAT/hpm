@@ -72,9 +72,7 @@ class HomepageController extends Controller
             abort(403, 'Sie haben keine Berechtigung');
         }
 
-        $homepage = Homepage::findOrFail($request->id);
         $homepage->update($request->validated());
-        info($request->validated());
         return response()->json(new HomepageResource($homepage), 200);
     }
 
@@ -83,6 +81,11 @@ class HomepageController extends Controller
      */
     public function destroy(Homepage $homepage)
     {
-        //
+        if (! $auth_user = $this->userHasRole(['admin'])) {
+            abort(403, 'Sie haben keine Berechtigung');
+        }
+
+        $homepage->delete();
+        return response()->noContent();
     }
 }

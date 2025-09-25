@@ -95,7 +95,7 @@ it('creates a homepage with normalized structure for admins', function () {
     expect($homepage->structure)->not->toHaveKey('junk');
 });
 
-it('returns 403 when trying to reuse an existing homepage name', function () {
+it('returns 422 with a validation error when reusing an existing homepage name', function () {
     $admin = makeUserWithOptionalRole('admin');
     Sanctum::actingAs($admin, ['*']);
 
@@ -110,6 +110,7 @@ it('returns 403 when trying to reuse an existing homepage name', function () {
         'structure' => [],
     ]);
 
-    $response->assertStatus(403);
+    $response->assertStatus(422);
+    $response->assertJsonValidationErrors(['name']);
     $this->assertDatabaseCount('homepages', 1);
 });

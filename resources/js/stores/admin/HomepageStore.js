@@ -1,209 +1,223 @@
-import { defineStore } from 'pinia';
-import { createResourceStore } from './ResourceStore';
-import { useAdminStore } from "@/stores/admin/AdminStore";
-import { useNotificationStore } from "@/stores/spa/NotificationStore";
+import { defineStore } from 'pinia'
+import { createResourceStore } from './ResourceStore'
+import { useAdminStore } from '@/stores/admin/AdminStore'
+import { useNotificationStore } from '@/stores/spa/NotificationStore'
 
-const resourceStore = createResourceStore('homepages');
+const resourceStore = createResourceStore('homepages')
 
 export const useHomepageStore = defineStore('AdminHomepageStore', {
-
     state: () => ({
         ...resourceStore.state(),
         isSaving: false,
         active_homepage: null,
+        delete_action: 0,
+        selected_action: '',
     }),
 
     actions: {
         ...resourceStore.actions(),
 
         async store(payload = {}) {
-            const adminStore = useAdminStore();
-            const notification = useNotificationStore();
-            const timeout = adminStore.config?.timeout ?? this.timeout ?? 3000;
+            const adminStore = useAdminStore()
+            const notification = useNotificationStore()
+            const timeout = adminStore.config?.timeout ?? this.timeout ?? 3000
 
-            this.is_loading = true;
-            this.isSaving = true;
-            adminStore.is_loading++;
+            this.is_loading = true
+            this.isSaving = true
+            adminStore.is_loading++
 
             try {
-                const response = await axios.post('/api/admin/homepages', payload);
-                const created = response.data;
+                const response = await axios.post('/api/admin/homepages', payload)
+                const created = response.data
 
-                this.active_homepage = created;
-                /*
-                this.api_answer = created;
+                this.active_homepage = created
 
-                if (created) {
-                    const currentItems = Array.isArray(this.items) ? this.items : [];
-                    if (created?.id !== undefined) {
-                        const withoutExisting = currentItems.filter(item => item?.id !== created.id);
-                        this.items = [...withoutExisting, created];
-                    } else {
-                        this.items = [...currentItems, created];
-                    }
-                }
-                    */
-
-                this.reload++;
+                this.reload++
                 this.error = {
                     status: null,
                     message: null,
                     is_error: false,
                     is_success: true,
-                };
+                }
 
                 notification.notify({
                     status: response.status,
                     message: 'Homepage wurde erstellt.',
                     type: 'success',
                     timeout,
-                });
+                })
 
-                return created;
+                return created
             } catch (error) {
-                const status = error?.response?.status ?? 500;
-                const message = error?.response?.data?.message ?? 'Fehler passiert.';
+                const status = error?.response?.status ?? 500
+                const message = error?.response?.data?.message ?? 'Fehler passiert.'
 
-                this.item = null;
-                this.api_answer = null;
+                this.item = null
+                this.api_answer = null
                 this.error = {
                     status,
                     message,
                     is_error: true,
                     is_success: false,
-                };
+                }
 
                 notification.notify({
                     status,
                     message,
                     type: 'error',
                     timeout,
-                });
+                })
 
-                return false;
+                return false
             } finally {
-                this.is_loading = false;
-                this.isSaving = false;
-                adminStore.is_loading--;
+                this.is_loading = false
+                this.isSaving = false
+                adminStore.is_loading--
             }
         },
 
         async update(data = {}) {
-            const adminStore = useAdminStore();
-            const notification = useNotificationStore();
-            const timeout = adminStore.config?.timeout ?? this.timeout ?? 3000;
+            const adminStore = useAdminStore()
+            const notification = useNotificationStore()
+            const timeout = adminStore.config?.timeout ?? this.timeout ?? 3000
 
-            this.is_loading = true;
-            this.isSaving = true;
-            adminStore.is_loading++;
+            this.is_loading = true
+            this.isSaving = true
+            adminStore.is_loading++
 
             try {
-                const id = data?.id;
+                const id = data?.id
                 if (id == null || id === '') {
-                    throw { response: { status: 422, data: { message: 'data.id is required' } } };
+                    throw { response: { status: 422, data: { message: 'data.id is required' } } }
                 }
 
-                const response = await axios.put(`/api/admin/homepages/${encodeURIComponent(id)}`, data);
-                const updated = response.data;
+                const response = await axios.put(`/api/admin/homepages/${encodeURIComponent(id)}`, data)
+                const updated = response.data
 
                 // set active + upsert in list
-                this.active_homepage = updated;
+                this.active_homepage = updated
                 if (Array.isArray(this.homepages)) {
-                    const idx = this.homepages.findIndex(h => h?.id === id);
-                    if (idx !== -1) this.homepages.splice(idx, 1, updated);
-                    else this.homepages.push(updated);
+                    const idx = this.homepages.findIndex((h) => h?.id === id)
+                    if (idx !== -1) this.homepages.splice(idx, 1, updated)
+                    else this.homepages.push(updated)
                 }
 
-                this.reload++;
-                this.error = { status: null, message: null, is_error: false, is_success: true };
+                this.reload++
+                this.error = { status: null, message: null, is_error: false, is_success: true }
 
                 notification.notify({
                     status: response.status,
                     message: 'Homepage wurde aktualisiert.',
                     type: 'success',
                     timeout,
-                });
+                })
 
-                return updated;
+                return updated
             } catch (error) {
-                const status = error?.response?.status ?? 500;
-                const message = error?.response?.data?.message ?? 'Fehler beim Aktualisieren.';
+                const status = error?.response?.status ?? 500
+                const message = error?.response?.data?.message ?? 'Fehler beim Aktualisieren.'
 
-                this.error = { status, message, is_error: true, is_success: false };
+                this.error = { status, message, is_error: true, is_success: false }
 
-                notification.notify({ status, message, type: 'error', timeout });
-                return false;
+                notification.notify({ status, message, type: 'error', timeout })
+                return false
             } finally {
-                this.is_loading = false;
-                this.isSaving = false;
-                adminStore.is_loading--;
+                this.is_loading = false
+                this.isSaving = false
+                adminStore.is_loading--
             }
         },
 
-
         async index() {
-            const adminStore = useAdminStore();
-            const notification = useNotificationStore();
-            const timeout = adminStore.config?.timeout ?? this.timeout ?? 3000;
+            const adminStore = useAdminStore()
+            const notification = useNotificationStore()
+            const timeout = adminStore.config?.timeout ?? this.timeout ?? 3000
 
-            this.is_loading = true;
-            this.isSaving = true;
-            adminStore.is_loading++;
+            this.is_loading = true
+            this.isSaving = true
+            adminStore.is_loading++
 
             try {
-                const response = await axios.get('/api/admin/homepages', {});
-                const homepages = response.data;
+                const response = await axios.get('/api/admin/homepages', {})
+                const homepages = response.data
 
-                this.homepages = homepages;
-                /*
-                this.api_answer = created;
+                this.homepages = homepages
 
-                if (created) {
-                    const currentItems = Array.isArray(this.items) ? this.items : [];
-                    if (created?.id !== undefined) {
-                        const withoutExisting = currentItems.filter(item => item?.id !== created.id);
-                        this.items = [...withoutExisting, created];
-                    } else {
-                        this.items = [...currentItems, created];
-                    }
-                }
-                    */
+                this.reload++
+                this.error = { status: null, message: null, is_error: false, is_success: true }
 
-                this.reload++;
-                this.error = {
-                    status: null,
-                    message: null,
-                    is_error: false,
-                    is_success: true,
-                };
-
-                return homepages;
+                return homepages
             } catch (error) {
-                const status = error?.response?.status ?? 500;
-                const message = error?.response?.data?.message ?? 'Fehler passiert.';
+                const status = error?.response?.status ?? 500
+                const message = error?.response?.data?.message ?? 'Fehler passiert.'
 
-                this.item = null;
-                this.api_answer = null;
-                this.error = {
-                    status,
-                    message,
-                    is_error: true,
-                    is_success: false,
-                };
+                this.item = null
+                this.api_answer = null
+                this.error = { status, message, is_error: true, is_success: false }
 
                 notification.notify({
                     status,
                     message,
                     type: 'error',
                     timeout,
-                });
+                })
 
-                return false;
+                return false
             } finally {
-                this.is_loading = false;
-                this.isSaving = false;
-                adminStore.is_loading--;
+                this.is_loading = false
+                this.isSaving = false
+                adminStore.is_loading--
+            }
+        },
+
+        async delete(data = {}) {
+            const adminStore = useAdminStore()
+            const notification = useNotificationStore()
+            const timeout = adminStore.config?.timeout ?? this.timeout ?? 3000
+
+            this.is_loading = true
+            this.isSaving = true
+            adminStore.is_loading++
+
+            try {
+                const response = await axios.delete(`/api/admin/homepages/${data?.id}`, {})
+
+                this.error = { status: null, message: null, is_error: false, is_success: true }
+
+                notification.notify({
+                    status: response.status,
+                    message: 'Homepage wurde gelöscht.',
+                    type: 'success',
+                    timeout,
+                })
+
+                return true
+            } catch (error) {
+                const status = error?.response?.status ?? 500
+                const message = error?.response?.data?.message ?? 'Fehler passiert.'
+
+                this.item = null
+                this.api_answer = null
+                this.error = {
+                    status,
+                    message,
+                    is_error: true,
+                    is_success: false,
+                }
+
+                notification.notify({
+                    status,
+                    message,
+                    type: 'error',
+                    timeout,
+                })
+
+                return false
+            } finally {
+                this.is_loading = false
+                this.isSaving = false
+                adminStore.is_loading--
             }
         },
     },
-});
+})

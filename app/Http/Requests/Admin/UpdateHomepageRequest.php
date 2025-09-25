@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class UpdateHomepageRequest extends FormRequest
 {
@@ -25,7 +26,7 @@ class UpdateHomepageRequest extends FormRequest
         return [
             'id' => 'required|exists:homepages,id',
             'homepage_id' => 'sometimes|nullable|integer|exists:homepages,id',
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|unique:homepages,name,' . $this->id . ',id',
             'path' => 'nullable|max:255',
             'type' => 'nullable|max:255',
             'structure' => 'nullable|array'
