@@ -6,20 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
 
-class Homepage extends Model
+class Page extends Model
 {
     protected $guarded = [];
-    protected $casts = ['structure' => 'array'];
-
-    protected $table = 'homepages';
 
     protected static function booted(): void
     {
         // Load allowed types from config/hpm.php
-        $types = Arr::wrap(config('hpm.homepage_types', ['homepage']));
+        $types = Arr::wrap(config('hpm.page_types', ['page']));
 
-        // Apply global scope: only homepage types
-        static::addGlobalScope('homepage_types', function (Builder $query) use ($types) {
+        // Apply global scope: only page types
+        static::addGlobalScope('page_types', function (Builder $query) use ($types) {
             $query->whereIn('type', $types);
         });
 
