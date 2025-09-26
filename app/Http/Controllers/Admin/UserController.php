@@ -341,7 +341,6 @@ class UserController extends Controller
         if (! $user = $this->userHasRole(['admin'])) {
             abort(403, 'Sie haben keine Berechtigung');
         }
-        info("da");
         $validated = $request->validated();
 
         $userService = new UserService();

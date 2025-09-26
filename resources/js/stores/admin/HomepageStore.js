@@ -96,11 +96,6 @@ export const useHomepageStore = defineStore('AdminHomepageStore', {
 
                 // set active + upsert in list
                 this.active_homepage = updated
-                if (Array.isArray(this.homepages)) {
-                    const idx = this.homepages.findIndex((h) => h?.id === id)
-                    if (idx !== -1) this.homepages.splice(idx, 1, updated)
-                    else this.homepages.push(updated)
-                }
 
                 this.reload++
                 this.error = { status: null, message: null, is_error: false, is_success: true }
@@ -114,6 +109,7 @@ export const useHomepageStore = defineStore('AdminHomepageStore', {
 
                 return updated
             } catch (error) {
+                this.index()
                 const status = error?.response?.status ?? 500
                 const message = error?.response?.data?.message ?? 'Fehler beim Aktualisieren.'
 

@@ -3,15 +3,22 @@
     <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
         <v-col cols="12" sm="4" md="3">
             <v-list nav density="comfortable">
-                <v-list-subheader>Homepages</v-list-subheader>
+                <v-list-subheader>Seiten</v-list-subheader>
 
                 <v-list-item
                     v-for="(page, i) in pages"
                     :key="page.id ?? i"
-                    :title="page.name"
-                    :prepend-icon="'mdi-web'"
+                    :prepend-icon="'mdi-book-open-page-variant'"
                     :active="isActive(page)"
-                    @click="$emit('newActiveHomepage', page)" />
+                    @click="$emit('newActivePage', page)">
+                    <template #title>{{ page.name }}</template>
+                    <template #subtitle>
+                        <div class="d-flex flex-row align-center justify-space-between">
+                            <div>{{ page.type }}</div>
+                            <div>{{ page.path }}</div>
+                        </div>
+                    </template>
+                </v-list-item>
             </v-list>
         </v-col>
     </v-row>
@@ -19,7 +26,7 @@
 <script>
 export default {
     props: ['pages', 'active_page'],
-    emits: ['newActiveHomepage'],
+    emits: ['newActivePage'],
 
     components: {},
 

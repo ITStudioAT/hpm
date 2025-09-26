@@ -17,11 +17,11 @@
                 title="Übersicht"
                 icon="mdi-view-agenda"
                 :color="selected_menu == 'homepages' ? 'primary' : 'secondary'"
-                @click="doOverview" />
+                @click="doHomepages" />
 
             <its-menu-button
                 title="Seiten"
-                icon="mdi-view-agenda"
+                icon="mdi-book-open-page-variant-outline"
                 :color="selected_menu == 'pages' ? 'primary' : 'secondary'"
                 @click="doPages" />
         </v-row>
@@ -30,7 +30,7 @@
         <OverviewHomepages v-if="selected_menu == 'homepages'" />
 
         <!-- OVERVIEW PAGES -->
-        <OverviewPages v-if="selected_menu == 'pages'" />
+        <OverviewPages :homepage="active_homepage" v-if="selected_menu == 'pages' && active_homepage" />
     </v-container>
 </template>
 
@@ -49,14 +49,13 @@ export default {
         this.adminStore = useAdminStore()
         this.adminStore.initialize(this.$router)
         this.homepageStore = useHomepageStore()
-        this.doOverview()
     },
 
     data() {
         return {
             adminStore: null,
             homepageStore: null,
-            selected_menu: 'overview',
+            selected_menu: 'homepages',
         }
     },
 
@@ -72,18 +71,12 @@ export default {
     },
 
     methods: {
-        async doPages() {
-            this.selected_menu = 'pages'
+        doHomepages() {
+            this.selected_menu = 'homepages'
         },
 
-        async doOverview() {
-            await this.homepageStore.index()
-            // Preselect first homepage if none is active
-            if (!this.active_homepage && this.homepages?.length) {
-                this.active_homepage = this.homepages[0]
-            }
-            this.delete_action = 0
-            this.selected_menu = 'homepages'
+        doPages() {
+            this.selected_menu = 'pages'
         },
     },
 }

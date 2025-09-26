@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Builder;
 class Page extends Model
 {
     protected $guarded = [];
+    protected $casts = ['structure' => 'array'];
+    protected $table = 'homepages';
 
     protected static function booted(): void
     {

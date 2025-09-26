@@ -31,6 +31,11 @@ return [
             'content' => [],
             'footer'  => ['id' => null, 'is_visible' => true],
         ],
+        'page' => [
+            'header'  => ['id' => null, 'is_visible' => true],
+            'content' => [],
+            'footer'  => ['id' => null, 'is_visible' => true],
+        ],
 
     ],
 

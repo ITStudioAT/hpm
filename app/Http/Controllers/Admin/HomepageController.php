@@ -49,7 +49,6 @@ class HomepageController extends Controller
             'name' => $request->input('name'),
             'type' => 'homepage',
             'structure' => $normalized,
-            // ... other fillable fields
         ]);
 
         return response()->json(new HomepageResource($homepage), 200);

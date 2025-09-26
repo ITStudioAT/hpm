@@ -35,9 +35,9 @@ class UpdateService
         $structures = config('hpm.structures');
 
         foreach ($structures as $name => $schema) {
-            $command->line('🔄 Updating structure of ' . $name);
+            $command->line('Ã°Å¸â€â€ž Updating structure of ' . $name);
 
-            $homepages = Homepage::where('type', $name)->get();
+            $homepages = Homepage::withoutGlobalScope('homepage_types')->where('type', $name)->get();
 
             foreach ($homepages as $homepage) {
                 // 1) Coerce to array (handles casted array OR legacy string JSON)
@@ -73,9 +73,9 @@ class UpdateService
                     $homepage->structure = $normalized;
                     $homepage->save();
 
-                    $command->line("🔧 Homepage #{$homepage->id} structure normalized.");
+                    $command->line("Ã°Å¸â€Â§ Homepage #{$homepage->id} structure normalized.");
                 } else {
-                    $command->line("✅ Homepage #{$homepage->id} already up to date.");
+                    $command->line("Ã¢Å“â€¦ Homepage #{$homepage->id} already up to date.");
                 }
             }
         }
@@ -149,3 +149,6 @@ class UpdateService
         return $result;
     }
 }
+
+
+

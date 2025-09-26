@@ -17,7 +17,7 @@ export const usePageStore = defineStore('AdminPageStore', {
     actions: {
         ...resourceStore.actions(),
 
-        async store(payload = {}) {
+        async store(homepage, data = {}) {
             const adminStore = useAdminStore()
             const notification = useNotificationStore()
             const timeout = adminStore.config?.timeout ?? this.timeout ?? 3000
@@ -27,7 +27,7 @@ export const usePageStore = defineStore('AdminPageStore', {
             adminStore.is_loading++
 
             try {
-                const response = await axios.post('/api/admin/pages', payload)
+                const response = await axios.post('/api/admin/pages', { homepage_id: homepage.id, data: data })
                 const created = response.data
 
                 this.active_page = created
@@ -80,7 +80,7 @@ export const usePageStore = defineStore('AdminPageStore', {
             const adminStore = useAdminStore()
             const notification = useNotificationStore()
             const timeout = adminStore.config?.timeout ?? this.timeout ?? 3000
-
+            console.log('updating...')
             this.is_loading = true
             this.isSaving = true
             adminStore.is_loading++
@@ -96,11 +96,6 @@ export const usePageStore = defineStore('AdminPageStore', {
 
                 // set active + upsert in list
                 this.active_page = updated
-                if (Array.isArray(this.pages)) {
-                    const idx = this.pages.findIndex((h) => h?.id === id)
-                    if (idx !== -1) this.pages.splice(idx, 1, updated)
-                    else this.pages.push(updated)
-                }
 
                 this.reload++
                 this.error = { status: null, message: null, is_error: false, is_success: true }
@@ -111,7 +106,6 @@ export const usePageStore = defineStore('AdminPageStore', {
                     type: 'success',
                     timeout,
                 })
-
                 return updated
             } catch (error) {
                 const status = error?.response?.status ?? 500
@@ -128,7 +122,7 @@ export const usePageStore = defineStore('AdminPageStore', {
             }
         },
 
-        async index() {
+        async index(homepage_id = null) {
             const adminStore = useAdminStore()
             const notification = useNotificationStore()
             const timeout = adminStore.config?.timeout ?? this.timeout ?? 3000
@@ -138,7 +132,7 @@ export const usePageStore = defineStore('AdminPageStore', {
             adminStore.is_loading++
 
             try {
-                const response = await axios.get('/api/admin/pages', {})
+                const response = await axios.get('/api/admin/pages', { params: { homepage_id: homepage_id } })
                 const pages = response.data
 
                 this.pages = pages
@@ -186,7 +180,7 @@ export const usePageStore = defineStore('AdminPageStore', {
 
                 notification.notify({
                     status: response.status,
-                    message: 'Page wurde gelöscht.',
+                    message: 'Seite wurde gelöscht.',
                     type: 'success',
                     timeout,
                 })

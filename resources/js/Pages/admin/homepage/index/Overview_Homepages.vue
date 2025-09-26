@@ -35,10 +35,11 @@
     <ListOfHomepages
         :homepages="homepages"
         :active_homepage="active_homepage"
-        @newActiveHomepage="active_homepage = $event" />
+        @newActiveHomepage="active_homepage = $event"
+        v-if="selected_action == ''" />
 
-    <!-- NEUE HOMEPAGE -->
-    <Overview_NewHomepage
+    <!-- NEUE/EDIT HOMEPAGE -->
+    <Overview_NewEditHomepage
         :data="data"
         v-if="['new_homepage', 'rename_homepage'].includes(selected_action)"
         @save="doSave($event)"
@@ -48,14 +49,15 @@
 import { mapWritableState } from 'pinia'
 import { useHomepageStore } from '@/stores/admin/HomepageStore'
 import ItsMenuButton from '@/pages/components/ItsMenuButton.vue'
-import Overview_NewHomepage from './Overview_NewHomepage.vue'
+import Overview_NewEditHomepage from './Overview_NewEditHomepage.vue'
 import ListOfHomepages from './ListOfHomepages.vue'
 
 export default {
-    components: { ItsMenuButton, Overview_NewHomepage, ListOfHomepages },
+    components: { ItsMenuButton, Overview_NewEditHomepage, ListOfHomepages },
 
     async beforeMount() {
         this.homepageStore = useHomepageStore()
+        this.doOverview()
     },
 
     unmounted() {},
@@ -72,6 +74,16 @@ export default {
     },
 
     methods: {
+        async doOverview() {
+            await this.homepageStore.index()
+            // Preselect first homepage if none is active
+            if (!this.active_homepage && this.homepages?.length) {
+                this.active_homepage = this.homepages[0]
+            }
+            this.delete_action = 0
+            this.selected_action = ''
+        },
+
         async doDelete(homepage) {
             await this.homepageStore.delete(homepage)
             await this.homepageStore.index()
