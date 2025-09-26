@@ -26,8 +26,7 @@ class AppUpdateCommand extends Command
      */
     public function handle(UpdateService $updateService)
     {
-
-        // Los geht'S
+        // Los geht's
         $this->info('🚀 Update Version ' . config('hpm.version') . ' started.');
 
         // Migrationen durchführen
@@ -36,13 +35,12 @@ class AppUpdateCommand extends Command
         ]);
         $this->info('✅ Migrations finished.');
 
-
         $updateService->initialize($this);
         $this->info('✅ UpdateService initialized.');
 
         $updateService->updateHomepageStructures($this);
         $this->info('✅ Homepage structures updated.');
 
-        $this->info('✅ UpdateService finished sucessfully!');
+        $this->info('✅ UpdateService finished successfully!');
     }
 }

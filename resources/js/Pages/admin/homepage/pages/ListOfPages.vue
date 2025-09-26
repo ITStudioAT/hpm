@@ -2,7 +2,7 @@
     <!-- LIST OF PAGES -->
     <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
         <v-col cols="12" sm="4" md="3">
-            <v-list nav density="comfortable">
+            <v-list nav density="comfortable" color="primary">
                 <v-list-subheader>Seiten</v-list-subheader>
 
                 <v-list-item

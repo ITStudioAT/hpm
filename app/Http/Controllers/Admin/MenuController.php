@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\StorePageRequest;
-use App\Http\Requests\Admin\UpdatePageRequest;
-use App\Http\Resources\Admin\HomepageResource;
+use App\Http\Requests\Admin\StoreMenuRequest;
+use App\Http\Requests\Admin\UpdateMenuRequest;
+use App\Http\Resources\Admin\MenuResource;
 use App\Http\Resources\Admin\PageResource;
+use App\Models\Menu;
 use App\Models\Page;
 use App\Support\Structure;
 use Illuminate\Http\Request;
 
-class PageController extends Controller
+class MenuController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,51 +27,45 @@ class PageController extends Controller
             'homepage_id' => 'required|exists:homepages,id',
         ]);
 
-        $pages = Page::where('homepage_id', $validated['homepage_id'])->orderBy('name')->get();
+        $menus = Menu::where('homepage_id', $validated['homepage_id'])->orderBy('name')->get();
 
-        return response()->json(PageResource::collection($pages), 200);
+        return response()->json(MenuResource::collection($menus), 200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePageRequest $request)
+    public function store(StoreMenuRequest $request)
     {
         if (! $auth_user = $this->userHasRole(['admin'])) {
             abort(403, 'Sie haben keine Berechtigung');
         }
 
         $validated = $request->validated();
-        info($validated);
 
-        // create an allowed path
-        $raw = $validated['data']['path'];
-        $path = $this->normalizePath($raw);
+        if (Menu::where('name', $request->input('data.name'))->count() > 0) abort(403, 'Diese Bezeichnung wird bereits verwendet');
 
-        if (Page::where('name', $request->input('data.name'))->count() > 0) abort(403, 'Diese Bezeichnung wird bereits verwendet');
-
-        $page_structure = config('hpm.structures.page');
+        $page_structure = config('hpm.structures.menu');
 
         $incoming = $request->input('structure', []);            // expect the JSON under "structure"
 
         // Normalize to match the structure (adds missing keys, removes extras)
         $normalized = Structure::normalize((array) $incoming, (array) $page_structure);
 
-        $page = Page::create([
+        $menu = Menu::create([
             'homepage_id' =>  $validated['homepage_id'],
             'name' =>  $validated['data']['name'],
-            'path' =>  $path,
-            'type' => 'page',
+            'type' => 'menu',
             'structure' => $normalized,
         ]);
 
-        return response()->json(new PageResource($page), 200);
+        return response()->json(new MenuResource($menu), 200);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Page $page)
+    public function show(Menu $menu)
     {
         //
     }
@@ -78,50 +73,29 @@ class PageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePageRequest $request, Page $page)
+    public function update(UpdateMenuRequest $request, Menu $menu)
     {
         if (! $auth_user = $this->userHasRole(['admin'])) {
             abort(403, 'Sie haben keine Berechtigung');
         }
 
         $validated = $request->validated();
-        $validated['path'] = $this->normalizePath($validated['path']);
 
+        $menu->update($validated);
 
-        $page->update($validated);
-
-        return response()->json(new PageResource($page), 200);
+        return response()->json(new MenuResource($menu), 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Page $page)
+    public function destroy(Menu $menu)
     {
         if (! $auth_user = $this->userHasRole(['admin'])) {
             abort(403, 'Sie haben keine Berechtigung');
         }
 
-        $page->delete();
+        $menu->delete();
         return response()->noContent();
-    }
-
-    private function normalizePath($raw): String
-    {
-        $path = trim($raw);
-
-        // 2. convert to lowercase (optional, if you want consistency)
-        $path = strtolower($path);
-
-        // 3. replace spaces and consecutive non-allowed chars with dashes
-        $path = preg_replace('/[^a-z0-9\/_-]+/', '-', $path);
-
-        // 4. collapse multiple dashes
-        $path = preg_replace('/-+/', '-', $path);
-
-        // 5. remove leading/trailing dashes or slashes
-        $path = trim($path, '-/');
-
-        return $path;
     }
 }

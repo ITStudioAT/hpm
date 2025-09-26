@@ -19,6 +19,22 @@ return [
     */
     'page_types' => ['index', 'page'], // you can add more, e.g. ['page', 'landing', 'article']
 
+    /*
+    |--------------------------------------------------------------------------
+    | Menu Types
+    | Rows in the `homepages` table considered "menus"
+    |--------------------------------------------------------------------------
+    */
+    'menu_types' => ['menu'],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Folders Types
+    | Rows in the `homepages` table considered "folders"
+    |--------------------------------------------------------------------------
+    */
+    'folder_types' => ['page_folder'],
+
 
     'structures' => [
         'homepage' => [
@@ -35,6 +51,12 @@ return [
             'header'  => ['id' => null, 'is_visible' => true],
             'content' => [],
             'footer'  => ['id' => null, 'is_visible' => true],
+        ],
+        'menu' => [
+            'content' => [],
+        ],
+        'folder' => [
+            'content' => [],
         ],
 
     ],

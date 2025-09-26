@@ -24,6 +24,12 @@
                 icon="mdi-book-open-page-variant-outline"
                 :color="selected_menu == 'pages' ? 'primary' : 'secondary'"
                 @click="doPages" />
+
+            <its-menu-button
+                title="Menüs"
+                icon="mdi-menu-open"
+                :color="selected_menu == 'menus' ? 'primary' : 'secondary'"
+                @click="doMenus" />
         </v-row>
 
         <!-- OVERVIEW HOMEPAGES -->
@@ -31,6 +37,9 @@
 
         <!-- OVERVIEW PAGES -->
         <OverviewPages :homepage="active_homepage" v-if="selected_menu == 'pages' && active_homepage" />
+
+        <!-- OVERVIEW MENUS -->
+        <OverviewMenus :homepage="active_homepage" v-if="selected_menu == 'menus' && active_homepage" />
     </v-container>
 </template>
 
@@ -39,11 +48,12 @@ import { mapWritableState } from 'pinia'
 import { useAdminStore } from '@/stores/admin/AdminStore'
 import { useHomepageStore } from '@/stores/admin/HomepageStore'
 import ItsMenuButton from '@/pages/components/ItsMenuButton.vue'
-import OverviewHomepages from './index/Overview_Homepages.vue'
+import OverviewHomepages from './homepages/Overview_Homepages.vue'
 import OverviewPages from './pages/Overview_Pages.vue'
+import OverviewMenus from './menus/Overview_Menus.vue'
 
 export default {
-    components: { ItsMenuButton, OverviewHomepages, OverviewPages },
+    components: { ItsMenuButton, OverviewHomepages, OverviewPages, OverviewMenus },
 
     async beforeMount() {
         this.adminStore = useAdminStore()
@@ -77,6 +87,10 @@ export default {
 
         doPages() {
             this.selected_menu = 'pages'
+        },
+
+        doMenus() {
+            this.selected_menu = 'menus'
         },
     },
 }

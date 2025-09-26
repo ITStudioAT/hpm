@@ -64,6 +64,8 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
         // admin/homepage
         Route::apiResource('/admin/homepages', \App\Http\Controllers\Admin\HomepageController::class);
         Route::apiResource('/admin/pages', \App\Http\Controllers\Admin\PageController::class);
+        Route::apiResource('/admin/menus', \App\Http\Controllers\Admin\MenuController::class);
+        Route::apiResource('/admin/folders', \App\Http\Controllers\Admin\FolderController::class);
 
 
         // navigation, menus

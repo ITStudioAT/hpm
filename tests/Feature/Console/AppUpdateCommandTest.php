@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Illuminate\Support\Facades\Config;
 use App\Models\Homepage;
@@ -23,7 +23,7 @@ beforeEach(function () {
 it('runs the update command and shows start/finish', function () {
     $this->artisan('app:update')
         ->expectsOutputToContain('🚀 Update Version 1.2.3 started.')
-        ->expectsOutputToContain('✅ UpdateService finished')
+        ->expectsOutputToContain('✅ UpdateService finished successfully!')
         ->assertExitCode(0);
 });
 
