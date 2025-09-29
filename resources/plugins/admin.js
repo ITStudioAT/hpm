@@ -25,6 +25,9 @@ const lightTheme = {
         success: '#00897B', // teal.darken1
         // For errors, alerts
         error: '#E53935', // red.darken1
+        folder: '#BCCAB3',
+        folder_path: '#FFEB9B',
+        active_folder: '#FFEB3B',
         ...mediamanagerLightTheme.colors,
     },
 }

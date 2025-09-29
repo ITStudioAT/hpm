@@ -57,6 +57,8 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
         Route::post('/admin/users/save_password_with_code',  [UserController::class, 'savePasswordWithCode']);
     });
 
+
+
     /* SANCTUM - admin */
     Route::middleware(['auth:sanctum', 'api-allowed:admin'])->group(function () {
 
@@ -66,6 +68,9 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
         Route::apiResource('/admin/pages', \App\Http\Controllers\Admin\PageController::class);
         Route::apiResource('/admin/menus', \App\Http\Controllers\Admin\MenuController::class);
         Route::apiResource('/admin/folders', \App\Http\Controllers\Admin\FolderController::class);
+        Route::post('/admin/folders/update',  [\App\Http\Controllers\Admin\FolderController::class, 'update']);
+        Route::post('/admin/folders/destroy',  [\App\Http\Controllers\Admin\FolderController::class, 'destroy']);
+
 
 
         // navigation, menus

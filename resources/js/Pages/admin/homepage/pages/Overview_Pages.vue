@@ -1,10 +1,14 @@
 <template>
+    <!-- FOLDERS -->
+    <Folders :homepage="homepage" />
+
     <!-- Aktive Page -->
-    <v-row v-if="active_page" class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
+    <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
         <v-col>
-            <v-card tile flat color="accent-2">
+            <v-card tile flat :color="active_page ? 'accent-2' : 'warning'">
                 <v-card-title class="d-flex flex-row ga-2 justify-space-between">
-                    <div>Aktive Seite: {{ active_page.name }}</div>
+                    <div v-if="active_page">Aktive Seite: {{ active_page.name }}</div>
+                    <div v-else>Bitte Seite auswählen</div>
                 </v-card-title>
             </v-card>
         </v-col>
@@ -46,6 +50,7 @@
     <ListOfPages
         :pages="pages"
         :active_page="active_page"
+        :homepage="homepage"
         @newActivePage="active_page = $event"
         v-if="selected_action == ''" />
 
@@ -61,12 +66,14 @@
 import { mapWritableState } from 'pinia'
 import { usePageStore } from '@/stores/admin/PageStore'
 import ItsMenuButton from '@/pages/components/ItsMenuButton.vue'
+
 import Overview_NewEditPage from './Overview_NewEditPage.vue'
 import ListOfPages from './ListOfPages.vue'
+import Folders from './Folders/Folders.vue'
 
 export default {
     props: ['homepage'],
-    components: { ItsMenuButton, ListOfPages, Overview_NewEditPage },
+    components: { ItsMenuButton, ListOfPages, Overview_NewEditPage, Folders },
 
     async beforeMount() {
         this.pageStore = usePageStore()

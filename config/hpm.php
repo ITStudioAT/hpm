@@ -33,7 +33,7 @@ return [
     | Rows in the `homepages` table considered "folders"
     |--------------------------------------------------------------------------
     */
-    'folder_types' => ['page_folder'],
+    'folder_types' => ['page_folders'],
 
 
     'structures' => [
@@ -55,8 +55,8 @@ return [
         'menu' => [
             'content' => [],
         ],
-        'folder' => [
-            'content' => [],
+        'page_folders' => [
+            'folders' => ['/'],
         ],
 
     ],

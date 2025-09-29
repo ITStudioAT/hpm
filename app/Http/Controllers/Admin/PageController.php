@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\UpdatePageRequest;
 use App\Http\Resources\Admin\HomepageResource;
 use App\Http\Resources\Admin\PageResource;
 use App\Models\Page;
+use App\Support\Path;
 use App\Support\Structure;
 use Illuminate\Http\Request;
 
@@ -45,7 +46,7 @@ class PageController extends Controller
 
         // create an allowed path
         $raw = $validated['data']['path'];
-        $path = $this->normalizePath($raw);
+        $path = Path::normalizePath($raw);
 
         if (Page::where('name', $request->input('data.name'))->count() > 0) abort(403, 'Diese Bezeichnung wird bereits verwendet');
 
@@ -85,7 +86,7 @@ class PageController extends Controller
         }
 
         $validated = $request->validated();
-        $validated['path'] = $this->normalizePath($validated['path']);
+        $validated['path'] = Path::normalizePath($validated['path']);
 
 
         $page->update($validated);
@@ -104,24 +105,5 @@ class PageController extends Controller
 
         $page->delete();
         return response()->noContent();
-    }
-
-    private function normalizePath($raw): String
-    {
-        $path = trim($raw);
-
-        // 2. convert to lowercase (optional, if you want consistency)
-        $path = strtolower($path);
-
-        // 3. replace spaces and consecutive non-allowed chars with dashes
-        $path = preg_replace('/[^a-z0-9\/_-]+/', '-', $path);
-
-        // 4. collapse multiple dashes
-        $path = preg_replace('/-+/', '-', $path);
-
-        // 5. remove leading/trailing dashes or slashes
-        $path = trim($path, '-/');
-
-        return $path;
     }
 }
