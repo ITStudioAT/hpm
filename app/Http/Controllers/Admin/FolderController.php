@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DestroyFolderRequest;
+use App\Http\Requests\Admin\PageMoveRequest;
 use App\Http\Requests\Admin\StoreFolderRequest;
 use App\Http\Requests\Admin\UpdateFolderRequest;
 use App\Http\Resources\Admin\FolderResource;
@@ -94,6 +95,8 @@ class FolderController extends Controller
         // Einfügen
         $structure['folders'][] = $path;
         $structure['folders'] = array_values(array_unique($structure['folders']));
+        natcasesort($structure['folders']);   // sorts naturally, ignoring case
+        $folders = array_values($structure['folders']); // reindex keys
 
 
 
@@ -153,8 +156,9 @@ class FolderController extends Controller
 
         $new = implode('/', $parts);
 
+
         // 🔎 Prüfen, ob der Ordner schon existiert
-        if (in_array($new, $structure['folders'], true)) {
+        if ($path != $new && in_array($new, $structure['folders'], true)) {
             abort(400, 'Ordner existiert bereits');
         }
 
@@ -166,7 +170,11 @@ class FolderController extends Controller
         }, $folders);
 
 
+
         // tidy & save
+        asort($folders);
+        natcasesort($folders);   // sorts naturally, ignoring case
+        $folders = array_values($folders); // reindex keys     
         $structure['folders'] = $folders;
         $folder->structure = $structure;         // if cast: ['structure' => 'array']
         $folder->save();
@@ -232,6 +240,8 @@ class FolderController extends Controller
         unset($item);
 
         // tidy & save
+        natcasesort($folders);   // sorts naturally, ignoring case
+        $folders = array_values($folders); // reindex keys
         $structure['folders'] = $folders;
         $folder->structure = $structure;         // if cast: ['structure' => 'array']
 
@@ -250,6 +260,22 @@ class FolderController extends Controller
 
                 $page->save();
             };
+        }
+    }
+
+    public function move(PageMoveRequest $request)
+    {
+        if (! $auth_user = $this->userHasRole(['admin'])) {
+            abort(403, 'Sie haben keine Berechtigung');
+        }
+
+        $validated = $request->validated();
+
+        // Only move one single file
+        if ($validated['move_action'] == 'active' && $validated['page_id']) {
+            Page::findOrFail($validated['page_id'])->update(['folder' =>  $validated['to_folder']]);
+        } else {
+            Page::where('homepage_id', $validated['homepage_id'])->where('folder', $validated['from_folder'])->update(['folder' => $validated['to_folder']]);
         }
     }
 }

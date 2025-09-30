@@ -12,6 +12,7 @@ export const usePageStore = defineStore('AdminPageStore', {
         active_page: null,
         delete_action: 0,
         selected_action: '',
+        pages: [],
     }),
 
     actions: {

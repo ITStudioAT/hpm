@@ -8,11 +8,9 @@ final class Path
     {
         $path = trim($raw);
 
-        // 2. convert to lowercase (optional, if you want consistency)
-        $path = strtolower($path);
 
         // 3. replace spaces and consecutive non-allowed chars with dashes
-        $path = preg_replace('/[^a-z0-9\/_-]+/', '-', $path);
+        $path = preg_replace('/[^A-Za-z0-9\/_-]+/', '-', $path);
 
         // 4. collapse multiple dashes
         $path = preg_replace('/-+/', '-', $path);

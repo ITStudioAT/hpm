@@ -70,6 +70,7 @@ Route::middleware(['api', 'throttle:global', 'throttle:api'])->group(function ()
         Route::apiResource('/admin/folders', \App\Http\Controllers\Admin\FolderController::class);
         Route::post('/admin/folders/update',  [\App\Http\Controllers\Admin\FolderController::class, 'update']);
         Route::post('/admin/folders/destroy',  [\App\Http\Controllers\Admin\FolderController::class, 'destroy']);
+        Route::post('/admin/folders/move',  [\App\Http\Controllers\Admin\FolderController::class, 'move']);
 
 
 

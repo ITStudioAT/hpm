@@ -52,6 +52,7 @@
         :active_page="active_page"
         :homepage="homepage"
         @newActivePage="active_page = $event"
+        @newActiveFolder="doOverview(homepage.id)"
         v-if="selected_action == ''" />
 
     <!-- NEUE/EDIT PAGE -->
@@ -98,9 +99,6 @@ export default {
         async doOverview(homepage_id) {
             await this.pageStore.index(homepage_id)
             // Preselect first homepage if none is active
-            if (!this.active_page && this.pages?.length) {
-                this.active_page = this.pages[0]
-            }
             this.delete_action = 0
             this.selected_action = ''
         },

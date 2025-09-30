@@ -114,6 +114,7 @@ import ItsFolder from '@/pages/components/ItsFolder.vue'
 import NewEditFolder from './NewEditFolder.vue'
 
 export default {
+    emits: ['newActiveFolder'],
     props: ['homepage'],
     components: { ItsFolder, NewEditFolder },
 
@@ -144,7 +145,7 @@ export default {
             'folder_id',
             'delete_count',
         ]),
-        ...mapWritableState(usePageStore, ['active_page']),
+        ...mapWritableState(usePageStore, ['active_page', 'pages']),
     },
 
     methods: {
@@ -155,12 +156,19 @@ export default {
             let answer = false
             answer = await this.folderStore.destroy(homepage, folder_id, path)
             await this.folderStore.index(homepage.id, this.type)
+
+            this.active_page = null
+
+            if (this.folders?.length) {
+                this.active_folder = this.folders[0]
+            }
             this.delete_count = 0
         },
         newActiveFolder(folder) {
             this.active_page = null
             this.active_folder = folder
             this.delete_count = 0
+            this.$emit('newActiveFolder', folder)
         },
         renameFolder(folder) {
             this.delete_count = 0
