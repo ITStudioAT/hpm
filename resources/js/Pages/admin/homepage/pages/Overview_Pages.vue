@@ -1,6 +1,6 @@
 <template>
     <!-- FOLDERS -->
-    <Folders :homepage="homepage" />
+    <Folders :homepage="homepage" @save="doOverview(homepage.id)" @pagesMoved="doOverview(homepage.id)" />
 
     <!-- Aktive Page -->
     <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
@@ -59,6 +59,7 @@
     <Overview_NewEditPage
         :data="data"
         :homepage="homepage"
+        :folder="active_folder"
         v-if="['new_page', 'rename_page'].includes(selected_action)"
         @save="doSave($event)"
         @abort="doAbort" />
@@ -66,6 +67,7 @@
 <script>
 import { mapWritableState } from 'pinia'
 import { usePageStore } from '@/stores/admin/PageStore'
+import { useFolderStore } from '@/stores/admin/FolderStore'
 import ItsMenuButton from '@/pages/components/ItsMenuButton.vue'
 
 import Overview_NewEditPage from './Overview_NewEditPage.vue'
@@ -78,7 +80,7 @@ export default {
 
     async beforeMount() {
         this.pageStore = usePageStore()
-
+        this.folderStore = useFolderStore()
         this.doOverview(this.homepage?.id)
     },
 
@@ -93,12 +95,12 @@ export default {
 
     computed: {
         ...mapWritableState(usePageStore, ['active_page', 'pages', 'delete_action', 'selected_action']),
+        ...mapWritableState(useFolderStore, ['active_folder']),
     },
 
     methods: {
         async doOverview(homepage_id) {
             await this.pageStore.index(homepage_id)
-            // Preselect first homepage if none is active
             this.delete_action = 0
             this.selected_action = ''
         },

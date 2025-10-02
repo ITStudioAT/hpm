@@ -8,54 +8,29 @@
                         {{ active_folder }}
                     </div>
                 </div>
-                <div
-                    class="d-flex flex-row align-center ga-2"
-                    v-if="active_folder != '/' || (is_move_pages && move_action)">
-                    <!-- Folder bestätigen -->
+                <div class="d-flex flex-row align-center ga-2" v-if="active_folder != '/'">
+                    <v-btn icon="mdi-pencil" flat size="small" color="secondary" @click="renameFolder(active_folder)" />
                     <v-btn
-                        icon="mdi-check"
+                        icon="mdi-delete"
+                        flat
+                        size="small"
+                        color="warning"
+                        @click="delete_count = 1"
+                        v-if="delete_count == 0" />
+                    <v-btn
+                        icon="mdi-delete-off"
                         flat
                         size="small"
                         color="success"
-                        @click="movePages"
-                        v-if="is_move_pages && move_action" />
-                    <v-card
+                        @click="delete_count = 0"
+                        v-if="delete_count == 1" />
+                    <v-btn
+                        icon="mdi-delete"
                         flat
-                        tile
-                        class="d-flex flex-row align-center ga-2"
-                        color="accent-2"
-                        v-if="!(is_move_pages && move_action != '')">
-                        <!-- Folder umbenennen -->
-                        <v-btn
-                            icon="mdi-pencil"
-                            flat
-                            size="small"
-                            color="secondary"
-                            @click="renameFolder(active_folder)" />
-
-                        <!-- Folder löschen -->
-                        <v-btn
-                            icon="mdi-delete"
-                            flat
-                            size="small"
-                            color="warning"
-                            @click="delete_count = 1"
-                            v-if="delete_count == 0" />
-                        <v-btn
-                            icon="mdi-delete-off"
-                            flat
-                            size="small"
-                            color="success"
-                            @click="delete_count = 0"
-                            v-if="delete_count == 1" />
-                        <v-btn
-                            icon="mdi-delete"
-                            flat
-                            size="small"
-                            color="error"
-                            @click="doDestroy(homepage, folder_id, active_folder)"
-                            v-if="delete_count == 1" />
-                    </v-card>
+                        size="small"
+                        color="error"
+                        @click="doDestroy(homepage, folder_id, active_folder)"
+                        v-if="delete_count == 1" />
                 </div>
             </v-card-title>
             <v-card-text>
@@ -86,7 +61,13 @@
                                 <its-folder
                                     title="Neuer Ordner"
                                     icon="mdi-plus"
-                                    @click="newFolder(getPathUntilNSlash(active_folder, i))"
+                                    @click="
+                                        newFolder(
+                                            getParentFolder(
+                                                getMatchingPrefix(getFolderWithCountSlashes(folders, i), active_folder)
+                                            )
+                                        )
+                                    "
                                     class="mr-2 mb-2"
                                     variant="outlined"
                                     color="secondary" />
@@ -133,8 +114,8 @@ import ItsFolder from '@/pages/components/ItsFolder.vue'
 import NewEditFolder from './NewEditFolder.vue'
 
 export default {
-    emits: ['newActiveFolder', 'save', 'pagesMoved'],
-    props: ['homepage'],
+    emits: ['newActiveFolder'],
+    props: ['homepage', 'show_all'],
     components: { ItsFolder, NewEditFolder },
 
     async beforeMount() {
@@ -144,7 +125,9 @@ export default {
         await this.folderStore.index(this.homepage.id, 'page_folders')
     },
 
-    unmounted() {},
+    unmounted() {
+        this.selected_action = ''
+    },
 
     data() {
         return {
@@ -163,43 +146,24 @@ export default {
             'selected_action',
             'folder_id',
             'delete_count',
-            'move_action',
-            'folder_90',
-            'page_to_move',
-            'is_move_pages',
         ]),
         ...mapWritableState(usePageStore, ['active_page', 'pages']),
     },
 
     methods: {
-        async movePages() {
-            await this.folderStore.move(
-                this.homepage,
-                this.folder_id,
-                this.move_action,
-                this.page_to_move?.id,
-                this.folder_90,
-                this.active_folder
-            )
-            this.is_move_pages = false
-            this.move_action = ''
-            this.$emit('pagesMoved')
-        },
-
         startsWith(path, item) {
             return path.startsWith(item) && (item.length === path.length || path.charAt(item.length) === '/')
         },
         async doDestroy(homepage, folder_id, path) {
             let answer = false
             answer = await this.folderStore.destroy(homepage, folder_id, path)
+            await this.folderStore.index(homepage.id, this.type)
 
-            // Wenn Löschen funktioniert hat
-            if (answer) {
-                this.active_page = null
-                this.active_folder = this.getParentFolder(path)
-                this.delete_count = 0
-                await this.folderStore.index(homepage.id, this.type)
-            }
+            this.active_page = null
+
+            this.active_folder = this.getParentFolder(path)
+
+            this.delete_count = 0
         },
         newActiveFolder(folder) {
             this.active_page = null
@@ -227,7 +191,6 @@ export default {
         async doSave(data) {
             this.data = {}
             this.selected_action = ''
-            this.$emit('save')
         },
 
         getMatchingPrefix(arr, str) {
@@ -284,20 +247,6 @@ export default {
                 }
             }
             return path.substring(0, pos)
-        },
-
-        getPathUntilNSlash(path, n) {
-            let pos = -1
-            for (let i = 0; i < n; i++) {
-                pos = path.indexOf('/', pos + 1)
-                if (pos === -1) {
-                    // fewer than n slashes → return whole path
-                    return path
-                }
-            }
-            let return_path = path.substring(0, pos)
-            if (return_path == '') return_path = '/'
-            return return_path
         },
 
         getParentFolder(path) {

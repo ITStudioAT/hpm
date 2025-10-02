@@ -12,6 +12,9 @@ export const useFolderStore = defineStore('AdminFolderStore', {
         folders: [],
         active_folder: null,
         folder_id: null,
+        move_action: '',
+        folder_90: null,
+        page_to_move: null,
     }),
 
     actions: {
@@ -179,8 +182,6 @@ export const useFolderStore = defineStore('AdminFolderStore', {
                     path: path,
                     folder_id: folder_id,
                 })
-                const created = response.data
-
                 this.reload++
                 this.error = {
                     status: null,
@@ -196,7 +197,7 @@ export const useFolderStore = defineStore('AdminFolderStore', {
                     timeout,
                 })
 
-                return created
+                return true
             } catch (error) {
                 const status = error?.response?.status ?? 500
                 const message = error?.response?.data?.message ?? 'Fehler passiert.'

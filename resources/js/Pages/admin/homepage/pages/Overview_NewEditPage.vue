@@ -40,7 +40,7 @@ export default {
     setup() {
         return useValidationRulesSetup()
     },
-    props: ['data', 'homepage'],
+    props: ['data', 'homepage', 'folder'],
     emits: ['save', 'abort'],
 
     components: {},
@@ -67,7 +67,7 @@ export default {
             if (!this.is_valid) return
             let answer = false
             if (data.id) answer = await this.pageStore.update(data)
-            else answer = await this.pageStore.store(homepage, data)
+            else answer = await this.pageStore.store(homepage, data, this.folder)
 
             if (!answer) return
 

@@ -18,7 +18,7 @@ export const usePageStore = defineStore('AdminPageStore', {
     actions: {
         ...resourceStore.actions(),
 
-        async store(homepage, data = {}) {
+        async store(homepage, data = {}, folder) {
             const adminStore = useAdminStore()
             const notification = useNotificationStore()
             const timeout = adminStore.config?.timeout ?? this.timeout ?? 3000
@@ -28,7 +28,11 @@ export const usePageStore = defineStore('AdminPageStore', {
             adminStore.is_loading++
 
             try {
-                const response = await axios.post('/api/admin/pages', { homepage_id: homepage.id, data: data })
+                const response = await axios.post('/api/admin/pages', {
+                    homepage_id: homepage.id,
+                    data: data,
+                    folder: folder,
+                })
                 const created = response.data
 
                 this.active_page = created

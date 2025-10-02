@@ -10,7 +10,8 @@ use App\Http\Requests\Admin\UpdateFolderRequest;
 use App\Http\Resources\Admin\FolderResource;
 use App\Models\Folder;
 use App\Models\Page;
-use App\Support\Path;
+use App\Services\FolderService;
+use App\Services\PageService;
 use App\Support\Structure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -34,22 +35,7 @@ class FolderController extends Controller
             'type'        => 'required|in:' . implode(',', $folder_types),
         ]);
 
-        $folder = Folder::where('homepage_id', $validated['homepage_id'])
-            ->where('type', $validated['type'])
-            ->first();
-
-
-        $structure = config('hpm.structures.page_folders', []);
-
-        if (!$folder) {
-            $folder = Folder::create([
-                'homepage_id' => $validated['homepage_id'],
-                'name' => 'page_folders',
-                'type' => 'page_folders',
-                'structure' => $structure,
-
-            ]);
-        }
+        $folder = FolderService::loadOrCreateFolder($validated['homepage_id'],  $validated['type']);
 
         return response()->json($folder, 200);
     }
@@ -68,24 +54,10 @@ class FolderController extends Controller
         $folder = Folder::findOrFail($validated['folder_id']);
 
         // Path aufbauen und normalisieren
-        $path = Path::normalizePath($validated['path'] . '/' . $validated['data']['name']);
-        while (strpos($path, '//') !== false) {
-            $path = str_replace('//', '/', $path);
-        }
-        $path = rtrim($path, '/');
-        if ($path === '') $path = '/';
-        if ($path[0] !== '/') $path = '/' . $path;
+        $path = FolderService::createPath($validated['path'], $validated['data']['name']);
 
         // Struktur holen (bei Model-Cast ist es schon ein Array)
-        $structure = $folder->structure ?? [];
-        if (!isset($structure['folders']) || !is_array($structure['folders'])) {
-            $structure['folders'] = [];
-        }
-
-        // Normalize to match the structure (adds missing keys, removes extras)
-        $folder_structure = config('hpm.structures.page_folders');
-        $incoming = $structure;            // expect the JSON under "structure"
-        $structure = Structure::normalize((array) $incoming, (array) $folder_structure);
+        $structure = FolderService::normalizeStructure($folder->structure ?? []);
 
         // 🔎 Prüfen, ob der Ordner schon existiert
         if (in_array($path, $structure['folders'], true)) {
@@ -94,19 +66,14 @@ class FolderController extends Controller
 
         // Einfügen
         $structure['folders'][] = $path;
-        $structure['folders'] = array_values(array_unique($structure['folders']));
-        natcasesort($structure['folders']);   // sorts naturally, ignoring case
-        $folders = array_values($structure['folders']); // reindex keys
+        $structure['folders'] = FolderService::sortFolders($structure['folders']);
 
-
-
+        // Save
         $folder->structure = $structure;
         $folder->save();
 
         return response()->json(new FolderResource($folder), 200);
     }
-
-
 
 
     /**
@@ -127,70 +94,29 @@ class FolderController extends Controller
 
         $folder = Folder::findOrFail($validated['folder_id']);
 
-        // Struktur holen (bei Model-Cast ist es schon ein Array)
-        $structure = $folder->structure ?? [];
-        if (!isset($structure['folders']) || !is_array($structure['folders'])) {
-            $structure['folders'] = [];
-        }
-
-        // Normalize to match the structure (adds missing keys, removes extras)
-        $folder_structure = config('hpm.structures.page_folders');
-        $incoming = $structure;            // expect the JSON under "structure"
-        $structure = Structure::normalize((array) $incoming, (array) $folder_structure);
-
-
-
+        // Struktur holen und normalize(bei Model-Cast ist es schon ein Array)
+        $structure = FolderService::normalizeStructure($folder->structure ?? []);
 
         $folders = $structure['folders'];
-
-
-        // old and new base names (e.g. "ggg" -> "ggg1")
-        $new = '/' . $validated['data']['name'] ?? '';
         $path = $validated['path'];
 
-        $new = ltrim($new, '/');
-
-        // split into parts
-        $parts = explode('/', $path);
-        $parts[count($parts) - 1] = $new;
-
-        $new = implode('/', $parts);
-
+        // old and new base names (e.g. "ggg" -> "ggg1")
+        $new = FolderService::createNewPath($path, $validated['data']['name']);
 
         // 🔎 Prüfen, ob der Ordner schon existiert
         if ($path != $new && in_array($new, $structure['folders'], true)) {
             abort(400, 'Ordner existiert bereits');
         }
 
-        $folders = array_map(function ($folder) use ($path, $new) {
-            if (strpos($folder, $path) === 0) {   // check if it starts with $old
-                return $new . substr($folder, strlen($path));
-            }
-            return $folder;
-        }, $folders);
+        $folders = FolderService::changePathInFolders($folders, $path, $new);
 
+        PageService::renameFolders($validated['homepage_id'], $path, $new);
 
-
-        // tidy & save
-        asort($folders);
-        natcasesort($folders);   // sorts naturally, ignoring case
-        $folders = array_values($folders); // reindex keys     
-        $structure['folders'] = $folders;
-        $folder->structure = $structure;         // if cast: ['structure' => 'array']
+        $structure['folders'] = FolderService::sortFolders($folders);
+        $folder->structure = $structure;
         $folder->save();
 
         return response()->json(new FolderResource($folder), 200);
-    }
-
-    /** Normalize a path without regex. Ensures leading "/" and no trailing "/" (except root). */
-    private function normalize(string $p): string
-    {
-        $p = trim(str_replace('\\', '/', $p));
-        while (strpos($p, '//') !== false) $p = str_replace('//', '/', $p);
-        if ($p === '' || $p === '.') return '/';
-        $p = '/' . ltrim($p, '/');
-        $p = rtrim($p, '/');
-        return $p === '' ? '/' : $p;
     }
 
 
@@ -208,59 +134,20 @@ class FolderController extends Controller
 
         $folder = Folder::findOrFail($validated['folder_id']);
 
-        // Struktur holen (bei Model-Cast ist es schon ein Array)
-        $structure = $folder->structure ?? [];
-        if (!isset($structure['folders']) || !is_array($structure['folders'])) {
-            $structure['folders'] = [];
-        }
-
-        // Normalize to match the structure (adds missing keys, removes extras)
-        $folder_structure = config('hpm.structures.page_folders');
-        $incoming = $structure;            // expect the JSON under "structure"
-        $structure = Structure::normalize((array) $incoming, (array) $folder_structure);
-
+        // Struktur holen und normalize(bei Model-Cast ist es schon ein Array)
+        $structure = FolderService::normalizeStructure($folder->structure ?? []);
         $folders = $structure['folders'];
-
-
         $path = $validated['path'];
 
-        $folders = array_values(array_filter($folders, function ($folder) use ($path) {
-            return $folder !== $path;
-        }));
+        if (FolderService::hasSubFolder($path, $folders)) abort(409, "Der Ordner beinhaltet noch andere Ordner.");
+
+        if (Page::where('homepage_id', $homepage_id)->where('folder', $path)->count() > 0) abort(409, "Der Ordner beinhaltet noch Dateien.");
 
 
-
-
-
-        foreach ($folders as &$item) {
-            if (strpos($item, $path) === 0 && (strlen($item) == strlen($path) || substr($item, strlen($path), 1) == '/')) {
-                $item = substr($item, strlen($path));
-            };
-        }
-        unset($item);
-
-        // tidy & save
-        natcasesort($folders);   // sorts naturally, ignoring case
-        $folders = array_values($folders); // reindex keys
-        $structure['folders'] = $folders;
-        $folder->structure = $structure;         // if cast: ['structure' => 'array']
-
+        $folders = array_values(array_filter($folders, fn($folder) => $folder !== $path));
+        $structure['folders'] = FolderService::sortFolders($folders);
+        $folder->structure = $structure;
         $folder->save();
-
-        // Aktualisieren der Page-Seiten der Homepage
-
-        $pages = Page::where('homepage_id', $homepage_id)->where('folder', 'like', $path . '%')->get();
-
-
-        foreach ($pages as $page) {
-
-            if (strpos($page->folder, $path) === 0 && (strlen($page->folder) == strlen($path) || substr($page->folder, strlen($path), 1) == '/')) {
-                $page->folder = substr($page->folder, strlen($path));
-                if ($page->folder == '') $page->folder = '/';
-
-                $page->save();
-            };
-        }
     }
 
     public function move(PageMoveRequest $request)
@@ -275,7 +162,7 @@ class FolderController extends Controller
         if ($validated['move_action'] == 'active' && $validated['page_id']) {
             Page::findOrFail($validated['page_id'])->update(['folder' =>  $validated['to_folder']]);
         } else {
-            Page::where('homepage_id', $validated['homepage_id'])->where('folder', $validated['from_folder'])->update(['folder' => $validated['to_folder']]);
+            PageService::renameFolders($validated['homepage_id'], $validated['from_folder'], $validated['to_folder']);
         }
     }
 }

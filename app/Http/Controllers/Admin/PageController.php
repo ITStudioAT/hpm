@@ -47,6 +47,7 @@ class PageController extends Controller
         // create an allowed path
         $raw = $validated['data']['path'];
         $path = Path::normalizePath($raw);
+        $folder = $validated['folder'];
 
         if (Page::where('name', $request->input('data.name'))->count() > 0) abort(403, 'Diese Bezeichnung wird bereits verwendet');
 
@@ -63,6 +64,7 @@ class PageController extends Controller
             'path' =>  $path,
             'type' => 'page',
             'structure' => $normalized,
+            'folder' => $folder,
         ]);
 
         return response()->json(new PageResource($page), 200);

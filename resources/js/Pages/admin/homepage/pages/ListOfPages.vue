@@ -7,7 +7,8 @@
                 size="small"
                 color="secondary"
                 @click="is_move_pages = true"
-                v-if="!is_move_pages" />
+                v-if="!is_move_pages && pagesInFolder(pages, active_folder).length > 0" />
+
             <v-btn icon="mdi-close" flat size="small" color="warning" @click="doAbort" v-if="is_move_pages" />
             <v-btn
                 flat
@@ -23,7 +24,11 @@
                 text="Alle Seiten verschieben"
                 v-if="is_move_pages && !move_action"
                 @click="moveAction()"></v-btn>
-            <div v-if="move_action" class="text-primary text-h6">Klicken Sie einen neuen Zielordner an!</div>
+            <div v-if="move_action" class="text-primary text-h6">
+                Ordner auswählen und mit
+                <v-icon icon="mdi-check" color="success" variant="tonal" />
+                bestätigen!
+            </div>
         </v-col>
     </v-row>
     <!-- LIST OF PAGES -->
@@ -69,34 +74,24 @@ export default {
     data() {
         return {
             folderStore: null,
-            is_move_pages: false,
-            move_action: '',
-            folder_90: null,
-            page_to_move: null,
         }
     },
 
     computed: {
-        ...mapWritableState(useFolderStore, ['active_folder', 'delete_count', 'folder_id']),
+        ...mapWritableState(useFolderStore, [
+            'active_folder',
+            'delete_count',
+            'folder_id',
+            'move_action',
+            'folder_90',
+            'page_to_move',
+            'is_move_pages',
+        ]),
     },
 
     watch: {
         async active_folder() {
-            if (this.move_action) {
-                console.log(1)
-                await this.folderStore.move(
-                    this.homepage,
-                    this.folder_id,
-                    this.move_action,
-                    this.page_to_move?.id,
-                    this.folder_90,
-                    this.active_folder
-                )
-                this.$emit('newActiveFolder')
-
-                this.move_action = ''
-                this.is_move_pages = false
-            }
+            this.$emit('newActiveFolder')
         },
     },
 

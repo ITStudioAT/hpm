@@ -26,6 +26,7 @@ class StorePageRequest extends FormRequest
             'homepage_id' => 'required|exists:homepages,id',
             'data.name' => 'required|string|max:255|unique:homepages,name',
             'data.path' => 'required|string|max:255|unique:homepages,path',
+            'folder' => 'nullable|string|max:255',
         ];
     }
 }
