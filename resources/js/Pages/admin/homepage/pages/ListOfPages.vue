@@ -6,7 +6,7 @@
                 flat
                 size="small"
                 color="secondary"
-                @click="is_move_pages = true"
+                @click="startMove"
                 v-if="!is_move_pages && pagesInFolder(pages, active_folder).length > 0" />
 
             <v-btn icon="mdi-close" flat size="small" color="warning" @click="doAbort" v-if="is_move_pages" />
@@ -58,6 +58,7 @@
 <script>
 import { mapWritableState } from 'pinia'
 import { useFolderStore } from '@/stores/admin/FolderStore'
+import { useAdminStore } from '@/stores/admin/AdminStore'
 
 export default {
     props: ['pages', 'active_page', 'homepage'],
@@ -73,6 +74,7 @@ export default {
 
     data() {
         return {
+            adminStore: null,
             folderStore: null,
         }
     },
@@ -87,6 +89,7 @@ export default {
             'page_to_move',
             'is_move_pages',
         ]),
+        ...mapWritableState(useAdminStore, ['is_in_work']),
     },
 
     watch: {
@@ -98,6 +101,7 @@ export default {
     methods: {
         doAbort() {
             this.is_move_pages = false
+            this.is_in_work = false
             this.move_action = ''
         },
         moveAction(page = null) {
@@ -116,6 +120,10 @@ export default {
 
         pagesInFolder(pages, folder) {
             return this.pages.filter((page) => page.folder === folder)
+        },
+        startMove() {
+            this.is_move_pages = true
+            this.is_in_work = true
         },
     },
 }

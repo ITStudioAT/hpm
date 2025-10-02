@@ -1,6 +1,9 @@
 <template>
     <v-row no-gutters class="mb-2" v-if="active_folder">
-        <v-card flat border :disabled="['new_folder', 'rename_folder'].includes(selected_action)">
+        <v-card
+            flat
+            border
+            :disabled="['new_folder', 'rename_folder'].includes(selected_action) || pageStore.selected_action != ''">
             <v-card-title class="d-flex flex-row align-center justify-space-between bg-accent-2 mb-2">
                 <div class="d-flex flex-row align-end">
                     <v-icon icon="mdi-map-marker" size="small" class="mr-2" />
@@ -127,6 +130,7 @@
 </template>
 <script>
 import { mapWritableState } from 'pinia'
+import { useAdminStore } from '@/stores/admin/AdminStore'
 import { useFolderStore } from '@/stores/admin/FolderStore'
 import { usePageStore } from '@/stores/admin/PageStore'
 import ItsFolder from '@/pages/components/ItsFolder.vue'
@@ -138,6 +142,7 @@ export default {
     components: { ItsFolder, NewEditFolder },
 
     async beforeMount() {
+        this.adminStore = useAdminStore()
         this.pageStore = usePageStore()
         this.folderStore = useFolderStore()
 
@@ -148,6 +153,7 @@ export default {
 
     data() {
         return {
+            adminStore: null,
             folderStore: null,
             pageStore: null,
             data: {},
@@ -169,6 +175,7 @@ export default {
             'is_move_pages',
         ]),
         ...mapWritableState(usePageStore, ['active_page', 'pages']),
+        ...mapWritableState(useAdminStore, ['is_in_work']),
     },
 
     methods: {
@@ -181,6 +188,7 @@ export default {
                 this.folder_90,
                 this.active_folder
             )
+            this.is_in_work = false
             this.is_move_pages = false
             this.move_action = ''
             this.$emit('pagesMoved')

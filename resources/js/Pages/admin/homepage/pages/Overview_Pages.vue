@@ -66,6 +66,7 @@
 </template>
 <script>
 import { mapWritableState } from 'pinia'
+import { useAdminStore } from '@/stores/admin/AdminStore'
 import { usePageStore } from '@/stores/admin/PageStore'
 import { useFolderStore } from '@/stores/admin/FolderStore'
 import ItsMenuButton from '@/pages/components/ItsMenuButton.vue'
@@ -79,6 +80,7 @@ export default {
     components: { ItsMenuButton, ListOfPages, Overview_NewEditPage, Folders },
 
     async beforeMount() {
+        this.adminStore = useAdminStore()
         this.pageStore = usePageStore()
         this.folderStore = useFolderStore()
         this.doOverview(this.homepage?.id)
@@ -96,6 +98,7 @@ export default {
     computed: {
         ...mapWritableState(usePageStore, ['active_page', 'pages', 'delete_action', 'selected_action']),
         ...mapWritableState(useFolderStore, ['active_folder']),
+        ...mapWritableState(useAdminStore, ['is_in_work']),
     },
 
     methods: {
@@ -107,19 +110,23 @@ export default {
         async doSave(data) {
             this.data = {}
             this.selected_action = ''
+            this.is_in_work = false
         },
 
         async doAbort() {
             await this.doOverview(this.homepage.id)
             this.data = {}
             this.selected_action = ''
+            this.is_in_work = false
         },
         newPage() {
+            this.is_in_work = true
             this.data = {}
             this.selected_action = 'new_page'
         },
 
         renamePage(page) {
+            this.is_in_work = true
             this.data = JSON.parse(JSON.stringify(page))
             this.selected_action = 'rename_page'
         },

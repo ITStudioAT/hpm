@@ -12,24 +12,26 @@
         </v-row>
 
         <!-- HAUPTMENÜ -->
-        <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
-            <its-menu-button
-                title="Übersicht"
-                icon="mdi-view-agenda"
-                :color="selected_menu == 'homepages' ? 'primary' : 'secondary'"
-                @click="doHomepages" />
+        <v-row no-gutters>
+            <v-card flat tile class="d-flex flex-row ga-2 mb-2 mt-0 w-100" :disabled="is_in_work">
+                <its-menu-button
+                    title="Übersicht"
+                    icon="mdi-view-agenda"
+                    :color="selected_menu == 'homepages' ? 'primary' : 'secondary'"
+                    @click="doHomepages" />
 
-            <its-menu-button
-                title="Seiten"
-                icon="mdi-book-open-page-variant-outline"
-                :color="selected_menu == 'pages' ? 'primary' : 'secondary'"
-                @click="doPages" />
+                <its-menu-button
+                    title="Seiten"
+                    icon="mdi-book-open-page-variant-outline"
+                    :color="selected_menu == 'pages' ? 'primary' : 'secondary'"
+                    @click="doPages" />
 
-            <its-menu-button
-                title="Menüs"
-                icon="mdi-menu-open"
-                :color="selected_menu == 'menus' ? 'primary' : 'secondary'"
-                @click="doMenus" />
+                <its-menu-button
+                    title="Menüs"
+                    icon="mdi-menu-open"
+                    :color="selected_menu == 'menus' ? 'primary' : 'secondary'"
+                    @click="doMenus" />
+            </v-card>
         </v-row>
 
         <!-- OVERVIEW HOMEPAGES -->
@@ -76,6 +78,7 @@ export default {
             'show_navigation_drawer',
             'load_config',
             'user_roles',
+            'is_in_work',
         ]),
         ...mapWritableState(useHomepageStore, ['active_homepage', 'homepages', 'delete_action']),
     },

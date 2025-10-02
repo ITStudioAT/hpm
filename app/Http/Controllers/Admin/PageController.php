@@ -42,7 +42,6 @@ class PageController extends Controller
         }
 
         $validated = $request->validated();
-        info($validated);
 
         // create an allowed path
         $raw = $validated['data']['path'];

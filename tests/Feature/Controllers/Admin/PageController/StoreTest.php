@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Models\Homepage;
 use App\Models\Page;
@@ -11,6 +11,7 @@ it('rejects unauthenticated requests when creating a page', function () {
             'name' => 'About Page',
             'path' => 'about-page',
         ],
+        'folder' => '/',
     ]);
 
     $response->assertStatus(401);
@@ -27,6 +28,7 @@ it('rejects authenticated users without the admin role when creating a page', fu
             'name' => 'About Page',
             'path' => 'about-page',
         ],
+        'folder' => '/',
     ]);
 
     $response->assertStatus(403);
@@ -44,6 +46,7 @@ it('validates the homepage id when storing a page', function () {
             'name' => 'About Page',
             'path' => 'about-page',
         ],
+        'folder' => '/',
     ]);
 
     $response->assertStatus(422);
@@ -79,6 +82,7 @@ it('creates a page with a sanitized path and normalized structure for admins', f
             ],
             'junk' => ['remove' => true],
         ],
+        'folder' => '/',
     ];
 
     $response = $this->postJson('/api/admin/pages', $payload);
@@ -94,9 +98,10 @@ it('creates a page with a sanitized path and normalized structure for admins', f
     $response->assertJson([
         'homepage_id' => $homepage->id,
         'name' => 'About Us',
-        'path' => 'about-team',
+        'path' => 'About-Team',
         'type' => 'page',
         'structure' => $expectedStructure,
+        'folder' => '/',
     ]);
 
     $pageId = $response->json('id');
@@ -106,14 +111,16 @@ it('creates a page with a sanitized path and normalized structure for admins', f
         'id' => $pageId,
         'homepage_id' => $homepage->id,
         'name' => 'About Us',
-        'path' => 'about-team',
+        'path' => 'About-Team',
         'type' => 'page',
+        'folder' => '/',
     ]);
 
     $page = Page::find($pageId);
     expect($page)->not->toBeNull();
     expect($page->structure)->toMatchArray($expectedStructure);
     expect($page->structure)->not->toHaveKey('junk');
+    expect($page->folder)->toBe('/');
 });
 
 it('returns 422 when attempting to reuse an existing page name', function () {
@@ -132,6 +139,7 @@ it('returns 422 when attempting to reuse an existing page name', function () {
         'path' => 'about-page',
         'type' => 'page',
         'structure' => config('hpm.structures.page'),
+        'folder' => '/',
     ]);
 
     $response = $this->postJson('/api/admin/pages', [
@@ -140,6 +148,7 @@ it('returns 422 when attempting to reuse an existing page name', function () {
             'name' => 'About Page',
             'path' => 'about-page-duplicate',
         ],
+        'folder' => '/',
     ]);
 
     $response->assertStatus(422);

@@ -15,6 +15,7 @@ export const useFolderStore = defineStore('AdminFolderStore', {
         move_action: '',
         folder_90: null,
         page_to_move: null,
+        is_move_pages: false,
     }),
 
     actions: {

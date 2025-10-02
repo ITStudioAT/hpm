@@ -13,6 +13,7 @@ export const usePageStore = defineStore('AdminPageStore', {
         delete_action: 0,
         selected_action: '',
         pages: [],
+        is_in_work: false,
     }),
 
     actions: {
