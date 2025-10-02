@@ -4,7 +4,7 @@
         <v-col>
             <v-card tile flat color="accent-2">
                 <v-card-title class="d-flex flex-row ga-2 justify-space-between">
-                    <div>Aktive Menü: {{ active_menu.name }}</div>
+                    <div>Aktives Menü: {{ active_menu.name }}</div>
                 </v-card-title>
             </v-card>
         </v-col>
@@ -18,6 +18,13 @@
                 icon="mdi-plus-thick"
                 :color="selected_action == 'new_menu' ? 'primary' : 'secondary'"
                 @click="newMenu" />
+
+            <its-menu-button
+                title="Bearbeiten"
+                icon="mdi-cog"
+                :color="selected_action == 'edit_menu' ? 'primary' : 'success'"
+                @click="editMenu(active_menu)"
+                v-if="active_menu" />
 
             <its-menu-button
                 title="Umbenennen"
@@ -49,26 +56,32 @@
         @newActiveMenu="active_menu = $event"
         v-if="selected_action == ''" />
 
-    <!-- NEUE/EDIT PAGE -->
+    <!-- NEUES/UMBENENNEN MENÜ -->
     <Overview_NewEditMenu
         :data="data"
         :homepage="homepage"
         v-if="['new_menu', 'rename_menu'].includes(selected_action)"
         @save="doSave($event)"
         @abort="doAbort" />
+
+    <!-- MENÜ BEARBEITEN-->
+    <EditMenu :active_menu="active_menu" v-if="selected_action == 'edit_menu'" @abort="doAbort" />
 </template>
 <script>
 import { mapWritableState } from 'pinia'
+import { useAdminStore } from '@/stores/admin/AdminStore'
 import { useMenuStore } from '@/stores/admin/MenuStore'
 import ItsMenuButton from '@/pages/components/ItsMenuButton.vue'
 import Overview_NewEditMenu from './Overview_NewEditMenu.vue'
 import ListOfMenus from './ListOfMenus.vue'
+import EditMenu from './EditMenu.vue'
 
 export default {
     props: ['homepage'],
-    components: { ItsMenuButton, ListOfMenus, Overview_NewEditMenu },
+    components: { ItsMenuButton, ListOfMenus, Overview_NewEditMenu, EditMenu },
 
     async beforeMount() {
+        this.adminStore = useAdminStore()
         this.menuStore = useMenuStore()
 
         this.doOverview(this.homepage?.id)
@@ -78,16 +91,23 @@ export default {
 
     data() {
         return {
+            adminStore: null,
             menuStore: null,
             data: {},
         }
     },
 
     computed: {
+        ...mapWritableState(useAdminStore, ['is_in_work']),
         ...mapWritableState(useMenuStore, ['active_menu', 'menus', 'delete_action', 'selected_action']),
     },
 
     methods: {
+        editMenu() {
+            this.is_in_work = true
+            this.selected_action = 'edit_menu'
+        },
+
         async doOverview(homepage_id) {
             await this.menuStore.index(homepage_id)
             // Preselect first homepage if none is active
