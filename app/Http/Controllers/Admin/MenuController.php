@@ -81,6 +81,15 @@ class MenuController extends Controller
 
         $validated = $request->validated();
 
+
+        $menu_structure = config('hpm.structures.menu');
+        $incoming = $validated['structure'];            // expect the JSON under "structure"
+
+        // Normalize to match the structure (adds missing keys, removes extras)
+        $normalized = Structure::normalize((array) $incoming, (array) $menu_structure);
+        $validated['structure'] = $normalized;
+
+
         $menu->update($validated);
 
         return response()->json(new MenuResource($menu), 200);

@@ -12,6 +12,14 @@ export const useMenuStore = defineStore('AdminMenuStore', {
         active_menu: null,
         delete_action: 0,
         selected_action: '',
+        selected_menu_action: '',
+        active_id: 0,
+        root: {
+            id: 0,
+            title: 'root',
+            children: [],
+        },
+        items: [],
     }),
 
     actions: {

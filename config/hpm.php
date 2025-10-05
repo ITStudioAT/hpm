@@ -53,7 +53,11 @@ return [
             'footer'  => ['id' => null, 'is_visible' => true],
         ],
         'menu' => [
-            'content' => [],
+            'root' => [
+                'id' => 0,
+                'title' => 'root',
+                'children' => [],
+            ],
         ],
         'page_folders' => [
             'folders' => ['/'],

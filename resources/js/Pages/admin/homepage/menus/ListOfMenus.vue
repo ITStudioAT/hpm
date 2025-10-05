@@ -15,7 +15,13 @@
             </v-list>
         </v-col>
     </v-row>
+    <v-row>
+        <v-col>
+            {{ menus }}
+        </v-col>
+    </v-row>
 </template>
+
 <script>
 export default {
     props: ['menus', 'active_menu'],

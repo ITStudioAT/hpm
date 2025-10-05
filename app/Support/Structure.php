@@ -12,29 +12,31 @@ final class Structure
      * - for list arrays, use a single-element prototype (if provided)
      * - cast scalars to the default's type when possible
      */
-    public static function normalize(array $input, array $structure): array
+    public static function normalize(array $data, array $schema): array
     {
-        $result = [];
+        // 1) Add defaults without wiping incoming values
+        $merged = array_replace_recursive($schema, $data);
 
-        foreach ($structure as $key => $spec) {
-            if (array_key_exists($key, $input)) {
-                $val = $input[$key];
+        // 2) Prune unknown keys only where schema is non-empty (no pruning under [])
+        return self::pruneWithWildcards($merged, $schema);
+    }
 
-                if (is_array($spec)) {
-                    $result[$key] = self::normalizeArray($val, $spec);
-                } else {
-                    $result[$key] = self::castToSpecType($val, $spec);
+    private static function pruneWithWildcards(array $data, array $schema): array
+    {
+        // keep only keys present in schema at this level
+        $data = array_intersect_key($data, $schema);
+
+        foreach ($data as $key => $val) {
+            if (is_array($val) && isset($schema[$key]) && is_array($schema[$key])) {
+                // Empty array in schema => wildcard: don't prune/normalize deeper
+                if ($schema[$key] === []) {
+                    continue;
                 }
-            } else {
-                // missing key → use default from structure
-                $result[$key] = is_array($spec)
-                    ? self::normalize([], $spec)
-                    : $spec;
+                // Non-empty sub-schema => recurse
+                $data[$key] = self::pruneWithWildcards($val, $schema[$key]);
             }
         }
-
-        // unknown keys in $input are intentionally dropped
-        return $result;
+        return $data;
     }
 
     private static function normalizeArray($val, array $spec): array

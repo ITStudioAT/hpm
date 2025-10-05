@@ -1,5 +1,5 @@
 <template>
-    <!-- NEUE HOMEPAGE -->
+    <!-- NEUEs MENÜ -->
     <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
         <v-col cols="12" sm="4" md="3">
             <v-form ref="form" @submit.prevent="doSave(homepage, data)" v-model="is_valid">

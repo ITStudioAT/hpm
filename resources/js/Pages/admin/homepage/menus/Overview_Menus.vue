@@ -65,7 +65,11 @@
         @abort="doAbort" />
 
     <!-- MENÜ BEARBEITEN-->
-    <EditMenu :active_menu="active_menu" v-if="selected_action == 'edit_menu'" @abort="doAbort" />
+    <EditMenu
+        :active_menu="active_menu"
+        :homepage="homepage"
+        v-if="selected_action == 'edit_menu'"
+        @abort="doAbortEditMenu" />
 </template>
 <script>
 import { mapWritableState } from 'pinia'
@@ -74,7 +78,7 @@ import { useMenuStore } from '@/stores/admin/MenuStore'
 import ItsMenuButton from '@/pages/components/ItsMenuButton.vue'
 import Overview_NewEditMenu from './Overview_NewEditMenu.vue'
 import ListOfMenus from './ListOfMenus.vue'
-import EditMenu from './EditMenu.vue'
+import EditMenu from './EditMenu/EditMenu.vue'
 
 export default {
     props: ['homepage'],
@@ -99,7 +103,13 @@ export default {
 
     computed: {
         ...mapWritableState(useAdminStore, ['is_in_work']),
-        ...mapWritableState(useMenuStore, ['active_menu', 'menus', 'delete_action', 'selected_action']),
+        ...mapWritableState(useMenuStore, [
+            'active_menu',
+            'menus',
+            'delete_action',
+            'selected_action',
+            'selected_menu_action',
+        ]),
     },
 
     methods: {
@@ -126,6 +136,12 @@ export default {
             await this.doOverview(this.homepage.id)
             this.data = {}
             this.selected_action = ''
+        },
+
+        doAbortEditMenu() {
+            this.selected_menu_action = ''
+            this.selected_action = ''
+            this.is_in_work = false
         },
         newMenu() {
             this.data = {}

@@ -10,6 +10,7 @@ export const usePageStore = defineStore('AdminPageStore', {
         ...resourceStore.state(),
         isSaving: false,
         active_page: null,
+        active_page_id: null,
         delete_action: 0,
         selected_action: '',
         pages: [],
@@ -86,7 +87,6 @@ export const usePageStore = defineStore('AdminPageStore', {
             const adminStore = useAdminStore()
             const notification = useNotificationStore()
             const timeout = adminStore.config?.timeout ?? this.timeout ?? 3000
-            console.log('updating...')
             this.is_loading = true
             this.isSaving = true
             adminStore.is_loading++
