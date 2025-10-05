@@ -1,25 +1,17 @@
 <template>
-    <!-- LIST OF HOMEPAGES -->
-    <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
-        <v-col cols="12" sm="4" md="3">
-            <v-list nav density="comfortable" color="primary">
-                <v-list-subheader>Menüs</v-list-subheader>
+    <v-card tile flat border>
+        <v-list nav density="comfortable" color="primary">
+            <v-list-subheader>Menüs</v-list-subheader>
 
-                <v-list-item
-                    v-for="(menu, i) in menus"
-                    :key="menu.id ?? i"
-                    :title="menu.name"
-                    :prepend-icon="'mdi-web'"
-                    :active="isActive(menu)"
-                    @click="$emit('newActiveMenu', menu)" />
-            </v-list>
-        </v-col>
-    </v-row>
-    <v-row>
-        <v-col>
-            {{ menus }}
-        </v-col>
-    </v-row>
+            <v-list-item
+                v-for="(menu, i) in menus"
+                :key="menu.id ?? i"
+                :title="menu.name"
+                :prepend-icon="'mdi-web'"
+                :active="isActive(menu)"
+                @click="$emit('newActiveMenu', menu)" />
+        </v-list>
+    </v-card>
 </template>
 
 <script>

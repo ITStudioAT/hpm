@@ -2,17 +2,19 @@
     <!-- LIST OF HOMEPAGES -->
     <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters>
         <v-col cols="12" sm="4" md="3">
-            <v-list nav density="comfortable" color="primary">
-                <v-list-subheader>Homepages</v-list-subheader>
+            <v-card flat tile border>
+                <v-list nav density="comfortable" color="primary">
+                    <v-list-subheader>Homepages</v-list-subheader>
 
-                <v-list-item
-                    v-for="(homepage, i) in homepages"
-                    :key="homepage.id ?? i"
-                    :title="homepage.name"
-                    :prepend-icon="'mdi-web'"
-                    :active="isActive(homepage)"
-                    @click="$emit('newActiveHomepage', homepage)" />
-            </v-list>
+                    <v-list-item
+                        v-for="(homepage, i) in homepages"
+                        :key="homepage.id ?? i"
+                        :title="homepage.name"
+                        :prepend-icon="'mdi-web'"
+                        :active="isActive(homepage)"
+                        @click="$emit('newActiveHomepage', homepage)" />
+                </v-list>
+            </v-card>
         </v-col>
     </v-row>
 </template>

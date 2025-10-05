@@ -49,29 +49,49 @@
         </v-row>
     </v-card>
 
-    <!-- LIST OF PAGES -->
-    <ListOfMenus
-        :menus="menus"
-        :active_menu="active_menu"
-        @newActiveMenu="active_menu = $event"
-        v-if="selected_action == ''" />
+    <!-- LIST OF MENUS -->
+    <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters v-if="selected_action == ''">
+        <v-col cols="12" sm="4" md="3">
+            <ListOfMenus :menus="menus" :active_menu="active_menu" @newActiveMenu="active_menu = $event" />
+        </v-col>
+
+        <v-col cols="12" sm="4" md="3" v-if="active_menu">
+            <v-card flat tile border>
+                <v-card-title>
+                    {{ active_menu.name }}
+                </v-card-title>
+                <v-card-text v-if="root.children && root.children.length > 0">
+                    <v-treeview color="primary" :items="items" item-key="id" item-value="id" activatable open-all>
+                        <template v-slot:prepend="{ item, isOpen }">
+                            <v-icon v-if="item.url" icon="mdi-link"></v-icon>
+                            <v-icon v-if="item.page_id" icon="mdi-arrow-bottom-right-thick"></v-icon>
+                        </template>
+                    </v-treeview>
+                </v-card-text>
+                <v-card-text v-else>
+                    <div class="text-body-2">Menü ist leer</div>
+                </v-card-text>
+            </v-card>
+        </v-col>
+    </v-row>
 
     <!-- NEUES/UMBENENNEN MENÜ -->
-    <Overview_NewEditMenu
-        :data="data"
-        :homepage="homepage"
-        v-if="['new_menu', 'rename_menu'].includes(selected_action)"
-        @save="doSave($event)"
-        @abort="doAbort" />
+    <v-row
+        class="d-flex flex-row ga-2 mb-2 mt-0 w-100"
+        no-gutters
+        v-if="['new_menu', 'rename_menu'].includes(selected_action)">
+        <v-col cols="12" sm="4" md="3">
+            <Overview_NewEditMenu :data="data" :homepage="homepage" @save="doSave($event)" @abort="doAbort" />
+        </v-col>
+    </v-row>
 
     <!-- MENÜ BEARBEITEN-->
-    <EditMenu
-        :active_menu="active_menu"
-        :homepage="homepage"
-        v-if="selected_action == 'edit_menu'"
-        @abort="doAbortEditMenu" />
+    <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters v-if="selected_action == 'edit_menu'">
+        <EditMenu :active_menu="active_menu" :homepage="homepage" @abort="doAbortEditMenu" />
+    </v-row>
 </template>
 <script>
+import { shallowRef } from 'vue'
 import { mapWritableState } from 'pinia'
 import { useAdminStore } from '@/stores/admin/AdminStore'
 import { useMenuStore } from '@/stores/admin/MenuStore'
@@ -109,7 +129,15 @@ export default {
             'delete_action',
             'selected_action',
             'selected_menu_action',
+            'root',
+            'items',
         ]),
+    },
+    watch: {
+        active_menu() {
+            this.root = this.active_menu.structure.root
+            this.items = shallowRef([...this.root.children])
+        },
     },
 
     methods: {

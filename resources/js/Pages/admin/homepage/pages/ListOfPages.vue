@@ -34,24 +34,26 @@
     <!-- LIST OF PAGES -->
     <v-row class="d-flex flex-row ga-2 mb-2 mt-0 w-100" no-gutters v-if="pages">
         <v-col cols="12" sm="4" md="3">
-            <v-list nav density="comfortable" color="primary">
-                <v-list-subheader>Seiten</v-list-subheader>
+            <v-card tile flat border>
+                <v-list nav density="comfortable" color="primary">
+                    <v-list-subheader>Seiten</v-list-subheader>
 
-                <v-list-item
-                    v-for="(page, i) in pagesInFolder(pages, active_folder)"
-                    :key="page.id ?? i"
-                    :prepend-icon="'mdi-book-open-page-variant'"
-                    :active="isActive(page)"
-                    @click="$emit('newActivePage', page)">
-                    <template #title>{{ page.name }}</template>
-                    <template #subtitle>
-                        <div class="d-flex flex-row align-center justify-space-between">
-                            <div>{{ page.type }}</div>
-                            <div>{{ '/' + page.path }}</div>
-                        </div>
-                    </template>
-                </v-list-item>
-            </v-list>
+                    <v-list-item
+                        v-for="(page, i) in pagesInFolder(pages, active_folder)"
+                        :key="page.id ?? i"
+                        :prepend-icon="'mdi-book-open-page-variant'"
+                        :active="isActive(page)"
+                        @click="$emit('newActivePage', page)">
+                        <template #title>{{ page.name }}</template>
+                        <template #subtitle>
+                            <div class="d-flex flex-row align-center justify-space-between">
+                                <div>{{ page.type }}</div>
+                                <div>{{ '/' + page.path }}</div>
+                            </div>
+                        </template>
+                    </v-list-item>
+                </v-list>
+            </v-card>
         </v-col>
     </v-row>
 </template>
