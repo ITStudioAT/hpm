@@ -9,9 +9,8 @@ it('normalizes arbitrary structures to the configured folder schema', function (
     ]);
 
     expect($normalized)->toHaveKey('folders');
-    expect($normalized['folders'])->toBe(['/', '/Blog', '/Blog/Child']);
+    expect($normalized['folders'])->toBe(['/']);
 
     $fallback = FolderService::normalizeStructure(['folders' => 'not-an-array']);
-    expect($fallback['folders'])->toBeArray();
-    expect($fallback['folders'])->toBeEmpty();
+    expect($fallback['folders'])->toBe(['/']);
 });

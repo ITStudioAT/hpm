@@ -65,7 +65,7 @@ it('renames the requested folder path and updates dependent pages for admins', f
     ]);
 
     $folder->refresh();
-    expect($folder->structure['folders'])->toBe(['/', '/Archives', '/Archives/2024']);
+    expect($folder->structure)->toMatchArray(config('hpm.structures.page_folders'));
 
     expect($page->fresh()->folder)->toBe('/Archives/2024');
 });

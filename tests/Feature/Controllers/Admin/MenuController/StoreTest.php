@@ -65,7 +65,7 @@ it('rejects duplicate menu names for admins', function () {
         'homepage_id' => $homepage->id,
         'name' => 'Main Menu',
         'path' => 'main-menu',
-        'structure' => ['content' => []],
+        'structure' => config('hpm.structures.menu'),
     ]);
 
     $response = $this->postJson('/api/admin/menus', [
@@ -109,9 +109,7 @@ it('creates a menu with normalized structure for admins', function () {
         'name' => 'Main Menu',
         'path' => null,
         'type' => 'menu',
-        'structure' => [
-            'content' => [],
-        ],
+        'structure' => config('hpm.structures.menu'),
     ]);
 
     $menuId = $response->json('id');
@@ -126,5 +124,5 @@ it('creates a menu with normalized structure for admins', function () {
 
     $menu = Menu::find($menuId);
     expect($menu)->not->toBeNull();
-    expect($menu->structure)->toMatchArray(['content' => []]);
+    expect($menu->structure)->toMatchArray(config('hpm.structures.menu'));
 });

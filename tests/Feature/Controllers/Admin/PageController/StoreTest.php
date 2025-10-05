@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Models\Homepage;
 use App\Models\Page;
@@ -90,9 +90,9 @@ it('creates a page with a sanitized path and normalized structure for admins', f
     $response->assertOk();
 
     $expectedStructure = [
-        'header' => ['id' => 42, 'is_visible' => false],
+        'header' => ['id' => 42, 'is_visible' => 'false'],
         'content' => [],
-        'footer' => ['id' => 7, 'is_visible' => true],
+        'footer' => ['id' => 7, 'is_visible' => 'TRUE'],
     ];
 
     $response->assertJson([

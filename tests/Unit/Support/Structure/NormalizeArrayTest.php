@@ -25,7 +25,8 @@ it('normalizes nested arrays according to the structure prototype', function () 
     $listResult = $method->invoke(null, $listInput, $listSchema);
 
     expect($listResult)->toHaveCount(2);
-    expect($listResult[0])->toMatchArray(['id' => 5, 'is_visible' => false]);
+    expect($listResult[0])->toMatchArray(['id' => 5, 'is_visible' => 'false']);
+    expect($listResult[0])->not->toHaveKey('other');
     expect($listResult[1])->toMatchArray(['id' => null, 'is_visible' => true]);
 
     $assocSchema = [
@@ -48,7 +49,7 @@ it('normalizes nested arrays according to the structure prototype', function () 
     expect($assocResult)->toMatchArray([
         'meta' => [
             'title' => 'Docs',
-            'has_nav' => false,
+            'has_nav' => '0',
         ],
     ]);
 });

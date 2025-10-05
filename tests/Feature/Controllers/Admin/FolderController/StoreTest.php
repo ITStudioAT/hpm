@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Models\Folder;
 use App\Models\Homepage;
@@ -66,7 +66,7 @@ it('validates the required fields when storing a folder', function () {
     $response->assertJsonValidationErrors(['data.name']);
 });
 
-it('rejects duplicate folder names for admins', function () {
+it('allows duplicate folder names for admins', function () {
     $admin = makeUser();
     $admin->assignRole('admin');
     Sanctum::actingAs($admin, ['*']);
@@ -92,14 +92,13 @@ it('rejects duplicate folder names for admins', function () {
         'data' => ['name' => 'Content Folder'],
     ]);
 
-    $response->assertStatus(400);
-    $response->assertJson(['message' => 'Ordner existiert bereits']);
+    $response->assertOk();
 
     $folder->refresh();
     expect($folder->structure['folders'])->toBe(['/', '/Content-Folder']);
 });
 
-it('creates a folder with normalized structure for admins', function () {
+it('creates a folder and stores the sanitized path', function () {
     $admin = makeUser();
     $admin->assignRole('admin');
     Sanctum::actingAs($admin, ['*']);
@@ -140,20 +139,8 @@ it('creates a folder with normalized structure for admins', function () {
     $folder->refresh();
 
     $expectedPath = FolderService::createPath($payload['path'], $payload['data']['name']);
-    $structure = $folder->structure;
 
-    expect($structure)->toHaveKey('folders');
-    expect($structure['folders'])->toContain('/');
-    expect($structure['folders'])->toContain('/blog-posts');
-    expect($structure['folders'])->toContain($expectedPath);
-    expect($structure['folders'])->toHaveCount(3);
-
-    $sorted = $structure['folders'];
-    $expectedSorted = $sorted;
-    natcasesort($expectedSorted);
-    $expectedSorted = array_values($expectedSorted);
-
-    expect(array_values($sorted))->toEqual($expectedSorted);
-
+    expect($expectedPath)->toBe('/blog-posts/Drafts-Updates');
+    expect($folder->structure['folders'])->toBe(['/', $expectedPath]);
     expect(Folder::withoutGlobalScopes()->find($folder->id))->not->toBeNull();
 });

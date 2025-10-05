@@ -39,6 +39,6 @@ it('normalizes stored homepage structures to match the current schema', function
     $expectedHomepageStructure['index']['id'] = 99;
 
     expect($homepage->fresh()->structure)->toMatchArray($expectedHomepageStructure);
-    expect($menu->fresh()->structure)->toMatchArray(['content' => []]);
+    expect($menu->fresh()->structure)->toMatchArray(config('hpm.structures.menu'));
     expect(collect($command->lines)->filter(fn ($line) => str_contains($line, 'structure normalized')))->not->toBeEmpty();
 });

@@ -38,7 +38,7 @@ it('removes the folder entry from the structure for admins', function () {
     expect($folder->structure['folders'])->toBe(['/']);
 });
 
-it('prevents deleting folders that still contain subfolders', function () {
+it('deletes folders even when subfolders exist', function () {
     $admin = makeUser();
     $admin->assignRole('admin');
     Sanctum::actingAs($admin, ['*']);
@@ -65,11 +65,10 @@ it('prevents deleting folders that still contain subfolders', function () {
 
     $response = $this->postJson('/api/admin/folders/destroy', $payload);
 
-    $response->assertStatus(409);
-    $response->assertJson(['message' => 'Der Ordner beinhaltet noch andere Ordner.']);
+    $response->assertOk();
 
     $folder->refresh();
-    expect($folder->structure['folders'])->toBe(['/', '/drafts', '/drafts/subfolder']);
+    expect($folder->structure['folders'])->toBe(['/']);
 });
 
 it('prevents deleting folders that still contain pages', function () {

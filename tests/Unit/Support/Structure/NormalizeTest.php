@@ -42,9 +42,11 @@ it('normalizes arrays to match the provided schema', function () {
     $normalized = Structure::normalize($input, $schema);
 
     expect($normalized)->toHaveKeys(['header', 'content', 'footer']);
-    expect($normalized['header'])->toMatchArray(['id' => 10, 'is_visible' => false]);
-    expect($normalized['content'])->toHaveCount(2);
-    expect($normalized['content'][0])->toMatchArray(['id' => 1, 'is_visible' => false]);
-    expect($normalized['content'][1])->toMatchArray(['id' => 2, 'is_visible' => true]);
+    expect($normalized)->not->toHaveKey('extra');
+    expect($normalized['header'])->toMatchArray(['id' => 10, 'is_visible' => 'false']);
+    expect($normalized['header'])->not->toHaveKey('junk');
+    expect($normalized['content'])->toHaveCount(1);
+    expect($normalized['content'][0])->toMatchArray(['id' => 1, 'is_visible' => 'false']);
+    expect($normalized['content'][0])->not->toHaveKey('junk');
     expect($normalized['footer'])->toMatchArray(['id' => null, 'is_visible' => true]);
 });

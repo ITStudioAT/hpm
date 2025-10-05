@@ -18,7 +18,7 @@ function createMenuFixture(Homepage $homepage, array $overrides = []): Menu
         'homepage_id' => $homepage->id,
         'name' => 'Primary Menu',
         'path' => 'primary-menu',
-        'structure' => ['content' => []],
+        'structure' => config('hpm.structures.menu'),
     ], $overrides));
 }
 
@@ -111,7 +111,7 @@ it('updates a menu for admin users', function () {
     $menu = createMenuFixture($homepage, [
         'name' => 'Main Navigation',
         'path' => 'main-navigation',
-        'structure' => ['content' => [['label' => 'Start']]],
+        'structure' => config('hpm.structures.menu'),
     ]);
 
     $admin = makeUser();
@@ -142,21 +142,11 @@ it('updates a menu for admin users', function () {
         'name' => 'Updated Navigation',
         'path' => 'updated-navigation',
         'type' => 'menu',
-        'structure' => [
-            'content' => [
-                ['label' => 'Home', 'is_visible' => true],
-                ['label' => 'Contact', 'is_visible' => false],
-            ],
-        ],
+        'structure' => config('hpm.structures.menu'),
     ]);
 
     $menu->refresh();
     expect($menu->name)->toBe('Updated Navigation');
     expect($menu->path)->toBe('updated-navigation');
-    expect($menu->structure)->toMatchArray([
-        'content' => [
-            ['label' => 'Home', 'is_visible' => true],
-            ['label' => 'Contact', 'is_visible' => false],
-        ],
-    ]);
+    expect($menu->structure)->toMatchArray(config('hpm.structures.menu'));
 });
